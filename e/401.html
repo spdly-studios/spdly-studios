@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>401 — Unauthorized · SpDly Studios</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=IBM+Plex+Mono:wght@300;400&display=swap');
+
+:root {
+  --bg:#09090b;--bg-alt:#0e0f11;--surface:#141518;--border:#242730;--border-sub:#1a1d22;
+  --text:#dde1ea;--text-2:#8b90a0;--text-3:#464b58;--text-4:#2a2e38;
+  --accent:#5fc4d0;--font:'Outfit',sans-serif;--mono:'IBM Plex Mono',monospace;
+  --error-color:#a78bfa;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+#node-canvas{position:fixed;inset:0;z-index:0;opacity:0.4}
+
+#navbar{position:fixed;top:0;left:0;right:0;height:60px;z-index:900;display:flex;align-items:center;justify-content:space-between;padding:0 36px;background:rgba(9,9,11,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border-sub)}
+.nav-logo{font-size:1.1rem;display:flex;align-items:baseline}
+.logo-sp{font-weight:800;letter-spacing:-0.04em;color:var(--accent)}
+.logo-studios{font-weight:300;letter-spacing:0.18em;color:var(--text-2);margin-left:4px;font-size:0.85em;text-transform:uppercase}
+.nav-home{font-family:var(--mono);font-size:0.68rem;color:var(--text-2);letter-spacing:0.06em;text-decoration:none;transition:color 0.2s}
+.nav-home:hover{color:var(--accent)}
+
+main{position:relative;z-index:10;flex:1;display:flex;align-items:center;justify-content:center;padding:80px 28px 40px}
+.error-wrap{text-align:center;max-width:580px}
+
+/* Lock animation */
+.lock-icon{
+  width:80px;height:80px;margin:0 auto 28px;position:relative;
+  animation:fadeUp 0.7s ease both;
+}
+.lock-body{
+  width:52px;height:40px;border:2.5px solid var(--error-color);border-radius:8px;
+  margin:0 auto;position:relative;top:8px;
+  background:rgba(167,139,250,0.06);
+  box-shadow:0 0 24px rgba(167,139,250,0.15);
+  animation:lockShake 4s ease infinite 2s;
+}
+.lock-body::after{
+  content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:10px;height:10px;border-radius:50%;border:2px solid var(--error-color);
+}
+.lock-shackle{
+  width:28px;height:20px;
+  border:2.5px solid var(--error-color);
+  border-bottom:none;
+  border-radius:14px 14px 0 0;
+  margin:0 auto;
+  position:relative;
+  animation:shackleOpen 4s ease infinite 2s;
+  transform-origin:bottom center;
+}
+@keyframes lockShake{
+  0%,85%,100%{transform:translateX(0)}
+  87%{transform:translateX(-4px) rotate(-2deg)}
+  89%{transform:translateX(4px) rotate(2deg)}
+  91%{transform:translateX(-3px)}
+  93%{transform:translateX(3px)}
+  95%{transform:translateX(0)}
+}
+@keyframes shackleOpen{
+  0%,80%,100%{transform:rotate(0) translateY(0)}
+  82%{transform:rotate(-15deg) translateY(-3px)}
+  90%{transform:rotate(-15deg) translateY(-3px)}
+  95%{transform:rotate(0) translateY(0)}
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+.error-label{font-family:var(--mono);font-size:0.68rem;color:var(--error-color);letter-spacing:0.14em;text-transform:uppercase;opacity:0.8;margin-bottom:12px;animation:fadeUp 0.8s ease 0.15s both}
+.error-code{font-family:var(--mono);font-size:clamp(5rem,16vw,10rem);font-weight:400;color:var(--error-color);line-height:1;letter-spacing:-0.04em;display:block;text-shadow:0 0 48px rgba(167,139,250,0.25);animation:fadeUp 0.8s ease 0.3s both}
+
+/* Keypad animation */
+.keypad{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:6px;
+  width:120px;margin:24px auto;
+  animation:fadeUp 0.8s ease 0.4s both;
+}
+.key{
+  background:var(--surface);border:1px solid var(--border);border-radius:6px;
+  height:28px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:0.65rem;color:var(--text-3);
+}
+.key.active{border-color:var(--error-color);color:var(--error-color);background:rgba(167,139,250,0.06);box-shadow:0 0 10px rgba(167,139,250,0.15)}
+.key.denied{border-color:#f05353;color:#f05353;background:rgba(240,83,83,0.06);animation:keyDeny 0.4s ease}
+@keyframes keyDeny{0%,100%{transform:scale(1)}50%{transform:scale(0.9)}}
+
+.error-title{font-size:clamp(1.4rem,3vw,2rem);font-weight:700;line-height:1.2;margin-bottom:14px;letter-spacing:-0.02em;animation:fadeUp 0.8s ease 0.5s both}
+.error-desc{font-size:0.92rem;color:var(--text-2);line-height:1.75;font-weight:300;margin-bottom:28px;animation:fadeUp 0.8s ease 0.65s both}
+.error-detail{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;font-family:var(--mono);font-size:0.72rem;color:var(--text-3);text-align:left;margin-bottom:32px;line-height:1.8;animation:fadeUp 0.8s ease 0.8s both}
+.error-detail span{color:var(--error-color)}
+.error-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fadeUp 0.8s ease 0.95s both}
+.btn-primary,.btn-ghost{font-family:var(--mono);font-size:0.72rem;letter-spacing:0.06em;padding:12px 26px;border-radius:8px;cursor:pointer;text-decoration:none;transition:all 0.25s;display:inline-block}
+.btn-primary{background:var(--error-color);color:#09090b;border:1px solid var(--error-color)}
+.btn-primary:hover{background:transparent;color:var(--error-color)}
+.btn-ghost{background:transparent;color:var(--text-2);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+footer{position:relative;z-index:10;text-align:center;padding:16px;font-family:var(--mono);font-size:0.62rem;color:var(--text-4);border-top:1px solid var(--border-sub)}
+</style>
+</head>
+<body>
+<canvas id="node-canvas"></canvas>
+<nav id="navbar">
+  <div class="nav-logo"><span class="logo-sp">SpDly</span><span class="logo-studios">Studios</span></div>
+  <a href="index.html" class="nav-home">← back to home</a>
+</nav>
+<main>
+  <div class="error-wrap">
+    <div class="lock-icon">
+      <div class="lock-shackle"></div>
+      <div class="lock-body"></div>
+    </div>
+    <div class="error-label">Access Control</div>
+    <span class="error-code">401</span>
+
+    <div class="keypad" id="keypad">
+      <div class="key">1</div><div class="key">2</div><div class="key">3</div>
+      <div class="key">4</div><div class="key active">•</div><div class="key">6</div>
+      <div class="key">7</div><div class="key">8</div><div class="key">9</div>
+    </div>
+
+    <div class="error-title">Unauthorized</div>
+    <p class="error-desc">Authentication is required to access this resource. You must provide valid credentials before entry is granted.</p>
+    <div class="error-detail">
+      <div>status &nbsp;&nbsp;&nbsp;→ <span>401 Unauthorized</span></div>
+      <div>required &nbsp;→ <span>Bearer token / credentials</span></div>
+      <div>timestamp → <span id="ts"></span></div>
+    </div>
+    <div class="error-actions">
+      <a href="javascript:history.back()" class="btn-primary">← Go Back</a>
+      <a href="index.html" class="btn-ghost">Home</a>
+    </div>
+  </div>
+</main>
+<footer>© <span id="yr"></span> Shivaprasad V &nbsp;·&nbsp; SpDly Studios</footer>
+<script>
+document.getElementById('yr').textContent=new Date().getFullYear();
+document.getElementById('ts').textContent=new Date().toISOString();
+
+// Keypad deny animation
+const keys=document.querySelectorAll('.key');
+setInterval(()=>{
+  keys.forEach(k=>k.classList.remove('active','denied'));
+  const picks=[Math.floor(Math.random()*9),Math.floor(Math.random()*9)];
+  picks.forEach(i=>{keys[i].classList.add('active');});
+  setTimeout(()=>{picks.forEach(i=>{keys[i].classList.remove('active');keys[i].classList.add('denied');});},700);
+  setTimeout(()=>{picks.forEach(i=>keys[i].classList.remove('denied'));},1200);
+},2600);
+
+(function(){
+  const canvas=document.getElementById('node-canvas'),ctx=canvas.getContext('2d');
+  const CELL=24,R=1.4,BASE=0.05,MAX_B=0.45,WAVE_SPEED=0.9,MAX_WAVES=5;
+  let W,H,cols,rows,dots=[],waves=[],frame=0;
+  function buildGrid(){W=canvas.width=canvas.offsetWidth;H=canvas.height=canvas.offsetHeight;cols=Math.ceil(W/CELL)+1;rows=Math.ceil(H/CELL)+1;const ox=(W-(cols-1)*CELL)/2,oy=(H-(rows-1)*CELL)/2;dots=[];for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)dots.push({x:ox+c*CELL,y:oy+r*CELL,c,r,b:BASE,flicker:Math.random()*Math.PI*2});}
+  function spawnWave(){waves.push({cx:Math.floor(Math.random()*cols),cy:Math.floor(Math.random()*rows),radius:0,life:1,decay:0.004+Math.random()*0.003,strength:0.25+Math.random()*0.25,width:2.5+Math.random()*2});}
+  function tick(){frame++;if(waves.length<MAX_WAVES&&frame%38===0)spawnWave();if(waves.length===0)spawnWave();for(const w of waves){w.radius+=WAVE_SPEED;w.life-=w.decay;}waves=waves.filter(w=>w.life>0.02&&w.radius<Math.hypot(cols,rows)*1.2);for(let i=0;i<dots.length;i++){const d=dots[i];d.b=BASE+Math.sin(d.flicker+frame*0.012)*0.01;}for(const w of waves)for(let i=0;i<dots.length;i++){const d=dots[i],dist=Math.hypot(d.c-w.cx,d.r-w.cy),delta=dist-w.radius;d.b+=Math.exp(-(delta*delta)/(2*w.width*w.width))*w.strength*w.life;}for(let i=0;i<dots.length;i++)dots[i].b=Math.min(dots[i].b,MAX_B);ctx.clearRect(0,0,W,H);for(let i=0;i<dots.length;i++){const d=dots[i];if(d.b<BASE*0.3)continue;ctx.beginPath();ctx.arc(d.x,d.y,R,0,Math.PI*2);ctx.fillStyle=`rgba(95,196,208,${d.b.toFixed(3)})`;ctx.fill();}for(let i=0;i<dots.length;i++){const d=dots[i];if(d.b<0.18)continue;if(d.c<cols-1){const nb=dots[i+1];if(nb&&nb.b>0.18){const a=Math.min(d.b,nb.b)*0.2;ctx.beginPath();ctx.moveTo(d.x,d.y);ctx.lineTo(nb.x,nb.y);ctx.strokeStyle=`rgba(95,196,208,${a.toFixed(3)})`;ctx.lineWidth=0.5;ctx.stroke();}}if(d.r<rows-1){const nb=dots[i+cols];if(nb&&nb.b>0.18){const a=Math.min(d.b,nb.b)*0.2;ctx.beginPath();ctx.moveTo(d.x,d.y);ctx.lineTo(nb.x,nb.y);ctx.strokeStyle=`rgba(95,196,208,${a.toFixed(3)})`;ctx.lineWidth=0.5;ctx.stroke();}}}requestAnimationFrame(tick);}
+  buildGrid();for(let i=0;i<2;i++)spawnWave();tick();
+  let t;window.addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(buildGrid,120)},{passive:true});
+})();
+</script>
+</body>
+</html>

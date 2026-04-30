@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>400 — Bad Request · SpDly Studios</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=IBM+Plex+Mono:wght@300;400&family=Fraunces:ital,wght@1,300&display=swap');
+
+:root {
+  --bg:#09090b; --bg-alt:#0e0f11; --surface:#141518; --surface-2:#1a1c20;
+  --border:#242730; --border-sub:#1a1d22;
+  --text:#dde1ea; --text-2:#8b90a0; --text-3:#464b58; --text-4:#2a2e38;
+  --accent:#5fc4d0; --accent-2:#3a9aaa; --accent-dim:rgba(95,196,208,0.08);
+  --accent-glow:rgba(95,196,208,0.18);
+  --font:'Outfit',sans-serif; --mono:'IBM Plex Mono',monospace;
+  --error-color:#f0a653;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+
+/* Canvas */
+#node-canvas{position:fixed;inset:0;z-index:0;opacity:0.45}
+
+/* Navbar */
+#navbar{position:fixed;top:0;left:0;right:0;height:60px;z-index:900;display:flex;align-items:center;justify-content:space-between;padding:0 36px;background:rgba(9,9,11,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border-sub)}
+.nav-logo{font-size:1.1rem;display:flex;align-items:baseline}
+.logo-sp{font-weight:800;letter-spacing:-0.04em;color:var(--accent)}
+.logo-studios{font-weight:300;letter-spacing:0.18em;color:var(--text-2);margin-left:4px;font-size:0.85em;text-transform:uppercase}
+.nav-home{font-family:var(--mono);font-size:0.68rem;color:var(--text-2);letter-spacing:0.06em;text-decoration:none;transition:color 0.2s}
+.nav-home:hover{color:var(--accent)}
+
+/* Main layout */
+main{position:relative;z-index:10;flex:1;display:flex;align-items:center;justify-content:center;padding:80px 28px 40px}
+
+.error-wrap{text-align:center;max-width:560px}
+
+/* Animated glitch code */
+.error-code{
+  font-family:var(--mono);
+  font-size:clamp(5rem,16vw,10rem);
+  font-weight:400;
+  color:var(--error-color);
+  line-height:1;
+  letter-spacing:-0.04em;
+  position:relative;
+  display:inline-block;
+  animation:flicker 4s infinite;
+  text-shadow:0 0 40px rgba(240,166,83,0.3);
+}
+.error-code::before,.error-code::after{
+  content:attr(data-text);
+  position:absolute;inset:0;
+  opacity:0.7;
+}
+.error-code::before{color:#f05353;animation:glitch1 3.5s infinite;clip-path:polygon(0 20%,100% 20%,100% 40%,0 40%)}
+.error-code::after{color:#53b4f0;animation:glitch2 3.5s infinite 0.15s;clip-path:polygon(0 60%,100% 60%,100% 80%,0 80%)}
+
+@keyframes glitch1{
+  0%,90%,100%{transform:translate(0)}
+  92%{transform:translate(-4px,1px)}
+  94%{transform:translate(3px,-1px)}
+  96%{transform:translate(-2px,2px)}
+  98%{transform:translate(4px,0)}
+}
+@keyframes glitch2{
+  0%,88%,100%{transform:translate(0)}
+  90%{transform:translate(4px,-1px)}
+  93%{transform:translate(-3px,1px)}
+  96%{transform:translate(2px,-2px)}
+  99%{transform:translate(-4px,0)}
+}
+@keyframes flicker{
+  0%,19%,21%,23%,25%,54%,56%,100%{opacity:1}
+  20%,22%,24%,55%{opacity:0.85}
+}
+
+/* Corruption scanner line */
+.scanner{
+  width:100%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--error-color),transparent);
+  margin:28px auto;
+  animation:scan 2.4s ease-in-out infinite;
+  opacity:0.6;
+}
+@keyframes scan{0%{transform:scaleX(0);opacity:0}40%{transform:scaleX(1);opacity:0.6}100%{transform:scaleX(0);opacity:0}}
+
+/* Label */
+.error-label{
+  font-family:var(--mono);font-size:0.68rem;
+  color:var(--error-color);letter-spacing:0.14em;
+  text-transform:uppercase;opacity:0.8;margin-bottom:14px;
+  animation:fadeUp 0.8s ease 0.2s both;
+}
+
+/* Title */
+.error-title{
+  font-family:var(--font);font-size:clamp(1.4rem,3vw,2rem);
+  font-weight:700;line-height:1.2;margin-bottom:16px;letter-spacing:-0.02em;
+  animation:fadeUp 0.8s ease 0.35s both;
+}
+
+/* Description */
+.error-desc{
+  font-size:0.92rem;color:var(--text-2);line-height:1.75;
+  font-weight:300;margin-bottom:32px;
+  animation:fadeUp 0.8s ease 0.5s both;
+}
+
+/* Mono detail block */
+.error-detail{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;padding:16px 20px;
+  font-family:var(--mono);font-size:0.72rem;
+  color:var(--text-3);text-align:left;
+  margin-bottom:36px;line-height:1.8;
+  animation:fadeUp 0.8s ease 0.65s both;
+}
+.error-detail span{color:var(--error-color)}
+
+/* Buttons */
+.error-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fadeUp 0.8s ease 0.8s both}
+.btn-primary,.btn-ghost{
+  font-family:var(--mono);font-size:0.72rem;letter-spacing:0.06em;
+  padding:12px 26px;border-radius:8px;cursor:pointer;
+  text-decoration:none;transition:all 0.25s;display:inline-block;
+}
+.btn-primary{background:var(--error-color);color:#09090b;border:1px solid var(--error-color)}
+.btn-primary:hover{background:transparent;color:var(--error-color)}
+.btn-ghost{background:transparent;color:var(--text-2);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* Footer */
+footer{position:relative;z-index:10;text-align:center;padding:16px;font-family:var(--mono);font-size:0.62rem;color:var(--text-4);border-top:1px solid var(--border-sub)}
+</style>
+</head>
+<body>
+<canvas id="node-canvas"></canvas>
+
+<nav id="navbar">
+  <div class="nav-logo"><span class="logo-sp">SpDly</span><span class="logo-studios">Studios</span></div>
+  <a href="index.html" class="nav-home">← back to home</a>
+</nav>
+
+<main>
+  <div class="error-wrap">
+    <div class="error-label">HTTP / 1.1</div>
+    <div class="error-code" data-text="400">400</div>
+    <div class="scanner"></div>
+    <div class="error-title">Bad Request</div>
+    <p class="error-desc">The server couldn't understand your request due to malformed syntax or invalid input. Your browser sent something the server simply cannot parse.</p>
+    <div class="error-detail">
+      <div>status &nbsp;&nbsp;→ <span>400 Bad Request</span></div>
+      <div>reason &nbsp;&nbsp;→ <span>malformed_request_syntax</span></div>
+      <div>timestamp → <span id="ts"></span></div>
+    </div>
+    <div class="error-actions">
+      <a href="javascript:history.back()" class="btn-primary">← Go Back</a>
+      <a href="index.html" class="btn-ghost">Home</a>
+    </div>
+  </div>
+</main>
+
+<footer>© <span id="yr"></span> Shivaprasad V &nbsp;·&nbsp; SpDly Studios</footer>
+
+<script>
+document.getElementById('yr').textContent = new Date().getFullYear();
+document.getElementById('ts').textContent = new Date().toISOString();
+
+// Node canvas (identical engine from main.js)
+(function(){
+  const canvas=document.getElementById('node-canvas');
+  const ctx=canvas.getContext('2d');
+  const CELL=24,R=1.4,BASE=0.05,MAX_B=0.45,WAVE_SPEED=0.9,MAX_WAVES=5;
+  let W,H,cols,rows,dots=[],waves=[],frame=0;
+  function buildGrid(){
+    W=canvas.width=canvas.offsetWidth;H=canvas.height=canvas.offsetHeight;
+    cols=Math.ceil(W/CELL)+1;rows=Math.ceil(H/CELL)+1;
+    const ox=(W-(cols-1)*CELL)/2,oy=(H-(rows-1)*CELL)/2;
+    dots=[];
+    for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)
+      dots.push({x:ox+c*CELL,y:oy+r*CELL,c,r,b:BASE,flicker:Math.random()*Math.PI*2});
+  }
+  function spawnWave(){
+    waves.push({cx:Math.floor(Math.random()*cols),cy:Math.floor(Math.random()*rows),
+      radius:0,life:1,decay:0.004+Math.random()*0.003,strength:0.25+Math.random()*0.25,width:2.5+Math.random()*2});
+  }
+  function tick(){
+    frame++;
+    if(waves.length<MAX_WAVES&&frame%38===0)spawnWave();
+    if(waves.length===0)spawnWave();
+    for(const w of waves){w.radius+=WAVE_SPEED;w.life-=w.decay;}
+    waves=waves.filter(w=>w.life>0.02&&w.radius<Math.hypot(cols,rows)*1.2);
+    for(let i=0;i<dots.length;i++){const d=dots[i];d.b=BASE+Math.sin(d.flicker+frame*0.012)*0.01;}
+    for(const w of waves)for(let i=0;i<dots.length;i++){
+      const d=dots[i],dist=Math.hypot(d.c-w.cx,d.r-w.cy),delta=dist-w.radius;
+      d.b+=Math.exp(-(delta*delta)/(2*w.width*w.width))*w.strength*w.life;
+    }
+    for(let i=0;i<dots.length;i++)dots[i].b=Math.min(dots[i].b,MAX_B);
+    ctx.clearRect(0,0,W,H);
+    for(let i=0;i<dots.length;i++){
+      const d=dots[i];if(d.b<BASE*0.3)continue;
+      ctx.beginPath();ctx.arc(d.x,d.y,R,0,Math.PI*2);
+      ctx.fillStyle=`rgba(95,196,208,${d.b.toFixed(3)})`;ctx.fill();
+    }
+    for(let i=0;i<dots.length;i++){
+      const d=dots[i];if(d.b<0.18)continue;
+      if(d.c<cols-1){const nb=dots[i+1];if(nb&&nb.b>0.18){const a=Math.min(d.b,nb.b)*0.2;ctx.beginPath();ctx.moveTo(d.x,d.y);ctx.lineTo(nb.x,nb.y);ctx.strokeStyle=`rgba(95,196,208,${a.toFixed(3)})`;ctx.lineWidth=0.5;ctx.stroke();}}
+      if(d.r<rows-1){const nb=dots[i+cols];if(nb&&nb.b>0.18){const a=Math.min(d.b,nb.b)*0.2;ctx.beginPath();ctx.moveTo(d.x,d.y);ctx.lineTo(nb.x,nb.y);ctx.strokeStyle=`rgba(95,196,208,${a.toFixed(3)})`;ctx.lineWidth=0.5;ctx.stroke();}}
+    }
+    requestAnimationFrame(tick);
+  }
+  buildGrid();for(let i=0;i<2;i++)spawnWave();tick();
+  let t;window.addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(buildGrid,120)},{passive:true});
+})();
+</script>
+</body>
+</html>

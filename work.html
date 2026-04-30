@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="meta-title">Project — SpDly Studios</title>
+  <meta name="theme-color" content="#000000" />
+  
+  <!-- Performance & DNS Hints -->
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&display=swap" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
+  <link rel="apple-touch-icon" href="assets/logo.svg" />
+  
+  <!-- Social Links -->
+  <link rel="me" href="https://github.com/SpDly14" />
+  <link rel="me" href="https://linkedin.com/in/spdly" />
+  
+  
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/core/firebase-config.js"></script>
+
+</head>
+<body class="project-page">
+<div id="scroll-progress"></div>
+<nav id="navbar">
+  <a href="index.html" class="nav-logo">
+    <span class="logo-sp">SpDly</span><span class="logo-studios">Studios</span>
+  </a>
+  <div class="nav-links" id="nav-links">
+    <a href="index.html#about">About</a>
+    <a href="index.html#skills">Skills</a>
+    <a href="index.html#experience">Experience</a>
+    <a href="index.html#research">Research</a>
+    <a href="index.html#projects">Projects</a>
+    <a href="index.html#education">Education</a>
+    <a href="index.html#contact">Contact</a>
+  </div>
+  <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<section id="project-hero">
+  <div class="container">
+    <a href="index.html#projects" class="back-link mono">← All Projects</a>
+    <div class="proj-hero-meta" id="proj-category"></div>
+    <h1 class="proj-hero-title" id="proj-title"></h1>
+    <p class="proj-hero-tagline" id="proj-tagline"></p>
+    <div class="proj-tags-row" id="proj-tags"></div>
+  </div>
+</section>
+
+<div class="metrics-band" id="metrics-band">
+  <div class="container metrics-inner" id="metrics-inner"></div>
+</div>
+
+<div class="proj-hero-img-wrap">
+  <div class="container">
+    <div class="proj-hero-img" id="proj-hero-img">
+      <div class="img-placeholder">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="0.8" opacity="0.2">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+        <span class="mono" style="font-size:0.62rem;opacity:0.2;margin-top:10px">hero image placeholder</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="proj-body container" id="proj-body"></div>
+
+<section class="section section-alt">
+  <div class="container">
+    <div class="projects-grid" id="more-work-grid"></div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <span class="footer-brand"><span class="logo-sp">SpDly</span><span class="logo-studios">Studios</span></span>
+    <span class="mono footer-copy">© 2025 Shivaprasad V</span>
+  </div>
+</footer>
+
+<script src="js/core/firebase-loader.js"></script>
+<script src="js/data/work-data.js"></script>
+
+<script src="js/core/ui.js" defer></script>
+<script src="js/pages/work.js"></script>
+</body>
+</html>

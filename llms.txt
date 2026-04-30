@@ -1,0 +1,20 @@
+# SpDly Studios — Shivaprasad V
+# https://spdly.is-a.dev
+
+User-agent: *
+Allow: /
+
+# Preferred content
+Preferred-Content: html
+
+# Canonical source
+Canonical: https://spdly.is-a.dev/
+
+# Key topics
+Topics: Embedded Systems, Signal Processing, CubeSat ADCS, Real-Time Systems, SDR, RSSI, PCB Design
+
+# Author
+Author: Shivaprasad V
+
+# Contact
+Contact: mailto:vshivaprasad07@gmail.com

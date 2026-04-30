@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>503 — Service Unavailable · SpDly Studios</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=IBM+Plex+Mono:wght@300;400&display=swap');
+
+:root{
+  --bg:#09090b;--surface:#141518;--border:#242730;--border-sub:#1a1d22;
+  --text:#dde1ea;--text-2:#8b90a0;--text-3:#464b58;--text-4:#2a2e38;
+  --accent:#5fc4d0;--font:'Outfit',sans-serif;--mono:'IBM Plex Mono',monospace;
+  --error-color:#34d399;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+#node-canvas{position:fixed;inset:0;z-index:0;opacity:0.4}
+
+#navbar{position:fixed;top:0;left:0;right:0;height:60px;z-index:900;display:flex;align-items:center;justify-content:space-between;padding:0 36px;background:rgba(9,9,11,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border-sub)}
+.nav-logo{font-size:1.1rem;display:flex;align-items:baseline}
+.logo-sp{font-weight:800;letter-spacing:-0.04em;color:var(--accent)}
+.logo-studios{font-weight:300;letter-spacing:0.18em;color:var(--text-2);margin-left:4px;font-size:0.85em;text-transform:uppercase}
+.nav-home{font-family:var(--mono);font-size:0.68rem;color:var(--text-2);letter-spacing:0.06em;text-decoration:none;transition:color 0.2s}
+.nav-home:hover{color:var(--accent)}
+
+main{position:relative;z-index:10;flex:1;display:flex;align-items:center;justify-content:center;padding:80px 28px 40px}
+.error-wrap{text-align:center;max-width:580px}
+
+/* Maintenance cog animation */
+.cog-wrap{
+  width:80px;height:80px;margin:0 auto 24px;position:relative;
+  animation:fadeUp 0.7s ease both;
+}
+.cog-svg{width:100%;height:100%}
+.cog-outer{
+  animation:cogSpin 8s linear infinite;
+  transform-origin:40px 40px;
+}
+.cog-inner{
+  animation:cogSpin 5s linear infinite reverse;
+  transform-origin:40px 40px;
+}
+@keyframes cogSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* Status panel */
+.status-panel{
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:18px 20px;margin:24px auto;max-width:360px;text-align:left;
+  animation:fadeUp 0.8s ease 0.45s both;
+}
+.status-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 0;border-bottom:1px solid var(--border-sub);
+  font-family:var(--mono);font-size:0.72rem;
+}
+.status-row:last-child{border-bottom:none;padding-bottom:0}
+.status-name{color:var(--text-2)}
+.status-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:0.65rem;letter-spacing:0.05em;
+}
+.status-dot{width:7px;height:7px;border-radius:50%}
+.dot-down{background:#f05353;animation:dotBlink 1.4s ease-in-out infinite}
+.dot-maint{background:var(--error-color);animation:dotBlink 2s ease-in-out infinite}
+.dot-up{background:#34d399}
+.text-down{color:#f05353}
+.text-maint{color:var(--error-color)}
+.text-up{color:#34d399}
+@keyframes dotBlink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* Progress bar — maintenance progress */
+.maint-progress{
+  background:var(--border);border-radius:4px;height:4px;
+  margin:22px auto 0;max-width:360px;overflow:hidden;
+  animation:fadeUp 0.8s ease 0.6s both;
+}
+.maint-bar{
+  height:100%;background:var(--error-color);border-radius:4px;
+  animation:maintProg 6s cubic-bezier(0.4,0,0.2,1) infinite;
+}
+@keyframes maintProg{
+  0%{width:0%}
+  50%{width:70%}
+  80%{width:72%}
+  100%{width:100%}
+}
+
+.error-label{font-family:var(--mono);font-size:0.68rem;color:var(--error-color);letter-spacing:0.14em;text-transform:uppercase;opacity:0.8;margin-bottom:12px;animation:fadeUp 0.8s ease 0.2s both}
+.error-code{font-family:var(--mono);font-size:clamp(5rem,16vw,10rem);font-weight:400;color:var(--error-color);line-height:1;letter-spacing:-0.04em;display:block;text-shadow:0 0 48px rgba(52,211,153,0.18);animation:fadeUp 0.8s ease 0.3s both}
+.error-title{font-size:clamp(1.4rem,3vw,2rem);font-weight:700;line-height:1.2;margin-bottom:14px;letter-spacing:-0.02em;animation:fadeUp 0.8s ease 0.75s both}
+.error-desc{font-size:0.92rem;color:var(--text-2);line-height:1.75;font-weight:300;margin-bottom:28px;animation:fadeUp 0.8s ease 0.9s both}
+.error-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fadeUp 0.8s ease 1.05s both}
+.btn-primary,.btn-ghost{font-family:var(--mono);font-size:0.72rem;letter-spacing:0.06em;padding:12px 26px;border-radius:8px;cursor:pointer;text-decoration:none;transition:all 0.25s;display:inline-block}
+.btn-primary{background:var(--error-color);color:#09090b;border:1px solid var(--error-color)}
+.btn-primary:hover{background:transparent;color:var(--error-color)}
+.btn-ghost{background:transparent;color:var(--text-2);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+footer{position:relative;z-index:10;text-align:center;padding:16px;font-family:var(--mono);font-size:0.62rem;color:var(--text-4);border-top:1px solid var(--border-sub)}
+</style>
+</head>
+<body>
+<canvas id="node-canvas"></canvas>
+<nav id="navbar">
+  <div class="nav-logo"><span class="logo-sp">SpDly</span><span class="logo-studios">Studios</span></div>
+  <a href="index.html" class="nav-home">← back to home</a>
+</nav>
+<main>
+  <div class="error-wrap">
+    <div class="cog-wrap">
+      <svg class="cog-svg" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Outer cog -->
+        <g class="cog-outer">
+          <circle cx="40" cy="40" r="22" stroke="rgba(52,211,153,0.3)" stroke-width="1.5"/>
+          <circle cx="40" cy="40" r="16" stroke="rgba(52,211,153,0.5)" stroke-width="1.5" fill="rgba(52,211,153,0.04)"/>
+          <!-- Teeth -->
+          <rect x="37" y="10" width="6" height="9" rx="2" fill="rgba(52,211,153,0.35)"/>
+          <rect x="37" y="10" width="6" height="9" rx="2" fill="rgba(52,211,153,0.35)" transform="rotate(45 40 40)"/>
+          <rect x="37" y="10" width="6" height="9" rx="2" fill="rgba(52,211,153,0.35)" transform="rotate(90 40 40)"/>
+          <rect x="37" y="10" width="6" height="9" rx="2" fill="rgba(52,211,153,0.35)" transform="rotate(135 40 40)"/>
+          <rect x="37" y="10" width="6" height="9" rx="2" fill="rgba(52,211,153,0.35)" transform="rotate(180 40 40)"/>
+          <rect x="37" y="10" width="6" height="9" rx="2" fill="rgba(52,211,153,0.35)" transform="rotate(225 40 40)"/>
+          <rect x="37" y="10" width="6" height="9" rx="2" fill="rgba(52,211,153,0.35)" transform="rotate(270 40 40)"/>
+          <rect x="37" y="10" width="6" height="9" rx="2" fill="rgba(52,211,153,0.35)" transform="rotate(315 40 40)"/>
+        </g>
+        <!-- Inner circle -->
+        <circle cx="40" cy="40" r="7" stroke="rgba(52,211,153,0.6)" stroke-width="1.5" fill="rgba(52,211,153,0.08)"/>
+        <circle cx="40" cy="40" r="3" fill="rgba(52,211,153,0.5)"/>
+      </svg>
+    </div>
+
+    <div class="error-label">Under Maintenance</div>
+    <span class="error-code">503</span>
+
+    <div class="status-panel">
+      <div class="status-row">
+        <span class="status-name">API Gateway</span>
+        <span class="status-badge"><span class="status-dot dot-down"></span><span class="text-down">OFFLINE</span></span>
+      </div>
+      <div class="status-row">
+        <span class="status-name">Web Server</span>
+        <span class="status-badge"><span class="status-dot dot-maint"></span><span class="text-maint">MAINTENANCE</span></span>
+      </div>
+      <div class="status-row">
+        <span class="status-name">CDN Edge</span>
+        <span class="status-badge"><span class="status-dot dot-up"></span><span class="text-up">ONLINE</span></span>
+      </div>
+      <div class="status-row">
+        <span class="status-name">Database</span>
+        <span class="status-badge"><span class="status-dot dot-up"></span><span class="text-up">ONLINE</span></span>
+      </div>
+    </div>
+    <div class="maint-progress"><div class="maint-bar"></div></div>
+
+    <div style="height:20px"></div>
+    <div class="error-title">Service Unavailable</div>
+    <p class="error-desc">The service is temporarily down for scheduled maintenance. We're working quickly to restore full functionality. Please check back shortly.</p>
+    <div class="error-actions">
+      <a href="javascript:location.reload()" class="btn-primary">↺ Check Again</a>
+      <a href="index.html" class="btn-ghost">Home</a>
+    </div>
+  </div>
+</main>
+<footer>© <span id="yr"></span> Shivaprasad V &nbsp;·&nbsp; SpDly Studios</footer>
+<script>
+document.getElementById('yr').textContent=new Date().getFullYear();
+(function(){const canvas=document.getElementById('node-canvas'),ctx=canvas.getContext('2d');const CELL=24,R=1.4,BASE=0.05,MAX_B=0.45,WAVE_SPEED=0.9,MAX_WAVES=5;let W,H,cols,rows,dots=[],waves=[],frame=0;function buildGrid(){W=canvas.width=canvas.offsetWidth;H=canvas.height=canvas.offsetHeight;cols=Math.ceil(W/CELL)+1;rows=Math.ceil(H/CELL)+1;const ox=(W-(cols-1)*CELL)/2,oy=(H-(rows-1)*CELL)/2;dots=[];for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)dots.push({x:ox+c*CELL,y:oy+r*CELL,c,r,b:BASE,flicker:Math.random()*Math.PI*2});}function spawnWave(){waves.push({cx:Math.floor(Math.random()*cols),cy:Math.floor(Math.random()*rows),radius:0,life:1,decay:0.004+Math.random()*0.003,strength:0.25+Math.random()*0.25,width:2.5+Math.random()*2});}function tick(){frame++;if(waves.length<MAX_WAVES&&frame%38===0)spawnWave();if(waves.length===0)spawnWave();for(const w of waves){w.radius+=WAVE_SPEED;w.life-=w.decay;}waves=waves.filter(w=>w.life>0.02&&w.radius<Math.hypot(cols,rows)*1.2);for(let i=0;i<dots.length;i++){const d=dots[i];d.b=BASE+Math.sin(d.flicker+frame*0.012)*0.01;}for(const w of waves)for(let i=0;i<dots.length;i++){const d=dots[i],dist=Math.hypot(d.c-w.cx,d.r-w.cy),delta=dist-w.radius;d.b+=Math.exp(-(delta*delta)/(2*w.width*w.width))*w.strength*w.life;}for(let i=0;i<dots.length;i++)dots[i].b=Math.min(dots[i].b,MAX_B);ctx.clearRect(0,0,W,H);for(let i=0;i<dots.length;i++){const d=dots[i];if(d.b<BASE*0.3)continue;ctx.beginPath();ctx.arc(d.x,d.y,R,0,Math.PI*2);ctx.fillStyle=`rgba(95,196,208,${d.b.toFixed(3)})`;ctx.fill();}for(let i=0;i<dots.length;i++){const d=dots[i];if(d.b<0.18)continue;if(d.c<cols-1){const nb=dots[i+1];if(nb&&nb.b>0.18){const a=Math.min(d.b,nb.b)*0.2;ctx.beginPath();ctx.moveTo(d.x,d.y);ctx.lineTo(nb.x,nb.y);ctx.strokeStyle=`rgba(95,196,208,${a.toFixed(3)})`;ctx.lineWidth=0.5;ctx.stroke();}}if(d.r<rows-1){const nb=dots[i+cols];if(nb&&nb.b>0.18){const a=Math.min(d.b,nb.b)*0.2;ctx.beginPath();ctx.moveTo(d.x,d.y);ctx.lineTo(nb.x,nb.y);ctx.strokeStyle=`rgba(95,196,208,${a.toFixed(3)})`;ctx.lineWidth=0.5;ctx.stroke();}}}requestAnimationFrame(tick);}buildGrid();for(let i=0;i<2;i++)spawnWave();tick();let t;window.addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(buildGrid,120)},{passive:true});})();
+</script>
+</body>
+</html>
