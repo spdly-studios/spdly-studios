@@ -21,7 +21,11 @@ function renderGalleryItem(img) {
   return `
     <div class="proj-gallery-item">
       <img src="${img.src}" alt="${img.caption}"
-           onerror="this.onerror=null;this.src='assets/logo.svg'" />
+           loading="lazy"
+           onerror="this.onerror=null;this.style.display='none';this.parentElement.querySelector('.img-fallback').style.display='flex'" />
+      <div class="img-fallback" style="display:none;align-items:center;justify-content:center;width:100%;height:200px;background:var(--surface);color:var(--text-3);font-size:0.75rem">
+        <span>Image unavailable</span>
+      </div>
       <div class="proj-gallery-caption">${img.caption}</div>
     </div>
   `;
@@ -43,7 +47,10 @@ function renderWorkPage(item) {
   if (item.hero) {
     heroWrap.innerHTML = `
       <img src="${item.hero}" alt="${item.title}"
-           onerror="this.onerror=null;this.src='assets/logo.svg'" />
+           onerror="this.onerror=null;this.style.display='none';this.parentElement.querySelector('.img-fallback').style.display='flex'" />
+      <div class="img-fallback" style="display:none;align-items:center;justify-content:center;width:100%;height:400px;background:var(--surface);color:var(--text-3);font-size:0.75rem">
+        <span>Hero image unavailable</span>
+      </div>
     `;
   } else {
     // Keep the placeholder SVG visible when no hero image is set
@@ -202,8 +209,12 @@ function renderMoreWork(currentId, sourceData) {
       // Only render <img> if thumb exists
       const imgHTML = item.thumb
         ? `<img src="${item.thumb}" alt="${item.title}"
-               onerror="this.onerror=null;this.src='assets/logo.svg'" />`
-        : '';
+               loading="lazy"
+               onerror="this.onerror=null;this.style.display='none';this.parentElement.querySelector('.img-fallback').style.display='flex'" />
+           <div class="img-fallback" style="display:none;align-items:center;justify-content:center;width:100%;height:200px;background:var(--surface);color:var(--text-3);font-size:0.75rem">
+             <span>Thumbnail unavailable</span>
+           </div>`
+        : '<div class="img-fallback" style="display:flex;align-items:center;justify-content:center;width:100%;height:200px;background:var(--surface);color:var(--text-3);font-size:0.75rem"><span>No thumbnail</span></div>';
 
       card.innerHTML = `
         <div class="project-card-img">${imgHTML}</div>
@@ -254,5 +265,10 @@ window.addEventListener('DOMContentLoaded', () => {
 // Re-run when Firestore data arrives — updates page with live data
 document.addEventListener('portfolioDataReady', (e) => {
   const projects = e.detail?.projects?.items;
-  if (projects) initPage(projects);
+  if (projects && projects.length > 0) {
+    console.log('[work.js] Using Firestore data:', projects.length, 'projects');
+    initPage(projects);
+  } else {
+    console.log('[work.js] No Firestore projects data, using static');
+  }
 });

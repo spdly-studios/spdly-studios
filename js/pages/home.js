@@ -38,8 +38,12 @@ function renderWorkGrid(data) {
     // Only render <img> if thumb exists — avoids 404s when field removed in Firestore
     const imgHTML = item.thumb
       ? `<img src="${item.thumb}" alt="${item.title}"
-             onerror="this.onerror=null;this.src='assets/logo.svg'" />`
-      : '';
+             loading="lazy"
+             onerror="this.onerror=null;this.style.display='none';this.parentElement.querySelector('.img-fallback').style.display='flex'" />
+         <div class="img-fallback" style="display:none;align-items:center;justify-content:center;width:100%;height:200px;background:var(--surface);color:var(--text-3);font-size:0.75rem">
+           <span>Thumbnail unavailable</span>
+         </div>`
+      : '<div class="img-fallback" style="display:flex;align-items:center;justify-content:center;width:100%;height:200px;background:var(--surface);color:var(--text-3);font-size:0.75rem"><span>No thumbnail</span></div>';
 
     card.innerHTML = `
       <div class="project-card-img">${imgHTML}</div>
@@ -76,7 +80,12 @@ renderWorkGrid(null);
 // Re-render when Firestore data arrives — replaces static cards with live data
 document.addEventListener('portfolioDataReady', (e) => {
   const projects = e.detail?.projects?.items;
-  if (projects) renderWorkGrid(projects);
+  if (projects && projects.length > 0) {
+    console.log('[home.js] Using Firestore data:', projects.length, 'projects');
+    renderWorkGrid(projects);
+  } else {
+    console.log('[home.js] No Firestore projects data, using static');
+  }
 });
 
 /* ─── Animated Stats ──────────────────────────────────────── */

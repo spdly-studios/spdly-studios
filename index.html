@@ -19,7 +19,7 @@
   <meta property="og:title" content="Shivaprasad V — Embedded Systems & Signal Processing Engineer" />
   <meta property="og:description" content="System Design Engineer building end-to-end hardware–software systems — PCB layout, firmware, telemetry pipelines, CubeSat ADCS, and SDR communication links. Based in Chennai, India." />
   <meta property="og:url" content="https://spdly.is-a.dev/" />
-  <meta property="og:image" content="https://spdly.is-a.dev/assets/logo.svg" />
+  <meta property="og:image" content="https://spdly.is-a.dev/assets/og-image.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="Shivaprasad V — Embedded Systems Engineer portfolio" />
@@ -29,7 +29,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Shivaprasad V — Embedded Systems & Signal Processing Engineer" />
   <meta name="twitter:description" content="System Design Engineer building end-to-end hardware–software systems. CubeSat ADCS, SDR, FreeRTOS, PCB Design — hardware–signal boundary." />
-  <meta name="twitter:image" content="https://spdly.is-a.dev/assets/logo.svg" />
+  <meta name="twitter:image" content="https://spdly.is-a.dev/assets/og-image.png" />
   <meta name="twitter:image:alt" content="Shivaprasad V portfolio" />
   <meta name="twitter:creator" content="@SpDly14" />
   <meta name="twitter:site" content="@SpDly14" />
@@ -124,14 +124,14 @@
   <style>
     /* Bare minimum to paint preloader instantly with no FOUC */
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--bg:#0a0a0a;--fg:#f0ede6;--accent:#e8c547;--muted:#6b6b6b}
+    :root{--bg:#09090b;--fg:#dde1ea;--accent:#5fc4d0;--muted:#464b58}
     html{scroll-behavior:smooth;background:var(--bg);color:var(--fg)}
     body{font-family:'Outfit',sans-serif;background:var(--bg);overflow-x:hidden}
     #preloader{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center}
     .pre-inner{text-align:center}
     .pre-wordmark{font-size:2rem;font-weight:700;letter-spacing:-.02em}
     .pre-sp{color:var(--accent)}.pre-studios{color:var(--fg)}
-    .pre-bar-wrap{width:200px;height:2px;background:#1a1a1a;margin:1.5rem auto .75rem;border-radius:1px;overflow:hidden}
+    .pre-bar-wrap{width:200px;height:2px;background:#242730;margin:1.5rem auto .75rem;border-radius:1px;overflow:hidden}
     .pre-bar{height:100%;width:0;background:var(--accent);transition:width .3s ease}
     .pre-label{font-size:.75rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;letter-spacing:.1em}
     #scroll-progress{position:fixed;top:0;left:0;height:2px;background:var(--accent);z-index:9998;width:0;transition:width .1s linear}
@@ -141,64 +141,10 @@
   <link rel="preload" as="style" href="css/style.css" onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link rel="stylesheet" href="css/style.css" /></noscript>
 
-  <!-- ═══ FIREBASE: Analytics + App ═══ -->
-  <!-- Use module pattern for tree-shaking; load async after page renders -->
-  <script type="module">
-    // Dynamically import Firebase after first user interaction or 3s, whichever comes first
-    // This keeps Firebase off the critical path entirely
-    const loadFirebase = () => {
-      import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js').then(({ initializeApp }) => {
-        import('https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js').then(({ getAnalytics, logEvent }) => {
-          import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(({ getFirestore }) => {
-            // Firebase config is loaded from external file to keep it out of HTML
-            // window.__fbConfig is set by js/core/firebase-config.js
-            const waitForConfig = setInterval(() => {
-              if (window.__fbConfig) {
-                clearInterval(waitForConfig);
-                const app = initializeApp(window.__fbConfig);
-                const analytics = getAnalytics(app);
-                window.__fbAnalytics = analytics;
-                window.__fbDb = getFirestore(app);
-                // Log initial page view
-                logEvent(analytics, 'page_view', {
-                  page_title: document.title,
-                  page_location: window.location.href,
-                  page_path: window.location.pathname
-                });
-                // Track section views via Intersection Observer
-                document.querySelectorAll('section[id]').forEach(section => {
-                  const obs = new IntersectionObserver(entries => {
-                    entries.forEach(e => {
-                      if (e.isIntersecting) {
-                        logEvent(analytics, 'section_view', { section_id: section.id });
-                        obs.disconnect();
-                      }
-                    });
-                  }, { threshold: 0.3 });
-                  obs.observe(section);
-                });
-                // Track outbound link clicks
-                document.querySelectorAll('a[href^="http"], a[download]').forEach(link => {
-                  link.addEventListener('click', () => {
-                    logEvent(analytics, 'click', {
-                      link_text: link.innerText.trim(),
-                      link_url: link.href
-                    });
-                  }, { once: true });
-                });
-              }
-            }, 100);
-          });
-        });
-      });
-    };
-    // Defer Firebase until page is idle
-    if ('requestIdleCallback' in window) {
-      requestIdleCallback(loadFirebase, { timeout: 3000 });
-    } else {
-      setTimeout(loadFirebase, 3000);
-    }
-  </script>
+  <!-- ═══ FIREBASE: Compat SDKs for Firestore ─══ -->
+  <!-- Load compat mode to match admin panel structure -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -280,7 +226,7 @@
       <div class="about-photo-col reveal-left">
         <div class="about-photo-frame">
           <div class="about-photo-inner">
-            <img src="assets/logo.svg" alt="Shivaprasad V — Embedded Systems Engineer"
+            <img src="assets/profile.png" alt="Shivaprasad V — Embedded Systems Engineer"
               width="320" height="320" loading="lazy" decoding="async"
               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
             <div class="img-fallback mono" style="display:none;align-items:center;justify-content:center;width:100%;height:100%;color:var(--muted);font-size:.75rem">

@@ -29,6 +29,15 @@
 
 </head>
 <body class="project-page">
+<div id="preloader">
+  <div class="pre-inner">
+    <div class="pre-wordmark">
+      <span class="pre-sp">SpDly</span><span class="pre-studios">Studios</span>
+    </div>
+    <div class="pre-bar-wrap"><div class="pre-bar"></div></div>
+    <div class="pre-label mono">Loading…</div>
+  </div>
+</div>
 <div id="scroll-progress"></div>
 <nav id="navbar">
   <a href="index.html" class="nav-logo">
@@ -87,12 +96,24 @@
 <footer class="footer">
   <div class="container footer-inner">
     <span class="footer-brand"><span class="logo-sp">SpDly</span><span class="logo-studios">Studios</span></span>
-    <span class="mono footer-copy">© 2025 Shivaprasad V</span>
+    <span class="mono footer-copy">© 2026 Shivaprasad V</span>
   </div>
 </footer>
 
 <script src="js/core/firebase-loader.js"></script>
 <script src="js/data/work-data.js"></script>
+
+<script>
+// Preloader for work page
+document.body.classList.add('no-scroll');
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const preloader = document.getElementById('preloader');
+    if (preloader) preloader.classList.add('done');
+    document.body.classList.remove('no-scroll');
+  }, 800);
+});
+</script>
 
 <script src="js/core/ui.js" defer></script>
 <script src="js/pages/work.js"></script>

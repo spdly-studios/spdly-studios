@@ -14,49 +14,60 @@
     return;
   }
 
-  async function waitForFirestore() {
-    while (!window._fbDb) {
-      await new Promise(r => setTimeout(r, 100));
-    }
-    return window._fbDb;
+  // ── Initialize Firebase compat mode ─────────────────────────────────
+  // Use compat mode to match admin panel
+  if (typeof firebase === 'undefined') {
+    console.error('[PortfolioData] Firebase compat SDK not loaded. Ensure firebase-app-compat.js and firebase-firestore-compat.js are loaded before this script.');
+    window.PortfolioData = Promise.resolve(null);
+    return;
   }
 
-  // ── Helper: fetch a document ──────────────────────────────────────────
-  async function fetchDoc(path, db) {
+  try {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(FIREBASE_CONFIG);
+    }
+    window._fbDb = firebase.firestore();
+  } catch (e) {
+    console.error('[PortfolioData] Firebase initialization error:', e);
+    window.PortfolioData = Promise.resolve(null);
+    return;
+  }
+
+  // ── Helper: fetch a document from portfolio collection ──────────────
+  async function fetchDoc(section) {
     try {
-      const [col, docId] = path.split('/');
-      
-      const { doc, getDoc } = await import(
-        'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js'
-      );
-
-    const snap = await getDoc(doc(db, col, docId));
-    return snap.exists() ? snap.data() : null;
-
+      const docRef = window._fbDb.collection('portfolio').doc(section);
+      const snap = await docRef.get();
+      return snap.exists ? snap.data() : null;
     } catch (e) {
-      console.error('[PortfolioData] Error fetching', path, e);
+      console.error('[PortfolioData] Error fetching', section, e);
       return null;
     }
   }
 
   // ── Load everything ───────────────────────────────────────────────────
   window.PortfolioData = (async () => {
-    const db = await waitForFirestore();
-    const [config, projects, experience, research, education,
-           presentations, skills, contact, about] = await Promise.all([
-      fetchDoc(DB_PATHS.CONFIG, db),
-      fetchDoc(DB_PATHS.PROJECTS, db),
-      fetchDoc(DB_PATHS.EXPERIENCE, db),
-      fetchDoc(DB_PATHS.RESEARCH, db),
-      fetchDoc(DB_PATHS.EDUCATION, db),
-      fetchDoc(DB_PATHS.PRESENTATIONS, db),
-      fetchDoc(DB_PATHS.SKILLS, db),
-      fetchDoc(DB_PATHS.CONTACT, db),
-      fetchDoc(DB_PATHS.ABOUT, db),
-    ]);
+    try {
+      const [config, projects, experience, research, education,
+             presentations, skills, contact, about] = await Promise.all([
+        fetchDoc('config'),
+        fetchDoc('projects'),
+        fetchDoc('experience'),
+        fetchDoc('research'),
+        fetchDoc('education'),
+        fetchDoc('presentations'),
+        fetchDoc('skills'),
+        fetchDoc('contact'),
+        fetchDoc('about'),
+      ]);
 
-    return { config, projects, experience, research, education,
-             presentations, skills, contact, about };
+      console.log('[PortfolioData] Firebase data loaded successfully');
+      return { config, projects, experience, research, education,
+               presentations, skills, contact, about };
+    } catch (error) {
+      console.error('[PortfolioData] Error loading Firebase data:', error);
+      return null;
+    }
   })();
 
   // ── Apply data to DOM once loaded ─────────────────────────────────────

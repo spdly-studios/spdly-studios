@@ -1,2 +1,2 @@
 /home /index.html 301
-/work /work.html 200
+/work/* /work.html:splat 200
