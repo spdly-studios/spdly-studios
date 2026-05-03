@@ -1132,6 +1132,7 @@ function buildProjectForm(p) {
       <div class="field"><label>Category</label><input id="pf-cat" value="${esc(p.category)}" placeholder="Embedded Systems" /></div>
     </div>
     <div class="field"><label>Title</label><input id="pf-title" value="${esc(p.title)}" /></div>
+    <div class="field"><label>Project URL</label><input id="pf-url" value="${esc(p.url)}" placeholder="https://spdly.is-a.dev/projects/my-project" /></div>
     <div class="field"><label>Tagline</label><input id="pf-tagline" value="${esc(p.tagline)}" /></div>
     <div class="field"><label>Tags</label><div id="proj-tags-input" class="tag-input-wrap"></div></div>
     <div class="fields-row">
@@ -1171,6 +1172,7 @@ function readProjectForm() {
   return {
     id:           v('pf-id').replace(/\s+/g,'-').toLowerCase(),
     title:        v('pf-title'),
+    url:          v('pf-url'),
     tagline:      v('pf-tagline'),
     category:     v('pf-cat'),
     tags:         getTagInputValue('proj-tags-input'),

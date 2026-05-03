@@ -1,12 +1,11 @@
 /**
- * home.js — Home page logic
+ * projects.js — All projects listing page
  * Depends on: core/config.js, core/ui.js, data/work-data.js
  *
  * Handles:
+ *   - Rendering all projects in a grid
  *   - Preloader
- *   - Projects grid rendering
- *   - Animated stats counter
- *   - Contact form feedback
+ *   - Scroll reveal animations
  */
 
 /* ─── Preloader ───────────────────────────────────────────── */
@@ -20,25 +19,22 @@ window.addEventListener('load', () => {
 });
 
 /* ─── Projects Grid ───────────────────────────────────────── */
-function renderWorkGrid(data, limit = 4) {
-  const grid = document.getElementById('work-grid');
+function renderAllProjectsGrid(data) {
+  const grid = document.getElementById('projects-grid');
   if (!grid) return;
 
   // Use Firestore data if available, otherwise fall back to static WORK_DATA
   const items = data || (typeof WORK_DATA !== 'undefined' ? WORK_DATA : []);
   if (!items.length) return;
 
-  // Limit to featured projects (default 4)
-  const featuredItems = items.slice(0, limit);
+  grid.innerHTML = ''; // clear before re-render
 
-  grid.innerHTML = ''; // clear before re-render so stale cards are removed
-
-  featuredItems.forEach(item => {
+  items.forEach(item => {
     const card = document.createElement('a');
     card.className = 'project-card reveal';
     card.href = item.url || `work.html?id=${item.id}`;
 
-    // Only render <img> if thumb exists — avoids 404s when field removed in Firestore
+    // Only render <img> if thumb exists
     const imgHTML = item.thumb
       ? `<img src="${item.thumb}" alt="${item.title}"
              loading="lazy"
@@ -87,17 +83,17 @@ function renderWorkGrid(data, limit = 4) {
       const data = await Promise.race([PortfolioData, timeoutPromise]);
       projectsData = data?.projects?.items || null;
     } catch (e) {
-      console.warn('[home.js] Error waiting for Firestore data:', e);
+      console.warn('[projects.js] Error waiting for Firestore data:', e);
     }
   }
 
   // Render with Firestore data if available, otherwise use static
   if (projectsData && projectsData.length > 0) {
-    console.log('[home.js] Rendering with Firestore data:', projectsData.length, 'projects');
-    renderWorkGrid(projectsData);
+    console.log('[projects.js] Rendering with Firestore data:', projectsData.length, 'projects');
+    renderAllProjectsGrid(projectsData);
   } else {
-    console.log('[home.js] Rendering with static data');
-    renderWorkGrid(null);
+    console.log('[projects.js] Rendering with static data');
+    renderAllProjectsGrid(null);
   }
 })();
 
@@ -105,53 +101,7 @@ function renderWorkGrid(data, limit = 4) {
 document.addEventListener('portfolioDataReady', (e) => {
   const projects = e.detail?.projects?.items;
   if (projects && projects.length > 0) {
-    console.log('[home.js] Firestore data arrived after init, re-rendering:', projects.length, 'projects');
-    renderWorkGrid(projects);
+    console.log('[projects.js] Firestore data arrived after init, re-rendering:', projects.length, 'projects');
+    renderAllProjectsGrid(projects);
   }
 });
-
-/* ─── Animated Stats ──────────────────────────────────────── */
-function animateStat(el) {
-  const target = parseInt(el.dataset.target, 10);
-  const suffix = el.dataset.suffix || '';
-  const dur    = 1400;
-  const start  = performance.now();
-  const step   = (now) => {
-    const p    = Math.min((now - start) / dur, 1);
-    const ease = 1 - Math.pow(1 - p, 4);
-    el.textContent = Math.round(ease * target) + suffix;
-    if (p < 1) requestAnimationFrame(step);
-    else el.textContent = target + suffix;
-  };
-  requestAnimationFrame(step);
-}
-
-const statsObs = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.querySelectorAll('.stat-num').forEach(animateStat);
-      statsObs.unobserve(e.target);
-    }
-  });
-}, { threshold: 0.3 });
-
-const aboutStats = document.querySelector('.about-stats');
-if (aboutStats) statsObs.observe(aboutStats);
-
-/* ─── Contact Form ────────────────────────────────────────── */
-const contactForm = document.getElementById('contact-form');
-if (contactForm) {
-  contactForm.addEventListener('submit', e => {
-    e.preventDefault();
-    const btn = contactForm.querySelector('button[type=submit]');
-    btn.textContent = 'Message Sent ✓';
-    btn.style.cssText = 'background:#2a7a5e;border-color:#2a7a5e;color:#fff';
-    btn.disabled = true;
-    setTimeout(() => {
-      btn.textContent = 'Send Message';
-      btn.style.cssText = '';
-      btn.disabled = false;
-      contactForm.reset();
-    }, 3500);
-  });
-}

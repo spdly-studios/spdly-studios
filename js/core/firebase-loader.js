@@ -132,14 +132,52 @@
       'contact-linkedin': c.linkedin,
       'contact-github':   c.github,
       'contact-website':  c.website,
+      'contact-resume':   c.resume,
       'contact-intro':    c.intro,
     };
+
     for (const [id, val] of Object.entries(map)) {
       if (!val) continue;
       const el = document.querySelector(`[data-field="${id}"]`);
-      if (el) {
-        if (el.tagName === 'A') { el.href = val.startsWith('http') || val.startsWith('mailto') || val.startsWith('tel') ? val : '#'; el.textContent = c[id.replace('contact-','')] || val; }
-        else el.textContent = val;
+      if (!el) continue;
+
+      if (el.tagName === 'A') {
+        const existingLabel = el.querySelector('.contact-label');
+        const labelText = id === 'contact-resume'
+          ? (existingLabel ? existingLabel.textContent : 'Download Resume')
+          : c[id.replace('contact-', '')] || val;
+        let href = '#';
+
+        if (id === 'contact-email') {
+          href = val.startsWith('mailto:') ? val : `mailto:${val}`;
+        } else if (id === 'contact-phone') {
+          const phoneValue = val.startsWith('tel:') ? val : `tel:${val.replace(/\s+/g, '')}`;
+          href = phoneValue;
+        } else if (id === 'contact-resume') {
+          href = val;
+        } else if (val.startsWith('http://') || val.startsWith('https://')) {
+          href = val;
+        } else if (id === 'contact-website') {
+          href = val.startsWith('/') ? val : `https://${val}`;
+        } else if (val.includes('.') && !val.includes('://')) {
+          href = `https://${val}`;
+        } else {
+          href = val;
+        }
+
+        el.href = href;
+        if (id === 'contact-resume') {
+          el.setAttribute('download', '');
+        }
+
+        const labelEl = el.querySelector('.contact-label');
+        if (labelEl) {
+          labelEl.textContent = labelText;
+        } else {
+          setText(`[data-field="${id}"]`, labelText);
+        }
+      } else {
+        el.textContent = val;
       }
     }
   }

@@ -204,7 +204,7 @@ function renderMoreWork(currentId, sourceData) {
     .forEach(item => {
       const card = document.createElement('a');
       card.className = 'project-card reveal';
-      card.href = `work.html?id=${item.id}`;
+      card.href = item.url || `work.html?id=${item.id}`;
 
       // Only render <img> if thumb exists
       const imgHTML = item.thumb
