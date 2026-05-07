@@ -48,13 +48,14 @@
   // ── Load everything ───────────────────────────────────────────────────
   window.PortfolioData = (async () => {
     try {
-      const [config, projects, experience, research, education,
+      const [config, projects, experience, research, education, tools,
              presentations, skills, contact, about] = await Promise.all([
         fetchDoc('config'),
         fetchDoc('projects'),
         fetchDoc('experience'),
         fetchDoc('research'),
         fetchDoc('education'),
+        fetchDoc('tools'),
         fetchDoc('presentations'),
         fetchDoc('skills'),
         fetchDoc('contact'),
@@ -62,7 +63,7 @@
       ]);
 
       console.log('[PortfolioData] Firebase data loaded successfully');
-      return { config, projects, experience, research, education,
+      return { config, projects, experience, research, education, tools,
                presentations, skills, contact, about };
     } catch (error) {
       console.error('[PortfolioData] Error loading Firebase data:', error);

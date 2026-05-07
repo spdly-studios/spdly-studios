@@ -177,25 +177,25 @@ function getStaticTools() {
 
 /* ─── Initialize with Firestore data ───────────────────────── */
 (async () => {
-  // Wait for Firestore data with timeout (max 3 seconds)
+  // Wait for Firestore data with timeout (max 6 seconds - allows for preloader + network)
   let toolsData = null;
-  
+
   if (typeof PortfolioData !== 'undefined') {
     try {
-      const timeoutPromise = new Promise(resolve => setTimeout(() => resolve(null), 3000));
+      const timeoutPromise = new Promise(resolve => setTimeout(() => resolve(null), 6000));
       const data = await Promise.race([PortfolioData, timeoutPromise]);
       toolsData = data?.tools?.items || null;
     } catch (e) {
       console.warn('[tools.js] Error waiting for Firestore data:', e);
     }
   }
-  
+
   // Render with Firestore data if available, otherwise use static
   if (toolsData && toolsData.length > 0) {
     console.log('[tools.js] Rendering with Firestore data:', toolsData.length, 'tools');
     renderAllTools(toolsData);
   } else {
-    console.log('[tools.js] Rendering with static data');
+    console.log('[tools.js] Rendering with static data (Firebase unavailable or empty)');
     renderAllTools(getStaticTools());
   }
 })();
