@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IEEE 754 Floating Point Solver</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c10;
+    --panel: #0d1520;
+    --panel2: #111d2e;
+    --border: #1a3a5c;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --accent3: #39ff14;
+    --accent4: #ffd700;
+    --text: #c8e6ff;
+    --text-dim: #4a7a9b;
+    --sign-col: #ff6b35;
+    --exp-col: #ffd700;
+    --mant-col: #39ff14;
+    --glow: 0 0 20px rgba(0,212,255,0.3);
+    --glow2: 0 0 20px rgba(255,107,53,0.3);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(ellipse at 20% 20%, rgba(0,100,180,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 80%, rgba(0,212,255,0.05) 0%, transparent 60%),
+      linear-gradient(180deg, #080c10 0%, #060a0e 100%);
+  }
+
+  /* Grid lines background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+  }
+
+  header {
+    text-align: center;
+    padding: 48px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 36px;
+    position: relative;
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+
+  .header-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    opacity: 0.7;
+  }
+
+  h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(22px, 4vw, 40px);
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: 2px;
+    text-shadow: 0 0 40px rgba(0,212,255,0.5), 0 0 80px rgba(0,212,255,0.2);
+    line-height: 1.1;
+  }
+
+  h1 span {
+    color: var(--accent);
+  }
+
+  .subtitle {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+
+  /* Operation tabs */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 28px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px;
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    flex: 1;
+    min-width: 100px;
+    padding: 10px 16px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-dim);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .tab:hover {
+    color: var(--accent);
+    border-color: var(--border);
+  }
+
+  .tab.active {
+    background: var(--panel2);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: var(--glow);
+  }
+
+  /* Input panel */
+  .input-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 28px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .input-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+
+  .panel-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .input-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 16px;
+    align-items: end;
+    margin-bottom: 20px;
+  }
+
+  .op-symbol {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--accent2);
+    text-align: center;
+    line-height: 1;
+    padding-bottom: 8px;
+    text-shadow: var(--glow2);
+  }
+
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field-group label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .field-group input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 15px;
+    padding: 10px 14px;
+    border-radius: 3px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+  }
+
+  .field-group input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 12px rgba(0,212,255,0.15);
+  }
+
+  .field-group input.error {
+    border-color: #ff4444;
+  }
+
+  .hint {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  .precision-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .precision-row label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .precision-btn {
+    padding: 6px 14px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.15s;
+  }
+
+  .precision-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .precision-btn.active { background: var(--accent); border-color: var(--accent); color: var(--bg); font-weight: bold; }
+
+  .solve-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    cursor: pointer;
+    border-radius: 3px;
+    margin-top: 20px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .solve-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform: translateX(-100%);
+    transition: transform 0.2s;
+    z-index: 0;
+  }
+
+  .solve-btn:hover::before { transform: translateX(0); }
+  .solve-btn:hover { color: var(--bg); }
+  .solve-btn span { position: relative; z-index: 1; }
+
+  /* IEEE bit display */
+  .ieee-display {
+    display: flex;
+    gap: 4px;
+    align-items: stretch;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .bit-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .bit-group-label {
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .bit-group-label.sign { color: var(--sign-col); }
+  .bit-group-label.exp { color: var(--exp-col); }
+  .bit-group-label.mant { color: var(--mant-col); }
+
+  .bits {
+    display: flex;
+    gap: 1px;
+  }
+
+  .bit {
+    width: 18px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 2px;
+    font-size: 12px;
+    font-weight: bold;
+    border: 1px solid;
+    transition: all 0.2s;
+  }
+
+  .bit.sign-bit {
+    color: var(--sign-col);
+    border-color: rgba(255,107,53,0.4);
+    background: rgba(255,107,53,0.08);
+  }
+
+  .bit.exp-bit {
+    color: var(--exp-col);
+    border-color: rgba(255,215,0,0.3);
+    background: rgba(255,215,0,0.06);
+  }
+
+  .bit.mant-bit {
+    color: var(--mant-col);
+    border-color: rgba(57,255,20,0.25);
+    background: rgba(57,255,20,0.05);
+  }
+
+  /* Steps output */
+  .steps-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .step-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    animation: slideIn 0.3s ease both;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-card:nth-child(2) { animation-delay: 0.05s; }
+  .step-card:nth-child(3) { animation-delay: 0.1s; }
+  .step-card:nth-child(4) { animation-delay: 0.15s; }
+  .step-card:nth-child(5) { animation-delay: 0.2s; }
+  .step-card:nth-child(6) { animation-delay: 0.25s; }
+  .step-card:nth-child(7) { animation-delay: 0.3s; }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--panel2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .step-num {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--bg);
+    background: var(--accent);
+    padding: 3px 8px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+  }
+
+  .step-num.warn { background: var(--accent4); }
+  .step-num.ok { background: var(--accent3); color: #000; }
+
+  .step-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 1px;
+  }
+
+  .step-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .step-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .row-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .row-value {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    color: var(--text);
+    word-break: break-all;
+    line-height: 1.6;
+  }
+
+  .row-value.highlight { color: var(--accent); }
+  .row-value.highlight2 { color: var(--accent2); }
+  .row-value.highlight3 { color: var(--accent3); }
+  .row-value.highlight4 { color: var(--accent4); }
+
+  .mono-block {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 10px 14px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    white-space: pre;
+    overflow-x: auto;
+    line-height: 1.7;
+  }
+
+  .color-sign { color: var(--sign-col); }
+  .color-exp { color: var(--exp-col); }
+  .color-mant { color: var(--mant-col); }
+  .color-accent { color: var(--accent); }
+  .color-accent2 { color: var(--accent2); }
+  .color-accent3 { color: var(--accent3); }
+
+  .result-panel {
+    background: linear-gradient(135deg, rgba(0,212,255,0.05), rgba(0,212,255,0.02));
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    padding: 24px;
+    text-align: center;
+    box-shadow: var(--glow);
+    margin-top: 8px;
+  }
+
+  .result-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .result-value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(18px, 3vw, 28px);
+    font-weight: 900;
+    color: var(--accent);
+    text-shadow: var(--glow);
+    margin-bottom: 16px;
+    word-break: break-all;
+  }
+
+  .error-panel {
+    background: rgba(255,68,68,0.08);
+    border: 1px solid rgba(255,68,68,0.4);
+    border-radius: 4px;
+    padding: 16px 20px;
+    color: #ff6b6b;
+    font-size: 13px;
+  }
+
+  .sep {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 4px 0;
+  }
+
+  /* Special alignment for addition table */
+  .align-table {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  footer {
+    text-align: center;
+    padding: 32px 20px;
+    border-top: 1px solid var(--border);
+    margin-top: 60px;
+    position: relative;
+    z-index: 1;
+  }
+
+  footer a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 1px;
+    transition: color 0.2s, text-shadow 0.2s;
+  }
+
+  footer a:hover {
+    color: #fff;
+    text-shadow: var(--glow);
+  }
+
+  .footer-copy {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+
+  .footer-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    margin-top: 10px;
+    transition: border-color 0.2s;
+  }
+
+  .footer-home:hover { border-color: var(--accent); }
+
+  @media (max-width: 600px) {
+    .input-row { grid-template-columns: 1fr; }
+    .op-symbol { display: none; }
+    .bit { width: 14px; height: 24px; font-size: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="header-tag">IEEE 754 Standard</div>
+    <h1>Floating Point <span>Arithmetic</span> Solver</h1>
+    <p class="subtitle">Step-by-step binary floating point operations · Single &amp; Double Precision</p>
+  </header>
+
+  <!-- Operation Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="setOp('add', this)">＋ Addition</button>
+    <button class="tab" onclick="setOp('sub', this)">－ Subtraction</button>
+    <button class="tab" onclick="setOp('mul', this)">× Multiplication</button>
+    <button class="tab" onclick="setOp('div', this)">÷ Division</button>
+  </div>
+
+  <!-- Input Panel -->
+  <div class="input-panel">
+    <div class="panel-label">// Input Operands</div>
+    <div class="input-row">
+      <div class="field-group">
+        <label>Operand X</label>
+        <input type="text" id="inputA" placeholder="e.g. -12.5 or 0 10000010 10010000..." oninput="clearResult()">
+        <div class="hint">Decimal (e.g. 3.14) or IEEE 754 bits (space-separated groups)</div>
+      </div>
+      <div class="op-symbol" id="opSymbol">+</div>
+      <div class="field-group">
+        <label>Operand Y</label>
+        <input type="text" id="inputB" placeholder="e.g. 7.25 or 0 01111110 01000..." oninput="clearResult()">
+        <div class="hint">Decimal (e.g. -1.5) or IEEE 754 bits (space-separated groups)</div>
+      </div>
+    </div>
+
+    <div class="precision-row">
+      <label>Precision:</label>
+      <button class="precision-btn active" onclick="setPrecision(32, this)">Single (32-bit)</button>
+      <button class="precision-btn" onclick="setPrecision(64, this)">Double (64-bit)</button>
+    </div>
+
+    <button class="solve-btn" onclick="solve()"><span>SOLVE STEP BY STEP ▶</span></button>
+  </div>
+
+  <!-- Output -->
+  <div id="output"></div>
+</div>
+
+<footer>
+  <div class="footer-copy">© SpDly Studios</div>
+  <a class="footer-home" href="https://spdly.is-a.dev" target="_blank">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    spdly.is-a.dev
+  </a>
+</footer>
+
+<script>
+// ─────────────────────────────────────────────
+//  State
+// ─────────────────────────────────────────────
+let currentOp = 'add';
+let precision = 32;
+
+const opSymbols = { add: '+', sub: '−', mul: '×', div: '÷' };
+
+function setOp(op, btn) {
+  currentOp = op;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('opSymbol').textContent = opSymbols[op];
+  clearResult();
+}
+
+function setPrecision(p, btn) {
+  precision = p;
+  document.querySelectorAll('.precision-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  clearResult();
+}
+
+function clearResult() {
+  document.getElementById('output').innerHTML = '';
+}
+
+// ─────────────────────────────────────────────
+//  IEEE 754 Core Utilities
+// ─────────────────────────────────────────────
+
+function getParams(bits) {
+  if (bits === 32) return { exp: 8, mant: 23, bias: 127 };
+  return { exp: 11, mant: 52, bias: 1023 };
+}
+
+function parseInput(str, bits) {
+  str = str.trim();
+  // Try IEEE 754 bit string (with or without spaces)
+  const stripped = str.replace(/\s+/g, '');
+  if (/^[01]+$/.test(stripped) && stripped.length === bits) {
+    return ieee754BitsToFloat(stripped, bits);
+  }
+  // Try decimal
+  const num = parseFloat(str);
+  if (!isNaN(num)) return num;
+  throw new Error(`Cannot parse "${str}" as decimal or ${bits}-bit IEEE 754`);
+}
+
+function floatToIEEE754(num, bits) {
+  const p = getParams(bits);
+  if (num === 0) return { sign: 0, expBits: 0, mantBits: 0n, biasedExp: 0, trueExp: 0, mantFrac: 0, isZero: true };
+  const sign = num < 0 ? 1 : 0;
+  num = Math.abs(num);
+  let exp = Math.floor(Math.log2(num));
+  let mant = num / Math.pow(2, exp) - 1;
+  let biasedExp = exp + p.bias;
+  // Subnormal
+  if (biasedExp <= 0) {
+    biasedExp = 0;
+    mant = num / Math.pow(2, 1 - p.bias);
+    exp = 1 - p.bias;
+  }
+  // Overflow
+  if (biasedExp >= (1 << p.exp) - 1) {
+    biasedExp = (1 << p.exp) - 1;
+    mant = 0;
+  }
+  const mantInt = BigInt(Math.round(mant * Math.pow(2, p.mant)));
+  return {
+    sign, biasedExp, mantBits: mantInt, trueExp: exp,
+    mantFrac: mant, isZero: false
+  };
+}
+
+function ieee754BitsToFloat(bits, prec) {
+  const p = getParams(prec);
+  const sign = parseInt(bits[0]);
+  const expBits = bits.slice(1, 1 + p.exp);
+  const mantBits = bits.slice(1 + p.exp);
+  const biasedExp = parseInt(expBits, 2);
+  let mantFrac = 0;
+  for (let i = 0; i < mantBits.length; i++) {
+    if (mantBits[i] === '1') mantFrac += Math.pow(2, -(i + 1));
+  }
+  let val;
+  if (biasedExp === 0) {
+    val = Math.pow(2, 1 - p.bias) * mantFrac;
+  } else if (biasedExp === (1 << p.exp) - 1) {
+    val = mantFrac === 0 ? Infinity : NaN;
+  } else {
+    val = Math.pow(2, biasedExp - p.bias) * (1 + mantFrac);
+  }
+  return sign ? -val : val;
+}
+
+function ieeeToBits(num, bits) {
+  const p = getParams(bits);
+  const r = floatToIEEE754(num, bits);
+  const signBit = r.sign.toString();
+  const expBits = r.biasedExp.toString(2).padStart(p.exp, '0');
+  const mantBits = r.mantBits.toString(2).padStart(p.mant, '0');
+  return { signBit, expBits, mantBits, all: signBit + expBits + mantBits, r };
+}
+
+function bitsToHtml(signBit, expBits, mantBits) {
+  let html = '<div class="ieee-display">';
+  html += '<div class="bit-group"><div class="bit-group-label sign">S</div><div class="bits">';
+  html += `<div class="bit sign-bit">${signBit}</div>`;
+  html += '</div></div>';
+  html += '<div class="bit-group"><div class="bit-group-label exp">Exponent</div><div class="bits">';
+  for (const b of expBits) html += `<div class="bit exp-bit">${b}</div>`;
+  html += '</div></div>';
+  html += '<div class="bit-group"><div class="bit-group-label mant">Mantissa</div><div class="bits">';
+  for (const b of mantBits) html += `<div class="bit mant-bit">${b}</div>`;
+  html += '</div></div>';
+  html += '</div>';
+  return html;
+}
+
+function decimalToBinary(num, intBits = 16, fracBits = 23) {
+  const sign = num < 0 ? '-' : '';
+  num = Math.abs(num);
+  const intPart = Math.floor(num);
+  let fracPart = num - intPart;
+  const intBin = intPart.toString(2);
+  let fracBin = '';
+  let f = fracPart;
+  for (let i = 0; i < fracBits; i++) {
+    f *= 2;
+    fracBin += Math.floor(f);
+    f -= Math.floor(f);
+    if (f === 0) break;
+  }
+  return sign + intBin + (fracBin ? '.' + fracBin : '');
+}
+
+function addBinary(a, b, bits) {
+  // Simple 64-bit addition using BigInt
+  const aBig = BigInt('0b' + a.padStart(bits, '0'));
+  const bBig = BigInt('0b' + b.padStart(bits, '0'));
+  const sum = aBig + bBig;
+  return sum.toString(2).padStart(bits + 1, '0');
+}
+
+function formatBinStep(label, value, cls = '') {
+  return `<div class="step-row">
+    <div class="row-label">${label}</div>
+    <div class="row-value ${cls}">${value}</div>
+  </div>`;
+}
+
+// ─────────────────────────────────────────────
+//  Main Solver
+// ─────────────────────────────────────────────
+
+function solve() {
+  const aStr = document.getElementById('inputA').value.trim();
+  const bStr = document.getElementById('inputB').value.trim();
+  const out = document.getElementById('output');
+
+  if (!aStr || !bStr) {
+    out.innerHTML = `<div class="error-panel">⚠ Please enter both operands.</div>`;
+    return;
+  }
+
+  let A, B;
+  try { A = parseInput(aStr, precision); } catch(e) {
+    out.innerHTML = `<div class="error-panel">⚠ Operand X: ${e.message}</div>`; return;
+  }
+  try { B = parseInput(bStr, precision); } catch(e) {
+    out.innerHTML = `<div class="error-panel">⚠ Operand Y: ${e.message}</div>`; return;
+  }
+
+  try {
+    let html = '';
+    if (currentOp === 'add') html = solveAdd(A, B, false);
+    else if (currentOp === 'sub') html = solveAdd(A, -B, true);
+    else if (currentOp === 'mul') html = solveMul(A, B);
+    else if (currentOp === 'div') html = solveDiv(A, B);
+    out.innerHTML = `<div class="steps-container">${html}</div>`;
+  } catch(e) {
+    out.innerHTML = `<div class="error-panel">⚠ Error: ${e.message}</div>`;
+  }
+}
+
+// ─────────────────────────────────────────────
+//  ADDITION / SUBTRACTION
+// ─────────────────────────────────────────────
+
+function solveAdd(A, B, isSub) {
+  const p = getParams(precision);
+  const op = isSub ? 'Subtraction' : 'Addition';
+  const opSym = isSub ? '−' : '+';
+
+  const rA = ieeeToBits(A, precision);
+  const rB = ieeeToBits(B, precision);
+  const result = A + B;
+  const rR = ieeeToBits(result, precision);
+
+  let steps = '';
+
+  // Step 1: Represent inputs
+  steps += stepCard('STEP 1', `Load Operands → IEEE ${precision}-bit Representation`, `
+    ${formatBinStep('X = ' + A, '')}
+    ${formatBinStep('Binary (raw)', decimalToBinary(A))}
+    <div class="row-label">X in IEEE ${precision}</div>
+    ${bitsToHtml(rA.signBit, rA.expBits, rA.mantBits)}
+    <div class="mono-block"><span class="color-sign">${rA.signBit}</span> <span class="color-exp">${rA.expBits}</span> <span class="color-mant">${rA.mantBits}</span>
+Sign=${rA.signBit}  Biased Exp=${rA.r.biasedExp} (${rA.expBits}₂)  True Exp=${rA.r.biasedExp - p.bias}
+Mantissa = 1.${rA.mantBits} = ${(1 + rA.r.mantFrac).toFixed(8)}</div>
+    <hr class="sep">
+    ${formatBinStep('Y = ' + (isSub ? -B : B), '')}
+    ${formatBinStep('Binary (raw)', decimalToBinary(isSub ? -B : B))}
+    <div class="row-label">Y in IEEE ${precision}</div>
+    ${bitsToHtml(rB.signBit, rB.expBits, rB.mantBits)}
+    <div class="mono-block"><span class="color-sign">${rB.signBit}</span> <span class="color-exp">${rB.expBits}</span> <span class="color-mant">${rB.mantBits}</span>
+Sign=${rB.signBit}  Biased Exp=${rB.r.biasedExp} (${rB.expBits}₂)  True Exp=${rB.r.biasedExp - p.bias}
+Mantissa = 1.${rB.mantBits} = ${(1 + rB.r.mantFrac).toFixed(8)}</div>
+  `);
+
+  // Step 2: Compare exponents
+  const expA = rA.r.biasedExp;
+  const expB = rB.r.biasedExp;
+  const diff = expA - expB;
+  steps += stepCard('STEP 2', 'Compare Exponents (E register)', `
+    <div class="mono-block">E1 (X exponent) = ${expA.toString(2).padStart(p.exp,'0')} = ${expA}
+E2 (Y exponent) = ${expB.toString(2).padStart(p.exp,'0')} = ${expB}
+E  = E1 − E2     = ${(diff).toString(2).padStart(p.exp,'0')} = ${diff}
+
+X_E = ${expA},  Y_E = ${expB},  Difference = ${diff}</div>
+    ${diff === 0
+      ? '<div class="row-value highlight3">✓ Exponents are equal — no alignment needed</div>'
+      : `<div class="row-value highlight4">▲ Exponents differ by ${Math.abs(diff)} — must align mantissas</div>`}
+  `);
+
+  // Step 3: Equalize
+  let mantA_full = '1' + rA.mantBits; // 24 or 53 bits
+  let mantB_full = '1' + rB.mantBits;
+  let finalExpBiased = expA;
+  let shiftSteps = '';
+
+  if (diff !== 0) {
+    // Shift the smaller exponent's mantissa right
+    let shiftCount = Math.abs(diff);
+    let mantToShift = diff > 0 ? mantB_full : mantA_full;
+    let shiftLabel = diff > 0 ? 'Y' : 'X';
+    let equalizeTo = diff > 0 ? expA : expB;
+    finalExpBiased = equalizeTo;
+
+    let rows = `Shift ${shiftLabel} mantissa right by ${shiftCount} to align exponents:\n`;
+    let current = mantToShift;
+    for (let i = 0; i < shiftCount && i < 12; i++) {
+      current = '0' + current.slice(0, -1);
+      rows += `  >> ${current}  (shift ${i+1})\n`;
+    }
+    if (shiftCount > 12) {
+      rows += `  ... (${shiftCount - 12} more shifts)\n`;
+      for (let i = 12; i < shiftCount; i++) current = '0' + current.slice(0, -1);
+      rows += `  >> ${current}  (final)\n`;
+    }
+
+    shiftSteps = `<div class="mono-block">${rows}</div>`;
+    if (diff > 0) mantB_full = current;
+    else mantA_full = current;
+  }
+
+  steps += stepCard('STEP 3', 'Equalize Exponents (Align Mantissas)', `
+    <div class="mono-block">X mantissa (AC): 1.${rA.mantBits}
+Y mantissa (DR): 1.${rB.mantBits}
+
+After prepending hidden '1' bit:
+  X: ${mantA_full}
+  Y: ${mantB_full}</div>
+    ${diff !== 0 ? shiftSteps : '<div class="row-value highlight3">✓ No shift needed</div>'}
+    <div class="mono-block">Aligned mantissas (common exponent E=${finalExpBiased}, true exp=${finalExpBiased - p.bias}):
+  X: ${mantA_full}
+  Y: ${mantB_full}</div>
+  `);
+
+  // Step 4: Add mantissas
+  const signA = rA.signBit === '1' ? -1 : 1;
+  const signB = rB.signBit === '1' ? -1 : 1;
+  const mantAVal = parseInt(mantA_full, 2) * signA;
+  const mantBVal = parseInt(mantB_full, 2) * signB;
+  const sumVal = mantAVal + mantBVal;
+  const sumSign = sumVal < 0 ? 1 : 0;
+  let sumBin = Math.abs(sumVal).toString(2).padStart(mantA_full.length + 1, '0');
+
+  const addOp = rA.signBit === rB.signBit ? 'ADD' : 'SUBTRACT';
+  steps += stepCard('STEP 4', `${op} Mantissas (AC = AC ${isSub ? '−' : '+'} DR)`, `
+    <div class="mono-block">Operation: ${addOp} (signs ${rA.signBit === rB.signBit ? 'same → add' : 'differ → subtract'})
+
+  X mantissa: ${mantA_full}  (${signA < 0 ? '-' : '+'}${parseInt(mantA_full,2)})
+${isSub ? '−' : '+'} Y mantissa: ${mantB_full}  (${signB < 0 ? '-' : '+'}${parseInt(mantB_full,2)})
+  ${'-'.repeat(mantA_full.length)}
+  Result:     ${sumBin}  (${sumVal})
+
+Result sign: ${sumSign} (${sumSign ? 'Negative' : 'Positive'})</div>
+  `);
+
+  // Step 5: Normalize
+  let normMant = sumBin;
+  let normExp = finalExpBiased;
+  let normSteps = '';
+  let normShifts = 0;
+
+  // Remove leading sign bit if needed, handle overflow
+  if (normMant.length > mantA_full.length) {
+    // Overflow: shift right by 1
+    normExp += 1;
+    normShifts--;
+    normSteps += `Overflow: shift right 1, exp += 1 → biasedExp = ${normExp}\n`;
+    normMant = normMant.slice(0, -1);
+  }
+  // Shift left until leading 1
+  let leadIdx = normMant.indexOf('1');
+  if (leadIdx === -1) {
+    normMant = '0'.repeat(p.mant + 1);
+    normSteps += 'Result is zero.\n';
+  } else if (leadIdx > 0) {
+    normShifts = leadIdx;
+    normExp -= leadIdx;
+    normSteps += `Leading zeros: shift left ${leadIdx}, exp -= ${leadIdx} → biasedExp = ${normExp}\n`;
+    normMant = normMant.slice(leadIdx).padEnd(p.mant + 1, '0');
+  } else {
+    normSteps += 'Already normalized (leading 1 in position 0).\n';
+  }
+  // Keep only mant bits (drop implicit 1)
+  const finalMantBits = normMant.slice(1).padEnd(p.mant, '0').slice(0, p.mant);
+  const finalExpBits = normExp.toString(2).padStart(p.exp, '0');
+
+  steps += stepCard('STEP 5', 'Normalize Result', `
+    <div class="mono-block">${normSteps || 'No normalization shift needed.\n'}
+Normalized form: 1.${finalMantBits}
+Final biased exponent: ${normExp} = ${finalExpBits}₂
+True exponent: ${normExp - p.bias}</div>
+  `);
+
+  // Step 6: Final result
+  steps += stepCard('STEP 6', 'Final Result', `
+    <div class="row-label">Result in IEEE ${precision}</div>
+    ${bitsToHtml(sumSign.toString(), finalExpBits, finalMantBits)}
+    <div class="mono-block"><span class="color-sign">${sumSign}</span> <span class="color-exp">${finalExpBits}</span> <span class="color-mant">${finalMantBits}</span>
+Sign=${sumSign}  Biased Exp=${normExp} (${finalExpBits}₂)  True Exp=${normExp - p.bias}
+Mantissa = 1.${finalMantBits}</div>
+  `);
+
+  steps += `<div class="result-panel">
+    <div class="result-label">Computed Result</div>
+    <div class="result-value">${A} ${opSym} ${isSub ? -B : B} = ${result}</div>
+    ${bitsToHtml(rR.signBit, rR.expBits, rR.mantBits)}
+    <div style="margin-top:12px;font-size:12px;color:var(--text-dim)">IEEE ${precision}-bit hex: 0x${hexOfFloat(result, precision)}</div>
+  </div>`;
+
+  return steps;
+}
+
+// ─────────────────────────────────────────────
+//  MULTIPLICATION
+// ─────────────────────────────────────────────
+
+function solveMul(A, B) {
+  const p = getParams(precision);
+  const rA = ieeeToBits(A, precision);
+  const rB = ieeeToBits(B, precision);
+  const result = A * B;
+  const rR = ieeeToBits(result, precision);
+
+  let steps = '';
+
+  // Step 1
+  steps += stepCard('STEP 1', 'Load Operands → IEEE Representation', `
+    ${formatBinStep('X = ' + A, '')}
+    ${bitsToHtml(rA.signBit, rA.expBits, rA.mantBits)}
+    <div class="mono-block"><span class="color-sign">${rA.signBit}</span> <span class="color-exp">${rA.expBits}</span> <span class="color-mant">${rA.mantBits}</span>
+Biased Exp_X = ${rA.r.biasedExp},  True Exp_X = ${rA.r.biasedExp - p.bias}
+Mantissa_X = 1.${rA.mantBits}</div>
+    <hr class="sep">
+    ${formatBinStep('Y = ' + B, '')}
+    ${bitsToHtml(rB.signBit, rB.expBits, rB.mantBits)}
+    <div class="mono-block"><span class="color-sign">${rB.signBit}</span> <span class="color-exp">${rB.expBits}</span> <span class="color-mant">${rB.mantBits}</span>
+Biased Exp_Y = ${rB.r.biasedExp},  True Exp_Y = ${rB.r.biasedExp - p.bias}
+Mantissa_Y = 1.${rB.mantBits}</div>
+  `);
+
+  // Step 2: Sign
+  const resultSign = rA.r.sign ^ rB.r.sign;
+  steps += stepCard('STEP 2', 'Determine Result Sign', `
+    <div class="mono-block">Sign_X = ${rA.signBit}  (${rA.r.sign ? 'Negative' : 'Positive'})
+Sign_Y = ${rB.signBit}  (${rB.r.sign ? 'Negative' : 'Positive'})
+
+Result Sign = Sign_X XOR Sign_Y
+            = ${rA.signBit} XOR ${rB.signBit}
+            = ${resultSign}  (${resultSign ? 'Negative' : 'Positive'})</div>
+  `);
+
+  // Step 3: Add exponents
+  const expA = rA.r.biasedExp;
+  const expB = rB.r.biasedExp;
+  const rawExp = expA + expB - p.bias; // remove one bias since biased + biased - bias = biased + true
+  steps += stepCard('STEP 3', 'Add Exponents (subtract one bias)', `
+    <div class="mono-block">Biased_Exp_X = ${expA}  =  ${expA.toString(2).padStart(p.exp,'0')}₂
+Biased_Exp_Y = ${expB}  =  ${expB.toString(2).padStart(p.exp,'0')}₂
+Bias         = ${p.bias}
+
+Result Biased Exp = Exp_X + Exp_Y − Bias
+                  = ${expA} + ${expB} − ${p.bias}
+                  = ${rawExp}
+                  = ${rawExp.toString(2).padStart(p.exp,'0')}₂
+
+True Exponent = ${rawExp - p.bias}</div>
+  `);
+
+  // Step 4: Multiply mantissas
+  const mA = 1 + rA.r.mantFrac;
+  const mB = 1 + rB.r.mantFrac;
+  const mProd = mA * mB;
+  let finalExp = rawExp;
+
+  steps += stepCard('STEP 4', 'Multiply Mantissas', `
+    <div class="mono-block">Mantissa_X = 1.${rA.mantBits}
+            = ${mA.toFixed(10)}
+
+Mantissa_Y = 1.${rB.mantBits}
+            = ${mB.toFixed(10)}
+
+Product = ${mA.toFixed(10)}
+        × ${mB.toFixed(10)}
+        = ${mProd.toFixed(10)}
+
+Binary product = ${decimalToBinary(mProd, 4, p.mant + 4)}</div>
+  `);
+
+  // Step 5: Normalize
+  let normMant = mProd;
+  let normNote = '';
+  if (mProd >= 2) {
+    normMant = mProd / 2;
+    finalExp += 1;
+    normNote = `Product ≥ 2: shift right 1 bit, exp += 1 → biased exp = ${finalExp}`;
+  } else if (mProd < 1 && mProd > 0) {
+    let s = 0;
+    while (normMant < 1) { normMant *= 2; finalExp--; s++; }
+    normNote = `Product < 1: shift left ${s} bits, exp -= ${s} → biased exp = ${finalExp}`;
+  } else {
+    normNote = 'Product already in [1, 2) — no shift needed';
+  }
+  const normFrac = normMant - 1;
+  const normMantBig = BigInt(Math.round(normFrac * Math.pow(2, p.mant)));
+  const finalMantBits = normMantBig.toString(2).padStart(p.mant, '0').slice(0, p.mant);
+  const finalExpBits = finalExp.toString(2).padStart(p.exp, '0');
+
+  steps += stepCard('STEP 5', 'Normalize Result', `
+    <div class="mono-block">${normNote}
+
+Normalized mantissa = 1.${finalMantBits}
+Final biased exp = ${finalExp} = ${finalExpBits}₂
+True exp = ${finalExp - p.bias}</div>
+  `);
+
+  // Step 6: Result
+  steps += stepCard('STEP 6', 'Final Result', `
+    <div class="row-label">Result in IEEE ${precision}</div>
+    ${bitsToHtml(resultSign.toString(), finalExpBits, finalMantBits)}
+    <div class="mono-block"><span class="color-sign">${resultSign}</span> <span class="color-exp">${finalExpBits}</span> <span class="color-mant">${finalMantBits}</span></div>
+  `);
+
+  steps += `<div class="result-panel">
+    <div class="result-label">Computed Result</div>
+    <div class="result-value">${A} × ${B} = ${result}</div>
+    ${bitsToHtml(rR.signBit, rR.expBits, rR.mantBits)}
+    <div style="margin-top:12px;font-size:12px;color:var(--text-dim)">IEEE ${precision}-bit hex: 0x${hexOfFloat(result, precision)}</div>
+  </div>`;
+
+  return steps;
+}
+
+// ─────────────────────────────────────────────
+//  DIVISION
+// ─────────────────────────────────────────────
+
+function solveDiv(A, B) {
+  const p = getParams(precision);
+  const rA = ieeeToBits(A, precision);
+  const rB = ieeeToBits(B, precision);
+
+  if (B === 0) throw new Error('Division by zero');
+
+  const result = A / B;
+  const rR = ieeeToBits(result, precision);
+
+  let steps = '';
+
+  // Step 1
+  steps += stepCard('STEP 1', 'Load Operands → IEEE Representation', `
+    ${formatBinStep('X (dividend) = ' + A, '')}
+    ${bitsToHtml(rA.signBit, rA.expBits, rA.mantBits)}
+    <div class="mono-block"><span class="color-sign">${rA.signBit}</span> <span class="color-exp">${rA.expBits}</span> <span class="color-mant">${rA.mantBits}</span>
+Biased Exp_X = ${rA.r.biasedExp},  True Exp_X = ${rA.r.biasedExp - p.bias}
+Mantissa_X = 1.${rA.mantBits} = ${(1+rA.r.mantFrac).toFixed(10)}</div>
+    <hr class="sep">
+    ${formatBinStep('Y (divisor) = ' + B, '')}
+    ${bitsToHtml(rB.signBit, rB.expBits, rB.mantBits)}
+    <div class="mono-block"><span class="color-sign">${rB.signBit}</span> <span class="color-exp">${rB.expBits}</span> <span class="color-mant">${rB.mantBits}</span>
+Biased Exp_Y = ${rB.r.biasedExp},  True Exp_Y = ${rB.r.biasedExp - p.bias}
+Mantissa_Y = 1.${rB.mantBits} = ${(1+rB.r.mantFrac).toFixed(10)}</div>
+  `);
+
+  // Step 2: Sign
+  const resultSign = rA.r.sign ^ rB.r.sign;
+  steps += stepCard('STEP 2', 'Determine Result Sign', `
+    <div class="mono-block">Sign_X = ${rA.signBit}  (${rA.r.sign ? 'Negative' : 'Positive'})
+Sign_Y = ${rB.signBit}  (${rB.r.sign ? 'Negative' : 'Positive'})
+
+Result Sign = Sign_X XOR Sign_Y
+            = ${rA.signBit} XOR ${rB.signBit}
+            = ${resultSign}  (${resultSign ? 'Negative' : 'Positive'})</div>
+  `);
+
+  // Step 3: Subtract exponents
+  const expA = rA.r.biasedExp;
+  const expB = rB.r.biasedExp;
+  const rawExp = expA - expB + p.bias;
+  steps += stepCard('STEP 3', 'Subtract Exponents (add bias back)', `
+    <div class="mono-block">Biased_Exp_X = ${expA}  =  ${expA.toString(2).padStart(p.exp,'0')}₂
+Biased_Exp_Y = ${expB}  =  ${expB.toString(2).padStart(p.exp,'0')}₂
+Bias         = ${p.bias}
+
+Result Biased Exp = Exp_X − Exp_Y + Bias
+                  = ${expA} − ${expB} + ${p.bias}
+                  = ${rawExp}
+                  = ${rawExp.toString(2).padStart(p.exp,'0')}₂
+
+True Exponent = ${rawExp - p.bias}</div>
+  `);
+
+  // Step 4: Divide mantissas (binary long division preview)
+  const mA = 1 + rA.r.mantFrac;
+  const mB = 1 + rB.r.mantFrac;
+  const mQuot = mA / mB;
+  let finalExp = rawExp;
+
+  // Show partial binary long division
+  let divPreview = binaryLongDivisionPreview(mA, mB, p.mant);
+
+  steps += stepCard('STEP 4', 'Divide Mantissas (Binary Long Division)', `
+    <div class="mono-block">Dividend = 1.${rA.mantBits}
+         = ${mA.toFixed(10)}
+
+Divisor  = 1.${rB.mantBits}
+         = ${mB.toFixed(10)}
+
+Quotient = ${mA.toFixed(10)} ÷ ${mB.toFixed(10)}
+         = ${mQuot.toFixed(10)}
+
+Binary quotient = ${decimalToBinary(mQuot, 4, p.mant + 4)}</div>
+    <div class="mono-block">${divPreview}</div>
+  `);
+
+  // Step 5: Normalize
+  let normMant = mQuot;
+  let normNote = '';
+  if (mQuot >= 2) {
+    normMant = mQuot / 2;
+    finalExp += 1;
+    normNote = `Quotient ≥ 2: shift right 1 bit, exp += 1 → biased exp = ${finalExp}`;
+  } else if (mQuot < 1 && mQuot > 0) {
+    let s = 0;
+    while (normMant < 1) { normMant *= 2; finalExp--; s++; }
+    normNote = `Quotient < 1: shift left ${s} bits, exp -= ${s} → biased exp = ${finalExp}`;
+  } else {
+    normNote = 'Quotient already in [1, 2) — no shift needed';
+  }
+  const normFrac = normMant - 1;
+  const normMantBig = BigInt(Math.round(normFrac * Math.pow(2, p.mant)));
+  const finalMantBits = normMantBig.toString(2).padStart(p.mant, '0').slice(0, p.mant);
+  const finalExpBits = finalExp.toString(2).padStart(p.exp, '0');
+
+  steps += stepCard('STEP 5', 'Normalize Result', `
+    <div class="mono-block">${normNote}
+
+Normalized mantissa = 1.${finalMantBits}
+Final biased exp = ${finalExp} = ${finalExpBits}₂
+True exp = ${finalExp - p.bias}</div>
+  `);
+
+  // Step 6: Result
+  steps += stepCard('STEP 6', 'Final Result', `
+    <div class="row-label">Result in IEEE ${precision}</div>
+    ${bitsToHtml(resultSign.toString(), finalExpBits, finalMantBits)}
+    <div class="mono-block"><span class="color-sign">${resultSign}</span> <span class="color-exp">${finalExpBits}</span> <span class="color-mant">${finalMantBits}</span></div>
+  `);
+
+  steps += `<div class="result-panel">
+    <div class="result-label">Computed Result</div>
+    <div class="result-value">${A} ÷ ${B} = ${result}</div>
+    ${bitsToHtml(rR.signBit, rR.expBits, rR.mantBits)}
+    <div style="margin-top:12px;font-size:12px;color:var(--text-dim)">IEEE ${precision}-bit hex: 0x${hexOfFloat(result, precision)}</div>
+  </div>`;
+
+  return steps;
+}
+
+// ─────────────────────────────────────────────
+//  Helpers
+// ─────────────────────────────────────────────
+
+function stepCard(num, title, body, numClass = '') {
+  return `<div class="step-card">
+    <div class="step-header">
+      <span class="step-num ${numClass}">${num}</span>
+      <span class="step-title">${title}</span>
+    </div>
+    <div class="step-body">${body}</div>
+  </div>`;
+}
+
+function hexOfFloat(num, bits) {
+  if (bits === 32) {
+    const buf = new ArrayBuffer(4);
+    new DataView(buf).setFloat32(0, num, false);
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('').toUpperCase();
+  } else {
+    const buf = new ArrayBuffer(8);
+    new DataView(buf).setFloat64(0, num, false);
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('').toUpperCase();
+  }
+}
+
+function binaryLongDivisionPreview(a, b, mantBits) {
+  // Convert to fixed-point binary strings and show partial division
+  let lines = [];
+  lines.push(`Binary Long Division (first ${Math.min(mantBits, 16)} bits):`);
+  lines.push('');
+
+  // Represent as integer shifted
+  const scale = Math.pow(2, mantBits);
+  let dividend = Math.round(a * scale);
+  let divisor = Math.round(b * scale);
+  let quotBits = '';
+  let rem = dividend;
+
+  lines.push(`Dividend: ${a.toFixed(8)}`);
+  lines.push(`Divisor:  ${b.toFixed(8)}`);
+  lines.push('');
+
+  for (let i = 0; i < Math.min(mantBits, 16); i++) {
+    rem *= 2;
+    if (rem >= divisor) {
+      quotBits += '1';
+      rem -= divisor;
+    } else {
+      quotBits += '0';
+    }
+  }
+
+  // Display with leading 1 for normalization
+  const intPart = a >= b ? '1' : '0';
+  lines.push(`Quotient bits: ${intPart}.${quotBits}`);
+  lines.push(`         ≈ ${a/b}`);
+  return lines.join('\n');
+}
+</script>
+</body>
+</html>
