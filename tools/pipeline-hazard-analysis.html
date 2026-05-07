@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pipeline Hazard Analyzer</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0f14;--bg2:#141720;--bg3:#1c2030;--bg4:#242840;
+  --border:#2e3450;--border2:#3d4468;
+  --accent:#4f8ef7;--accent2:#7c5df0;
+  --success:#3ecf8e;--warning:#f5a623;--danger:#f25f5c;--info:#4ecdc4;
+  --text:#e8eaf6;--text2:#9ba3c4;--text3:#5a6080;
+  --mono:'JetBrains Mono',monospace;--sans:'DM Sans',sans-serif;
+  --r:10px;--rs:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.6;min-height:100vh;}
+.app{max-width:1200px;margin:0 auto;padding:28px 20px 80px;}
+.hdr{margin-bottom:32px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.hdr h1{font-size:24px;font-weight:600;letter-spacing:-.5px;background:linear-gradient(135deg,#4f8ef7,#7c5df0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;}
+.hdr p{color:var(--text2);font-size:13px;}
+.sec{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:18px;overflow:hidden;}
+.sec-hd{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--border);background:var(--bg3);}
+.sec-hd h2{font-size:13px;font-weight:600;color:var(--text);text-transform:uppercase;letter-spacing:.8px;}
+.sec-bd{padding:18px;}
+.badge{background:var(--bg4);border:1px solid var(--border2);color:var(--text2);font-size:11px;font-family:var(--mono);padding:2px 8px;border-radius:4px;}
+.badge-ok{background:rgba(62,207,142,.15);border-color:rgba(62,207,142,.3);color:var(--success);}
+.badge-bad{background:rgba(242,95,92,.15);border-color:rgba(242,95,92,.3);color:var(--danger);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+label{display:block;font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px;}
+input[type=number]{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:var(--mono);font-size:14px;padding:8px 11px;outline:none;transition:border-color .2s;}
+input[type=number]:focus{border-color:var(--accent);}
+.tbl-wrap{overflow-x:auto;}
+
+/* ---- Clickable reservation table ---- */
+.res-table{border-collapse:collapse;font-family:var(--mono);font-size:13px;}
+.res-table th{background:var(--bg3);color:var(--text2);padding:7px 12px;text-align:center;font-weight:500;font-size:11px;border:1px solid var(--border);letter-spacing:.4px;white-space:nowrap;}
+.res-table td.rl{background:var(--bg3);padding:7px 14px;color:var(--accent);font-weight:600;font-size:11px;text-align:center;border:1px solid var(--border);white-space:nowrap;}
+.res-cell{border:1px solid var(--border);width:54px;height:44px;text-align:center;vertical-align:middle;cursor:pointer;transition:background .12s, transform .08s;user-select:none;position:relative;}
+.res-cell:hover{background:var(--bg4);}
+.res-cell.active{background:rgba(79,143,247,.18);}
+.res-cell:active{transform:scale(0.88);}
+.res-cell .mark{font-size:18px;font-weight:700;color:#4f8ef7;transition:all .12s;line-height:1;}
+.res-cell.active .mark{color:#7eb8ff;}
+.res-cell:not(.active) .mark{opacity:0;}
+.res-cell:hover:not(.active) .mark{opacity:0.2;}
+
+td.col-label{background:var(--bg3);padding:7px 11px;color:var(--text2);font-weight:500;font-size:11px;text-align:center;border:1px solid var(--border);}
+.rt-cell-forb{background:rgba(242,95,92,.2);color:var(--danger);font-weight:700;}
+.rt-cell-perm{background:rgba(62,207,142,.15);color:var(--success);font-weight:700;}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-family:var(--mono);font-size:12px;font-weight:600;margin:2px;}
+.tf{background:rgba(242,95,92,.15);color:var(--danger);border:1px solid rgba(242,95,92,.3);}
+.tp{background:rgba(62,207,142,.15);color:var(--success);border:1px solid rgba(62,207,142,.3);}
+.ti{background:rgba(79,143,247,.15);color:var(--accent);border:1px solid rgba(79,143,247,.3);}
+.tw{background:rgba(245,166,35,.15);color:var(--warning);border:1px solid rgba(245,166,35,.3);}
+.tn{background:var(--bg4);color:var(--text2);border:1px solid var(--border);}
+.tc{background:rgba(78,205,196,.15);color:var(--info);border:1px solid rgba(78,205,196,.3);}
+.met{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);padding:14px;text-align:center;}
+.met-v{font-size:24px;font-weight:700;font-family:var(--mono);color:var(--accent);display:block;margin-bottom:3px;}
+.met-v.good{color:var(--success);}.met-v.warn{color:var(--warning);}
+.met-l{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;}
+.btn-p{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:var(--rs);padding:10px 22px;font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer;transition:all .18s;}
+.btn-p:hover{opacity:.88;transform:translateY(-1px);}
+.btn-s{background:var(--bg3);color:var(--text2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 14px;font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;transition:all .18s;}
+.btn-s:hover{background:var(--bg4);color:var(--text);border-color:var(--border2);}
+.ctrl-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px;}
+.cv-table-wrap{overflow-x:auto;}
+.cv-table{border-collapse:collapse;font-family:var(--mono);font-size:13px;}
+.cv-table th{background:var(--bg3);color:var(--text2);padding:6px 14px;border:1px solid var(--border);font-size:11px;min-width:42px;text-align:center;}
+.cv-table td{border:1px solid var(--border);padding:0;min-width:42px;text-align:center;}
+.cv-td-inner{padding:8px 14px;font-weight:700;font-size:15px;}
+.cv-1{background:rgba(242,95,92,.2);color:var(--danger);}
+.cv-0{background:rgba(62,207,142,.08);color:var(--text3);}
+.log{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);padding:14px;font-family:var(--mono);font-size:12px;color:var(--text2);line-height:1.9;min-height:60px;max-height:360px;overflow-y:auto;}
+.lok{color:var(--success);}.lbd{color:var(--danger);}.lhd{color:var(--accent);font-weight:600;}.lsb{color:var(--warning);}
+.stbl th{font-size:11px;}
+.stbl td{padding:6px 11px;text-align:center;font-size:12px;font-family:var(--mono);}
+.stbl tr:nth-child(even) td{background:rgba(255,255,255,.02);}
+.stbl tr.opt-row td{background:rgba(62,207,142,.06);}
+.cy-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;margin-top:8px;}
+.cy-table th{font-size:11px;text-align:left;padding:6px 10px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);}
+.cy-table td{padding:6px 10px;border:1px solid var(--border);color:var(--text2);}
+.cy-table tr.opt td{color:var(--success);}
+.alert{padding:11px 15px;border-radius:var(--rs);font-size:13px;margin-bottom:14px;display:flex;gap:9px;align-items:flex-start;}
+.ai{background:rgba(79,143,247,.1);border:1px solid rgba(79,143,247,.25);color:var(--accent);}
+hr{border:none;border-top:1px solid var(--border);margin:18px 0;}
+.optfb-table{border-collapse:collapse;font-family:var(--mono);font-size:12px;width:100%;}
+.optfb-table th{background:var(--bg3);border:1px solid var(--border);padding:6px 10px;color:var(--text2);font-size:11px;text-align:center;}
+.optfb-table td{border:1px solid var(--border);padding:5px 10px;text-align:center;}
+.tid-container{position:relative;width:100%;height:520px;background:#141720;border-radius:var(--rs);border:1px solid var(--border);overflow:hidden;cursor:grab;}
+.tid-container.dragging{cursor:grabbing;}
+.tid-toolbar{display:flex;gap:6px;align-items:center;padding:8px 12px;background:var(--bg3);border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.tid-toolbar button{background:var(--bg4);border:1px solid var(--border2);color:var(--text2);font-family:var(--mono);font-size:12px;padding:4px 10px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.tid-toolbar button:hover{background:var(--border2);color:var(--text);}
+.tid-toolbar .sep{width:1px;height:18px;background:var(--border);margin:0 2px;}
+.tid-toolbar .zoom-label{font-family:var(--mono);font-size:11px;color:var(--text3);min-width:40px;text-align:center;}
+#tidSvgWrap{position:absolute;top:0;left:0;transform-origin:0 0;}
+.tid-legend{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--text2);margin-top:10px;padding:10px 14px;background:var(--bg3);border-radius:var(--rs);border:1px solid var(--border);}
+.tid-legend span{display:flex;align-items:center;gap:6px;}
+footer{text-align:center;margin-top:40px;padding-top:20px;border-top:1px solid var(--border);font-size:12px;color:var(--text3);}
+footer a{color:var(--accent);text-decoration:none;}
+footer a:hover{text-decoration:underline;}
+@media(max-width:680px){.g2,.g3,.g4{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="hdr">
+  <h1>⚡ Pipeline Hazard Analyzer</h1>
+  <p>Reservation Table → Forbidden Latencies → Collision Vector → TID State Machine → MAL / MCL / Throughput / Efficiency</p>
+</div>
+
+<div class="sec">
+  <div class="sec-hd"><h2>Pipeline Setup</h2></div>
+  <div class="sec-bd">
+    <div class="g2" style="margin-bottom:16px">
+      <div><label>Number of Stages (rows)</label><input type="number" id="numStages" min="2" max="10" value="4" onchange="buildTable()"></div>
+      <div><label>Number of Clock Cycles (columns)</label><input type="number" id="numCycles" min="2" max="16" value="8" onchange="buildTable()"></div>
+    </div>
+    <div class="alert ai"><span>ℹ</span><span>Click any cell to mark it as <b>active (✕)</b>. Click again to clear. Active cells indicate that stage is used at that clock cycle.</span></div>
+    <div class="tbl-wrap" id="tableContainer"></div>
+    <div class="ctrl-row">
+      <button class="btn-p" onclick="analyze()">▶ Analyze Pipeline</button>
+      <button class="btn-s" onclick="loadExample(0)">Example 1</button>
+      <button class="btn-s" onclick="loadExample(1)">Example 2</button>
+      <button class="btn-s" onclick="loadExample(2)">Example 3</button>
+      <button class="btn-s" onclick="resetTable()">Clear</button>
+    </div>
+  </div>
+</div>
+
+<div id="resultsArea" style="display:none">
+
+  <div class="sec">
+    <div class="sec-hd"><h2>Working — Detailed Steps</h2></div>
+    <div class="sec-bd"><div id="analysisLog" class="log"></div></div>
+  </div>
+
+
+  <div class="sec">
+    <div class="sec-hd"><h2>🔢 Collision Vector</h2><span class="badge" id="cvValue"></span></div>
+    <div class="sec-bd">
+      <div class="cv-table-wrap" id="cvDisplay"></div>
+      <p style="font-size:12px;color:var(--text3);margin-top:10px">Binary string of length n−1. Bit at position i (1=LSB/latency-1, n−1=MSB) is <span style="color:var(--danger)">1</span> → latency i is forbidden. Written MSB on left.</p>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-hd"><h2>State Transition Table</h2></div>
+    <div class="sec-bd">
+      <p style="font-size:12px;color:var(--text2);margin-bottom:12px"><span style="color:var(--success)">★ Green rows</span> = edges part of MAL-optimal cycle(s).</p>
+      <div class="tbl-wrap" id="stateTableFull"></div>
+    </div>
+  </div>
+
+
+
+  <div class="sec">
+    <div class="sec-hd"><h2>Task Initiation Diagram (TID)</h2></div>
+    <div class="sec-bd">
+      <p style="font-size:12px;color:var(--text2);margin-bottom:10px">Nodes = CV states. Edges = permissible latency choices. Solid = optimal; dashed = non-optimal. Double ring = initial state.</p>
+      <div class="tid-toolbar">
+        <button onclick="tidZoom(1.25)">＋ Zoom In</button>
+        <button onclick="tidZoom(0.8)">－ Zoom Out</button>
+        <span class="sep"></span>
+        <button onclick="tidFit()">⊞ Fit</button>
+        <button onclick="tidReset()">↺ Reset</button>
+        <span class="sep"></span>
+        <span class="zoom-label" id="zoomLabel">100%</span>
+        <span style="font-size:11px;color:var(--text3);margin-left:6px">· Drag to pan · Scroll to zoom</span>
+      </div>
+      <div class="tid-container" id="tidContainer">
+        <div id="tidSvgWrap"></div>
+      </div>
+      <div class="tid-legend" id="tidLegend"></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-hd"><h2>Performance Metrics</h2></div>
+    <div class="sec-bd">
+      <div class="g4" style="margin-bottom:14px">
+        <div class="met"><span class="met-v good" id="malV">—</span><span class="met-l">MAL (cycles)</span></div>
+        <div class="met"><span class="met-v" id="mclV">—</span><span class="met-l">MCL (cycles)</span></div>
+        <div class="met"><span class="met-v" id="thrV">—</span><span class="met-l">Max Throughput (/cycle)</span></div>
+        <div class="met"><span class="met-v" id="effV">—</span><span class="met-l">Pipeline Efficiency</span></div>
+      </div>
+      <div class="g3" style="margin-bottom:14px">
+        <div class="met"><span class="met-v warn" id="statesV">—</span><span class="met-l">TID States</span></div>
+        <div class="met"><span class="met-v" id="cyclesV">—</span><span class="met-l">Total Cycles Found</span></div>
+        <div class="met"><span class="met-v" id="selfV">—</span><span class="met-l">Self-Loop Latencies</span></div>
+      </div>
+      <hr>
+      <div id="metricsDetail"></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>© <a href="https://spdly.is-a.dev" target="_blank">SpDly Studios</a> — Pipeline Hazard Analyzer</p>
+</footer>
+</div>
+
+<script>
+let numStages=4, numCycles=8, tableData=[];
+const EXAMPLES=[
+  {stages:4,cycles:8,data:[[1,0,1,0,1,0,0,0],[0,1,0,0,0,0,0,0],[1,0,0,1,0,0,0,0],[0,0,1,0,0,0,0,0]]},
+  {stages:3,cycles:6,data:[[1,0,0,1,0,0],[0,1,0,0,1,0],[0,0,1,0,0,1]]},
+  {stages:4,cycles:7,data:[[1,0,1,0,0,1,0],[0,1,0,0,0,0,0],[0,0,0,1,0,0,1],[0,0,1,0,1,0,0]]}
+];
+
+// ================================================================
+// TABLE UI — click-to-toggle X cells
+// ================================================================
+function buildTable(){
+  numStages=Math.max(2,parseInt(document.getElementById('numStages').value)||4);
+  numCycles=Math.max(2,parseInt(document.getElementById('numCycles').value)||8);
+  tableData=Array.from({length:numStages},(_,i)=>Array.from({length:numCycles},(_,j)=>tableData[i]?+(tableData[i][j]||0):0));
+  renderTable();
+  document.getElementById('resultsArea').style.display='none';
+}
+
+function renderTable(){
+  let h='<table class="res-table"><thead><tr><th>Stage \\ Cycle</th>';
+  for(let j=0;j<numCycles;j++) h+=`<th>C${j+1}</th>`;
+  h+='</tr></thead><tbody>';
+  for(let i=0;i<numStages;i++){
+    h+=`<tr><td class="rl">S${i+1}</td>`;
+    for(let j=0;j<numCycles;j++){
+      const v=tableData[i]?+(tableData[i][j]||0):0;
+      h+=`<td class="res-cell${v?' active':''}" data-r="${i}" data-c="${j}" onclick="toggleCell(this)"><span class="mark">✕</span></td>`;
+    }
+    h+='</tr>';
+  }
+  h+='</tbody></table>';
+  document.getElementById('tableContainer').innerHTML=h;
+}
+
+function toggleCell(td){
+  const r=+td.dataset.r, c=+td.dataset.c;
+  tableData[r][c]=tableData[r][c]?0:1;
+  td.classList.toggle('active', tableData[r][c]===1);
+}
+
+function resetTable(){
+  tableData=Array.from({length:numStages},()=>new Array(numCycles).fill(0));
+  renderTable();
+  document.getElementById('resultsArea').style.display='none';
+}
+
+function loadExample(idx){
+  const ex=EXAMPLES[idx];
+  document.getElementById('numStages').value=ex.stages;
+  document.getElementById('numCycles').value=ex.cycles;
+  numStages=ex.stages; numCycles=ex.cycles;
+  tableData=ex.data.map(r=>[...r]);
+  renderTable();
+  document.getElementById('resultsArea').style.display='none';
+}
+
+// ================================================================
+// CV MATH
+// ================================================================
+function arrKey(a){ return a.join(''); }
+
+function computeNext(cur, d, init){
+  const len=cur.length, sh=new Array(len).fill(0);
+  for(let i=0;i<len;i++) if(i+d<len) sh[i]=cur[i+d];
+  return sh.map((b,i)=>b|init[i]);
+}
+
+// ================================================================
+// ANALYZE
+// ================================================================
+function analyze(){
+  const n=numCycles, s=numStages;
+  const log=[], push=(cls,txt)=>log.push({cls,txt});
+  const stageOnes=tableData.map(row=>row.reduce((a,v,j)=>v===1?[...a,j+1]:a,[]));
+
+  push('lhd',`STEP 1 — Reservation Table: ${s} stages × ${n} clock cycles`);
+  push('','');
+
+  const forbSet=new Set();
+  const stageForbidden=Array.from({length:s},()=>new Set());
+  push('lhd','STEP 2 — Computing Forbidden Latencies');
+  for(let i=0;i<s;i++){
+    const ones=stageOnes[i];
+    push('lsb',`  S${i+1}: 1s at columns {${ones.join(', ')||'—'}}`);
+    if(ones.length<2){push('lok','    → Only one (or zero) 1 here — no forbidden latencies from this stage');continue;}
+    for(let a=0;a<ones.length;a++) for(let b=a+1;b<ones.length;b++){
+      const d=ones[b]-ones[a]; forbSet.add(d); stageForbidden[i].add(d);
+      push('lbd',`    → Columns ${ones[a]} and ${ones[b]}: difference = ${d}  → FORBIDDEN`);
+    }
+  }
+  const forbidden=[...forbSet].sort((a,b)=>a-b);
+  push('','');push('lhd',`  Total Forbidden = {${forbidden.join(', ')||'∅'}}`);
+
+  const permissible=[];
+  push('','');push('lhd',`STEP 3 — Permissible Latencies (checking 1 to ${n-1}):`);
+  for(let i=1;i<n;i++){
+    if(!forbSet.has(i)){permissible.push(i);push('lok',`  d = ${i} → NOT forbidden → PERMISSIBLE`);}
+    else push('lbd',`  d = ${i} → forbidden → SKIP`);
+  }
+  push('lok',`  d ≥ ${n} → always permissible`);
+  push('','');push('lhd',`  Permissible (1..${n-1}) = {${permissible.join(', ')||'∅'}}, plus all ≥ ${n}`);
+
+  const cvArr=[];
+  for(let lat=1;lat<n;lat++) cvArr.push(forbSet.has(lat)?1:0);
+  const cvStr=cvArr.slice().reverse().join('');
+  push('','');push('lhd',`STEP 4 — Collision Vector = (${cvStr})`);
+
+  document.getElementById('analysisLog').innerHTML=log.map(l=>`<div class="${l.cls}">${l.txt||'&nbsp;'}</div>`).join('');
+  document.getElementById('cvValue').textContent=cvStr;
+  buildCVTable(cvArr,n);
+
+  // TID BFS
+  const initKey=arrKey(cvArr);
+  const states=new Map();
+  let sid=0;
+  states.set(initKey,{cv:[...cvArr],id:sid++,label:cvStr});
+  const workPerm=[...permissible];
+  if(!workPerm.includes(n)) workPerm.push(n);
+  const transitions=[], queue=[initKey], visited=new Set([initKey]);
+  while(queue.length){
+    const ck=queue.shift(), cs=states.get(ck);
+    for(const d of workPerm){
+      const na=computeNext(cs.cv,d,cvArr), nk=arrKey(na);
+      if(!states.has(nk)) states.set(nk,{cv:na,id:sid++,label:na.slice().reverse().join('')});
+      if(!visited.has(nk)){visited.add(nk);queue.push(nk);}
+      transitions.push({from:ck,to:nk,latency:d});
+    }
+  }
+  const tsSet=new Set();
+  const uniqTrans=transitions.filter(t=>{const k=`${t.from}|${t.to}|${t.latency}`;if(tsSet.has(k))return false;tsSet.add(k);return true;});
+
+  const stateKeys=[...states.keys()], adj=new Map();
+  for(const k of stateKeys) adj.set(k,[]);
+  for(const t of uniqTrans) adj.get(t.from).push({to:t.to,lat:t.latency});
+
+  const allCycles=[];
+  for(const t of uniqTrans) if(t.from===t.to) allCycles.push({latencies:[t.latency],sum:t.latency,count:1,stateSeq:[t.from,t.from],type:'self-loop'});
+  findCycles(stateKeys,adj,allCycles,60);
+
+  const cSet=new Set();
+  const dedupCycles=allCycles.filter(c=>{const k=JSON.stringify([...c.latencies].sort((a,b)=>a-b));if(cSet.has(k))return false;cSet.add(k);return true;});
+  const cwAvg=dedupCycles.map(c=>({...c,avg:c.sum/c.count})).sort((a,b)=>a.avg-b.avg);
+
+  const mal=cwAvg.length>0?cwAvg[0].avg:(permissible[0]||n);
+  const malR=Math.round(mal*1000)/1000;
+  const slLats=uniqTrans.filter(t=>t.from===t.to).map(t=>t.latency).sort((a,b)=>a-b);
+  const mcl=slLats.length>0?slLats[0]:(permissible.find(p=>p>=n)||n);
+
+  const optCycles=cwAvg.filter(c=>Math.abs(c.avg-mal)<0.0001);
+  const optEdgeSet=new Set();
+  for(const oc of optCycles) for(let i=0;i<oc.latencies.length;i++) optEdgeSet.add(`${oc.stateSeq[i]}|${oc.latencies[i]}`);
+
+  // State table
+  let fh='<table class="stbl"><thead><tr><th>From</th><th>From CV</th><th>Latency</th><th>To</th><th>To CV</th><th>Label</th></tr></thead><tbody>';
+  for(const t of uniqTrans){
+    const fs=states.get(t.from),ts=states.get(t.to);
+    const isOpt=optEdgeSet.has(`${t.from}|${t.latency}`);
+    const isSelf=t.from===t.to;
+    const lbl=isOpt?'<span class="tag tp">★ Optimal</span>':(isSelf?'<span class="tag tc">↺ Self-loop</span>':'');
+    fh+=`<tr${isOpt?' class="opt-row"':''}><td><span class="tag ti">S${fs.id}</span></td><td style="font-family:var(--mono);font-size:12px">${fs.label}</td><td><span class="tag tw">${t.latency}</span></td><td><span class="tag ti">S${ts.id}</span></td><td style="font-family:var(--mono);font-size:12px">${ts.label}</td><td>${lbl}</td></tr>`;
+  }
+  document.getElementById('stateTableFull').innerHTML=fh+'</tbody></table>';
+
+
+  drawTID(states,uniqTrans,optEdgeSet,initKey);
+
+  const ones=tableData.flat().reduce((a,b)=>a+b,0);
+  const eff=Math.round((ones/(s*mal))*1000)/10;
+  const thr=Math.round((1/mal)*10000)/10000;
+  document.getElementById('malV').textContent=malR;
+  document.getElementById('mclV').textContent=mcl;
+  document.getElementById('thrV').textContent=thr;
+  document.getElementById('effV').textContent=eff+'%';
+  document.getElementById('statesV').textContent=states.size;
+  document.getElementById('cyclesV').textContent=cwAvg.length;
+  document.getElementById('selfV').textContent=slLats.join(', ')||'None';
+
+  document.getElementById('metricsDetail').innerHTML=`<div style="font-size:13px;color:var(--text2);line-height:2.1">
+    <b style="color:var(--text)">MAL:</b> Initiate a new task every ${malR} clock cycles on average → throughput = ${thr} tasks/cycle<br>
+    <b style="color:var(--text)">MCL:</b> Simplest constant schedule: wait exactly ${mcl} cycle(s) between every pair of tasks<br>
+    <b style="color:var(--text)">Active stage-slots per task:</b> ${ones} (out of ${s}×${n} = ${s*n} possible slots)<br>
+    <b style="color:var(--text)">Pipeline efficiency:</b> ${eff}% of total stage capacity is productively used at MAL scheduling
+  </div>`;
+
+  document.getElementById('resultsArea').style.display='block';
+  setTimeout(()=>document.getElementById('resultsArea').scrollIntoView({behavior:'smooth',block:'start'}),80);
+}
+
+// ================================================================
+// FORBIDDEN/PERMISSIBLE TABLE
+// ================================================================
+function buildForbPermTable(s,n,stageOnes,stageForbidden,forbSet){
+  const lats=[]; for(let i=1;i<n;i++) lats.push(i);
+  let h='<table class="optfb-table"><thead><tr><th>Stage \\ Latency</th>';
+  for(const l of lats) h+=`<th>d=${l}</th>`;
+  h+='<th>Stage Forbidden</th></tr></thead><tbody>';
+  for(let i=0;i<s;i++){
+    const ones=stageOnes[i];
+    const stageGenerated=new Set();
+    for(let a=0;a<ones.length;a++) for(let b=a+1;b<ones.length;b++) stageGenerated.add(ones[b]-ones[a]);
+    h+=`<tr><td class="rl">S${i+1}</td>`;
+    for(const l of lats){
+      if(stageGenerated.has(l)) h+=`<td class="rt-cell-forb">F</td>`;
+      else h+=`<td style="text-align:center;color:var(--text3);font-size:12px;font-family:var(--mono)">—</td>`;
+    }
+    const sf=[...stageForbidden[i]].sort((a,b)=>a-b);
+    h+=`<td style="text-align:left;padding:5px 10px;font-size:12px">${sf.length?sf.map(f=>`<span class="tag tf" style="font-size:10px">⊗${f}</span>`).join(''):'<span style="color:var(--text3)">∅</span>'}</td>`;
+    h+='</tr>';
+  }
+  h+='<tr style="background:var(--bg3)"><td class="col-label"><b>Overall</b></td>';
+  for(const l of lats){
+    if(forbSet.has(l)) h+=`<td class="rt-cell-forb" style="font-size:11px;padding:5px"><b>FORB</b></td>`;
+    else h+=`<td class="rt-cell-perm" style="font-size:11px;padding:5px"><b>PERM</b></td>`;
+  }
+  h+='<td></td></tr></tbody></table>';
+  h+=`<div style="display:flex;gap:16px;margin-top:8px;font-size:11px;color:var(--text2)">
+    <span><span style="color:var(--danger);font-weight:700">F</span> = Stage forbids this latency</span>
+    <span><span style="color:var(--text3)">—</span> = Not generated by this stage</span>
+    <span><span style="color:var(--success);font-weight:700">PERM</span> = Permissible overall</span>
+    <span><span style="color:var(--danger);font-weight:700">FORB</span> = Forbidden overall</span>
+  </div>`;
+  document.getElementById('forbPermTable').innerHTML=h;
+}
+
+// ================================================================
+// CV TABLE
+// ================================================================
+function buildCVTable(cvArr,n){
+  const len=cvArr.length;
+  let h='<table class="cv-table"><thead><tr><th>Position</th>';
+  for(let i=len-1;i>=0;i--) h+=`<th>Bit ${i+1}</th>`;
+  h+='</tr></thead><tbody>';
+  h+='<tr><td style="background:var(--bg3);padding:6px 14px;font-size:11px;color:var(--text2);border:1px solid var(--border)">Latency</td>';
+  for(let i=len-1;i>=0;i--) h+=`<td style="border:1px solid var(--border);padding:6px 14px;text-align:center;font-size:12px;color:var(--text3);font-family:var(--mono)">${i+1}</td>`;
+  h+='</tr>';
+  h+='<tr><td style="background:var(--bg3);padding:6px 14px;font-size:11px;color:var(--text2);border:1px solid var(--border)">CV Bit</td>';
+  for(let i=len-1;i>=0;i--){const b=cvArr[i];h+=`<td><div class="cv-td-inner cv-${b}">${b}</div></td>`;}
+  h+='</tr>';
+  h+='<tr><td style="background:var(--bg3);padding:6px 14px;font-size:11px;color:var(--text2);border:1px solid var(--border)">Status</td>';
+  for(let i=len-1;i>=0;i--){const b=cvArr[i];h+=`<td style="border:1px solid var(--border);padding:5px 14px;text-align:center;font-size:10px;font-family:var(--mono);color:${b?'var(--danger)':'var(--success)'}"><b>${b?'FORB':'OK'}</b></td>`;}
+  h+='</tr></tbody></table>';
+  document.getElementById('cvDisplay').innerHTML=h;
+}
+
+// ================================================================
+// CYCLE TIMING TABLE
+// ================================================================
+function buildCycleTimingTable(cycles,states,isOpt){
+  if(!cycles.length) return '';
+  let maxSpan=0;
+  cycles.forEach(c=>{let s=0;c.latencies.forEach(l=>{s+=l;});maxSpan=Math.max(maxSpan,s);});
+  const cols=maxSpan+1;
+  let h=`<table class="optfb-table"><thead><tr><th style="text-align:left;padding:6px 10px">Cycle</th>`;
+  for(let t=0;t<cols;t++) h+=`<th>t=${t}</th>`;
+  h+='<th style="text-align:left;padding:6px 10px">Latencies</th><th>Avg</th></tr></thead><tbody>';
+  cycles.forEach((c,i)=>{
+    const stSeq=c.stateSeq?c.stateSeq.map(k=>'S'+states.get(k).id).join('→'):'—';
+    const slotSet=new Set([0]); let cum=0;
+    c.latencies.forEach(l=>{cum+=l;slotSet.add(cum);});
+    h+=`<tr><td style="text-align:left;padding:6px 10px;font-size:11px;color:var(--text2)">${i+1}. ${stSeq}</td>`;
+    for(let t=0;t<cols;t++){
+      if(slotSet.has(t)) h+=`<td style="background:${isOpt?'rgba(62,207,142,.2)':'rgba(245,166,35,.15)'};color:${isOpt?'var(--success)':'var(--warning)'};font-weight:700;text-align:center;font-family:var(--mono);font-size:14px">★</td>`;
+      else h+=`<td style="text-align:center;color:var(--text3);font-family:var(--mono);font-size:12px">·</td>`;
+    }
+    h+=`<td style="padding:5px 8px">${c.latencies.map(l=>`<span class="tag tw" style="font-size:10px">${l}</span>`).join('')}</td>`;
+    h+=`<td style="padding:5px 10px;font-family:var(--mono);font-weight:700;color:${isOpt?'var(--success)':'var(--warning)'}">${Math.round(c.avg*1000)/1000}</td>`;
+    h+='</tr>';
+  });
+  return h+'</tbody></table>';
+}
+
+// ================================================================
+// CYCLE FINDER
+// ================================================================
+function findCycles(keys,adj,out,max){
+  const visited=new Set(),stack=[],latStack=[];
+  function dfs(start,cur){
+    if(out.length>=max)return;
+    for(const e of(adj.get(cur)||[])){
+      if(e.to===start&&stack.length>0){
+        out.push({latencies:[...latStack,e.lat],sum:latStack.reduce((a,b)=>a+b,0)+e.lat,count:stack.length+1,stateSeq:[...stack,start],type:'multi'});
+      } else if(!visited.has(e.to)&&!stack.includes(e.to)){
+        visited.add(e.to);stack.push(e.to);latStack.push(e.lat);
+        dfs(start,e.to);
+        stack.pop();latStack.pop();visited.delete(e.to);
+      }
+    }
+  }
+  for(const k of keys){if(out.length>=max)break;stack.push(k);dfs(k,k);stack.pop();}
+}
+
+// ================================================================
+// TID SVG
+// ================================================================
+function drawTID(states,transitions,optEdges,initKey){
+  const stArr=[...states.values()], N=stArr.length;
+  if(N===0)return;
+  const R=44,LOOPH=54,LOOPW=44;
+  const COLS=Math.max(1,Math.min(N,Math.ceil(Math.sqrt(N*1.5))));
+  const ROWS=Math.ceil(N/COLS);
+  const CELL_W=Math.max(180,Math.min(240,1000/COLS));
+  const CELL_H=160, PAD_X=80, PAD_Y=100;
+  const W=COLS*CELL_W+PAD_X*2, H=ROWS*CELL_H+PAD_Y*2+60;
+  const pos=new Map();
+  stArr.forEach((st,idx)=>{const row=Math.floor(idx/COLS),col=idx%COLS;pos.set(st.id,{x:PAD_X+col*CELL_W+CELL_W/2,y:PAD_Y+60+row*CELL_H+CELL_H/2});});
+  const COLORS=['#4f8ef7','#a78bfa','#f5a623','#4ecdc4','#f472b6','#60a5fa','#34d399','#fb923c','#c084fc','#38bdf8'];
+  const nc=id=>COLORS[id%COLORS.length];
+  const edgeMap=new Map();
+  for(const t of transitions){
+    const fs=states.get(t.from),ts=states.get(t.to), k=`${fs.id}|${ts.id}`;
+    if(!edgeMap.has(k))edgeMap.set(k,{from:fs.id,to:ts.id,fromKey:t.from,lats:[],isOpt:false});
+    const em=edgeMap.get(k);
+    if(!em.lats.includes(t.latency))em.lats.push(t.latency);
+    if(optEdges.has(`${t.from}|${t.latency}`))em.isOpt=true;
+  }
+  const parts=[], markerColors=new Set(['OPT']);
+  stArr.forEach(st=>markerColors.add(nc(st.id).replace('#','')));
+  let defs='<defs>';
+  for(const mc of markerColors){
+    const col=mc==='OPT'?'#3ecf8e':'#'+mc;
+    defs+=`<marker id="mk_${mc}" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 2L10 6L2 10" fill="none" stroke="${col}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></marker>`;
+  }
+  defs+='</defs>';
+  parts.push(defs);
+  parts.push(`<rect width="${W}" height="${H}" fill="#141720" rx="10"/>`);
+  parts.push(`<rect width="${W}" height="44" fill="#1c2030" rx="10"/><rect y="34" width="${W}" height="10" fill="#1c2030"/>`);
+  const initSt=states.get(initKey);
+  parts.push(`<text x="${W/2}" y="26" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="13" font-weight="600" fill="#9ba3c4">TID  |  Initial: S${initSt?initSt.id:0} (${initSt?initSt.label:''})</text>`);
+  for(const [,e] of edgeMap){
+    const fp=pos.get(e.from),tp=pos.get(e.to);
+    const col=e.isOpt?'#3ecf8e':nc(e.from);
+    const mcId='mk_'+(e.isOpt?'OPT':nc(e.from).replace('#',''));
+    const lw=e.isOpt?2.8:1.8, dash=e.isOpt?'':'8 4';
+    const label=e.lats.sort((a,b)=>a-b).join(',');
+    if(e.from===e.to){
+      const lx=fp.x,ly=fp.y-R;
+      parts.push(`<path d="M${lx-7} ${ly} C${lx-LOOPW/2} ${ly-LOOPH} ${lx+LOOPW/2} ${ly-LOOPH} ${lx+7} ${ly}" fill="none" stroke="${col}" stroke-width="${lw}"${dash?` stroke-dasharray="${dash}"`:''}  marker-end="url(#${mcId})"/>`);
+      const lblY=ly-LOOPH-14, lblW=label.length*8+14;
+      parts.push(`<rect x="${lx-lblW/2}" y="${lblY-10}" width="${lblW}" height="20" rx="4" fill="#1c2030" opacity="0.92"/>`);
+      parts.push(`<text x="${lx}" y="${lblY+4}" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="13" font-weight="700" fill="${col}">${label}</text>`);
+    } else {
+      const revKey=`${e.to}|${e.from}`, hasBoth=edgeMap.has(revKey);
+      const dx=tp.x-fp.x,dy=tp.y-fp.y, dist=Math.sqrt(dx*dx+dy*dy)||1;
+      const nx=dx/dist,ny=dy/dist, perp=hasBoth?22:0;
+      const ox=-ny*perp,oy=nx*perp;
+      const sx=fp.x+nx*R+ox,sy=fp.y+ny*R+oy, ex2=tp.x-nx*R+ox,ey=tp.y-ny*R+oy;
+      const curv=hasBoth?36:20;
+      const cx=(sx+ex2)/2-ny*curv+ox,cy=(sy+ey)/2+nx*curv+oy;
+      const tlx=(sx+2*cx+ex2)/4,tly=(sy+2*cy+ey)/4, lblW=label.length*8+14;
+      parts.push(`<path d="M${sx} ${sy} Q${cx} ${cy} ${ex2} ${ey}" fill="none" stroke="${col}" stroke-width="${lw}"${dash?` stroke-dasharray="${dash}"`:''}  marker-end="url(#${mcId})"/>`);
+      parts.push(`<rect x="${tlx-lblW/2}" y="${tly-10}" width="${lblW}" height="20" rx="4" fill="#1c2030" opacity="0.92"/>`);
+      parts.push(`<text x="${tlx}" y="${tly+4}" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" font-weight="700" fill="${col}">${label}</text>`);
+    }
+  }
+  for(const st of stArr){
+    const p=pos.get(st.id),col=nc(st.id),isInit=arrKey(st.cv)===initKey;
+    if(isInit) parts.push(`<circle cx="${p.x}" cy="${p.y}" r="${R+8}" fill="none" stroke="${col}" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.55"/>`);
+    parts.push(`<circle cx="${p.x}" cy="${p.y}" r="${R+2}" fill="none" stroke="${col}" stroke-width="0.5" opacity="0.3"/>`);
+    parts.push(`<circle cx="${p.x}" cy="${p.y}" r="${R}" fill="#242840" stroke="${col}" stroke-width="2.5"/>`);
+    parts.push(`<text x="${p.x}" y="${p.y-9}" text-anchor="middle" dominant-baseline="middle" font-family="JetBrains Mono,monospace" font-size="15" font-weight="700" fill="${col}">S${st.id}</text>`);
+    const lbl=st.label.length>9?st.label.substring(0,8)+'…':st.label;
+    parts.push(`<text x="${p.x}" y="${p.y+11}" text-anchor="middle" dominant-baseline="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#9ba3c4">${lbl}</text>`);
+    if(isInit) parts.push(`<text x="${p.x}" y="${p.y+R+17}" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" font-weight="500" fill="${col}" opacity="0.75">initial state</text>`);
+  }
+  document.getElementById('tidSvgWrap').innerHTML=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="display:block">${parts.join('')}</svg>`;
+  document.getElementById('tidLegend').innerHTML=`
+    <span><svg width="32" height="10"><line x1="0" y1="5" x2="32" y2="5" stroke="#3ecf8e" stroke-width="2.5"/></svg> Solid = optimal (MAL)</span>
+    <span><svg width="32" height="10"><line x1="0" y1="5" x2="32" y2="5" stroke="#9ba3c4" stroke-width="1.8" stroke-dasharray="6 3"/></svg> Dashed = non-optimal</span>
+    <span><svg width="20" height="20"><circle cx="10" cy="10" r="7" fill="none" stroke="#4f8ef7" stroke-width="2"/><circle cx="10" cy="10" r="4" fill="none" stroke="#4f8ef7" stroke-width="1" stroke-dasharray="3 2"/></svg> Double ring = initial state</span>
+    <span>↺ Self-loop = constant schedule possible</span>`;
+  tidState={scale:1,ox:0,oy:0,svgW:W,svgH:H};
+  panZoomInited=false;
+  tidFit();
+  initTIDPanZoom();
+}
+
+// ================================================================
+// TID PAN/ZOOM
+// ================================================================
+let tidState={scale:1,ox:0,oy:0,svgW:800,svgH:500};
+let tidDragging=false,tidDragStart={x:0,y:0},tidDragOrigin={x:0,y:0};
+let panZoomInited=false;
+function applyTIDTransform(){
+  const wrap=document.getElementById('tidSvgWrap');
+  if(!wrap)return;
+  wrap.style.transform=`translate(${tidState.ox}px,${tidState.oy}px) scale(${tidState.scale})`;
+  document.getElementById('zoomLabel').textContent=Math.round(tidState.scale*100)+'%';
+}
+function tidZoom(factor,cx,cy){
+  const container=document.getElementById('tidContainer');
+  const rect=container.getBoundingClientRect();
+  const mcx=cx!==undefined?cx:rect.width/2, mcy=cy!==undefined?cy:rect.height/2;
+  const newScale=Math.max(0.1,Math.min(5,tidState.scale*factor));
+  tidState.ox=mcx-(mcx-tidState.ox)*(newScale/tidState.scale);
+  tidState.oy=mcy-(mcy-tidState.oy)*(newScale/tidState.scale);
+  tidState.scale=newScale;
+  applyTIDTransform();
+}
+function tidFit(){
+  const container=document.getElementById('tidContainer');
+  if(!container)return;
+  const cw=container.clientWidth,ch=container.clientHeight;
+  const scaleX=cw/tidState.svgW,scaleY=ch/tidState.svgH;
+  tidState.scale=Math.min(scaleX,scaleY)*0.92;
+  tidState.ox=(cw-tidState.svgW*tidState.scale)/2;
+  tidState.oy=(ch-tidState.svgH*tidState.scale)/2;
+  applyTIDTransform();
+}
+function tidReset(){tidState.scale=1;tidState.ox=0;tidState.oy=0;applyTIDTransform();}
+function initTIDPanZoom(){
+  if(panZoomInited)return;
+  panZoomInited=true;
+  const container=document.getElementById('tidContainer');
+  container.addEventListener('mousedown',e=>{
+    tidDragging=true;container.classList.add('dragging');
+    tidDragStart={x:e.clientX,y:e.clientY};tidDragOrigin={x:tidState.ox,y:tidState.oy};
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove',e=>{
+    if(!tidDragging)return;
+    tidState.ox=tidDragOrigin.x+(e.clientX-tidDragStart.x);
+    tidState.oy=tidDragOrigin.y+(e.clientY-tidDragStart.y);
+    applyTIDTransform();
+  });
+  window.addEventListener('mouseup',()=>{tidDragging=false;document.getElementById('tidContainer')?.classList.remove('dragging');});
+  container.addEventListener('wheel',e=>{
+    e.preventDefault();
+    const rect=container.getBoundingClientRect();
+    tidZoom(e.deltaY<0?1.12:0.88,e.clientX-rect.left,e.clientY-rect.top);
+  },{passive:false});
+  let lastTouchDist=null;
+  container.addEventListener('touchstart',e=>{
+    if(e.touches.length===1){tidDragging=true;tidDragStart={x:e.touches[0].clientX,y:e.touches[0].clientY};tidDragOrigin={x:tidState.ox,y:tidState.oy};}
+    else if(e.touches.length===2) lastTouchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    e.preventDefault();
+  },{passive:false});
+  container.addEventListener('touchmove',e=>{
+    if(e.touches.length===1&&tidDragging){tidState.ox=tidDragOrigin.x+(e.touches[0].clientX-tidDragStart.x);tidState.oy=tidDragOrigin.y+(e.touches[0].clientY-tidDragStart.y);applyTIDTransform();}
+    else if(e.touches.length===2&&lastTouchDist){const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);tidZoom(dist/lastTouchDist);lastTouchDist=dist;}
+    e.preventDefault();
+  },{passive:false});
+  container.addEventListener('touchend',()=>{tidDragging=false;lastTouchDist=null;});
+}
+
+buildTable();
+</script>
+</body>
+</html>
