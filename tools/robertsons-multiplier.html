@@ -4,176 +4,244 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Robertson's Two's Complement Multiplier</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
+:root{
+  --bg:#0a0e1a;
+  --surface:#111827;
+  --surface2:#1a2235;
+  --border:#1e2d45;
+  --accent:#3b82f6;
+  --accent2:#06b6d4;
+  --red:#ef4444;
+  --green:#22c55e;
+  --amber:#f59e0b;
+  --text:#e2e8f0;
+  --muted:#64748b;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Syne',sans-serif;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-.wrap{padding:1.5rem 0 0;font-family:var(--font-sans)}
-h2{font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:.5rem}
-.logic-box{font-size:12px;color:var(--color-text-secondary);margin-bottom:1rem;padding:8px 12px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-secondary)}
-.logic-box b{color:var(--color-text-primary)}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem}
-.field label{font-size:13px;color:var(--color-text-secondary);display:block;margin-bottom:4px}
-.field input{width:100%;padding:7px 10px;font-size:14px;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);color:var(--color-text-primary)}
-.field input:focus{outline:none;border-color:var(--color-border-primary)}
-.btns{display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap}
-button{padding:7px 14px;font-size:13px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:transparent;color:var(--color-text-primary);cursor:pointer}
-button:hover{background:var(--color-background-secondary)}
-button.primary{background:#E6F1FB;color:#0C447C;border-color:#B5D4F4}
-.badge{display:inline-block;font-size:12px;padding:3px 10px;border-radius:var(--border-radius-md);font-weight:500;margin-bottom:1rem}
-.tbl-wrap{overflow-x:auto;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);margin-bottom:1rem}
-table{width:100%;border-collapse:collapse;font-size:12px}
-thead tr{background:#E6F1FB}
-thead th{padding:8px 10px;text-align:center;font-weight:500;color:#0C447C;border-bottom:0.5px solid #B5D4F4;font-size:11px;white-space:nowrap}
-tbody tr{border-bottom:0.5px solid var(--color-border-tertiary)}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;padding:0}
+
+/* grid bg */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
+  background-size:40px 40px;opacity:.35;pointer-events:none;z-index:0;
+}
+
+.page{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:2rem 1.5rem 4rem}
+
+header{text-align:center;padding:3rem 0 2.5rem}
+header .chip{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.15em;color:var(--accent2);border:1px solid var(--accent2);padding:4px 14px;border-radius:2px;margin-bottom:1rem;opacity:.85}
+header h1{font-size:clamp(1.6rem,4vw,2.6rem);font-weight:800;letter-spacing:-.02em;line-height:1.1;margin-bottom:.5rem}
+header h1 span{color:var(--accent)}
+header p{font-size:.9rem;color:var(--muted);font-family:var(--mono)}
+
+.logic-pill{
+  display:flex;align-items:center;justify-content:center;gap:1.5rem;flex-wrap:wrap;
+  background:var(--surface);border:1px solid var(--border);border-radius:6px;
+  padding:.75rem 1.25rem;margin-bottom:1.5rem;font-family:var(--mono);font-size:12px;
+}
+.logic-pill .formula{color:var(--accent2);font-weight:700;letter-spacing:.05em}
+.logic-pill .kv{color:var(--muted)}
+.logic-pill .kv span{color:var(--text);font-weight:500}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin-bottom:1.25rem}
+
+.inputs{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+@media(max-width:500px){.inputs{grid-template-columns:1fr}}
+
+.field label{font-size:11px;letter-spacing:.1em;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase}
+.field input{
+  width:100%;padding:10px 14px;font-size:14px;font-family:var(--mono);
+  background:var(--surface2);border:1px solid var(--border);border-radius:4px;
+  color:var(--text);outline:none;transition:border-color .2s;
+}
+.field input:focus{border-color:var(--accent)}
+
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btn{
+  padding:9px 18px;font-size:13px;font-family:var(--sans);font-weight:500;
+  border:1px solid var(--border);border-radius:4px;background:transparent;
+  color:var(--muted);cursor:pointer;transition:all .15s;
+}
+.btn:hover{background:var(--surface2);color:var(--text);border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn.primary:hover{background:#2563eb;border-color:#2563eb}
+
+.tbl-wrap{overflow-x:auto;border-radius:6px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px}
+thead th{
+  padding:10px 12px;text-align:center;font-weight:700;font-size:11px;
+  letter-spacing:.08em;color:var(--accent2);background:var(--surface2);
+  border-bottom:1px solid var(--border);white-space:nowrap;
+}
+thead th.left{text-align:left}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
 tbody tr:last-child{border-bottom:none}
-.even{background:var(--color-background-secondary)}
-.odd{background:var(--color-background-primary)}
-.shift-row{opacity:0.82}
-td{padding:7px 8px;text-align:center;vertical-align:middle;color:var(--color-text-primary);font-size:12px}
+tbody tr:hover{background:rgba(59,130,246,.06)}
+tbody tr.even{background:rgba(255,255,255,.015)}
+tbody tr.shift-row{opacity:.75}
+td{padding:8px 12px;text-align:center;vertical-align:middle}
 td.left{text-align:left;font-size:11px}
-.mono{font-family:var(--font-mono);font-size:11px;letter-spacing:0.06em}
-.sb{color:#993C1D;font-weight:500}
-.f1{color:#0C447C;font-weight:500}
-.f0{color:var(--color-text-tertiary)}
-.fc{color:#993C1D;font-weight:500}
-.result-row td{background:#EAF3DE;font-weight:500;color:#27500A}
-.summary{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1.5rem}
-.sc{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 14px;flex:1;min-width:110px}
-.sc .lbl{font-size:12px;color:var(--color-text-secondary);margin-bottom:2px}
-.sc .val{font-size:13px;font-weight:500;color:var(--color-text-primary);font-family:var(--font-mono);word-break:break-all}
-.err{color:var(--color-text-danger);font-size:13px;margin-bottom:1rem}
-footer{margin-top:1.5rem;padding:12px 0;border-top:0.5px solid var(--color-border-tertiary);text-align:center;font-size:12px;color:var(--color-text-tertiary)}
-footer a{color:var(--color-text-secondary);text-decoration:none}
-footer a:hover{color:var(--color-text-primary)}
+.sb{color:#f87171;font-weight:700}
+.f1{color:var(--accent);font-weight:700}
+.f0{color:var(--muted)}
+.fc{color:var(--red);font-weight:700}
+tr.result-row td{background:rgba(34,197,94,.08);color:#4ade80;font-weight:700}
+tr.result-row:hover{background:rgba(34,197,94,.12)!important}
+
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-top:1.25rem}
+.sc{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:12px 16px}
+.sc .lbl{font-size:11px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+.sc .val{font-size:13px;font-weight:500;font-family:var(--mono);color:var(--text);word-break:break-all}
+.sc .val.ok{color:var(--green)}
+.sc .val.fail{color:var(--red)}
+
+.badge{
+  display:inline-block;font-size:11px;padding:4px 12px;
+  border-radius:3px;font-weight:600;letter-spacing:.06em;margin-bottom:1rem;
+  font-family:var(--mono);
+}
+
+.err{color:var(--red);font-size:13px;font-family:var(--mono);padding:.5rem}
+
+footer{
+  text-align:center;padding:2rem 0 1rem;
+  font-size:12px;color:var(--muted);font-family:var(--mono);
+  border-top:1px solid var(--border);margin-top:2rem;
+}
+footer a{color:var(--accent2);text-decoration:none}
+footer a:hover{color:#fff}
+
+/* entrance animation */
+.card{animation:fadeUp .4s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 </style>
 </head>
-<body
-<div class="wrap">
-<h2>Robertson's two's complement multiplier — trace table</h2>
-<div class="logic-box">
-  <b>F := (M[7] AND Q[0]) OR F</b> &nbsp;|&nbsp;
-  M[7] = <span id="lm7">—</span> &nbsp;
-  Q[0] = <span id="lq0">—</span> &nbsp;
-  Prev F = <span id="lfp">—</span>
+<body>
+<div class="page">
+
+<header>
+  <div class="chip">BINARY ARITHMETIC</div>
+  <h1>Robertson's <span>Two's Complement</span> Multiplier</h1>
+  <p>8-bit · Add-and-shift with sign extension · Step-by-step trace</p>
+</header>
+
+<div class="logic-pill">
+  <span class="formula">F := (M[7] AND Q[0]) OR F</span>
+  <span class="kv">M[7] = <span id="lm7">—</span></span>
+  <span class="kv">Q[0] = <span id="lq0">—</span></span>
+  <span class="kv">Prev F = <span id="lfp">—</span></span>
 </div>
-<div class="row2">
-  <div class="field"><label>Multiplicand Y / M (−128 to 127)</label><input type="number" id="mv" value="43" min="-128" max="127"></div>
-  <div class="field"><label>Multiplier X (−128 to 127)</label><input type="number" id="qv" value="77" min="-128" max="127"></div>
+
+<div class="card">
+  <div class="inputs">
+    <div class="field"><label>Multiplicand Y / M</label><input type="number" id="mv" value="43" min="-128" max="127"></div>
+    <div class="field"><label>Multiplier X</label><input type="number" id="qv" value="77" min="-128" max="127"></div>
+  </div>
+  <div class="btns">
+    <button class="btn primary" onclick="run()">&#9654; Generate Table</button>
+    <button class="btn" onclick="se(6,7)">6×7</button>
+    <button class="btn" onclick="se(-6,7)">−6×7</button>
+    <button class="btn" onclick="se(6,-7)">6×−7</button>
+    <button class="btn" onclick="se(-6,-7)">−6×−7</button>
+    <button class="btn" onclick="se(43,77)">43×77</button>
+    <button class="btn" onclick="se(11,-13)">11×−13</button>
+  </div>
 </div>
-<div class="btns">
-  <button class="primary" onclick="run()"><i class="ti ti-player-play" aria-hidden="true"></i> Generate table</button>
-  <button onclick="se(6,7)">6×7</button>
-  <button onclick="se(-6,7)">−6×7</button>
-  <button onclick="se(6,-7)">6×−7</button>
-  <button onclick="se(-6,-7)">−6×−7</button>
-  <button onclick="se(43,77)">43×77</button>
-  <button onclick="se(11,-13)">11×−13</button>
-</div>
+
 <div id="out"></div>
+
 <footer>© <a href="https://spdly.is-a.dev" target="_blank">SpDly Studios</a></footer>
 </div>
 
 <script>
 function se(m,q){document.getElementById('mv').value=m;document.getElementById('qv').value=q;run()}
-
 function b8(x){return((x&0xFF)>>>0).toString(2).padStart(8,'0')}
-function tcToInt(s){
-  const v=parseInt(s,2);
-  return s[0]==='1'?v-(1<<s.length):v;
-}
-function fmt(s){
-  return `<span class="mono"><span class="sb">${s[0]}</span>${s.slice(1)}</span>`;
-}
+function tcToInt(s){const v=parseInt(s,2);return s[0]==='1'?v-(1<<s.length):v}
+function fmt(s){return`<span style="font-family:'JetBrains Mono',monospace"><span class="sb">${s[0]}</span>${s.slice(1)}</span>`}
 
 function run(){
   const Mval=parseInt(document.getElementById('mv').value);
   const Qval=parseInt(document.getElementById('qv').value);
   const out=document.getElementById('out');
-
   if(isNaN(Mval)||isNaN(Qval)||Mval<-128||Mval>127||Qval<-128||Qval>127){
-    out.innerHTML='<p class="err">Enter integers between −128 and 127.</p>';return;
+    out.innerHTML='<div class="card"><p class="err">Enter integers between −128 and 127.</p></div>';return;
   }
 
-  let A=0, Q=Qval&0xFF, M=Mval&0xFF, F=0, count=0;
+  let A=0,Q=Qval&0xFF,M=Mval&0xFF,F=0,count=0;
   const rows=[];
-
-  rows.push({step:0,action:'Initialize registers',F:0,A:b8(A),Q:b8(Q),remark:'Multiplier X in Q, Multiplicand Y=M'});
+  rows.push({step:0,action:'Initialize registers',F:0,A:b8(A),Q:b8(Q),remark:'Multiplier X in Q, Multiplicand Y = M'});
 
   while(count<8){
-    const q0=Q&1;
-    const m7=(M>>7)&1;
+    const q0=Q&1,m7=(M>>7)&1;
     F=(m7&q0)|F;
-
     document.getElementById('lm7').textContent=m7;
     document.getElementById('lq0').textContent=q0;
     document.getElementById('lfp').textContent=F;
 
     if(count===7&&q0===1){
-      A=(A-M)&0xFF;
-      Q=Q&0xFE;
-      rows.push({step:'—',action:'Subtract M from A (correction)',F,A:b8(A),Q:b8(Q),remark:'x₇=1 correction step',isSub:true});
+      A=(A-M)&0xFF; Q=Q&0xFE;
+      rows.push({step:'—',action:'Subtract M from A (correction)',F,A:b8(A),Q:b8(Q),remark:'x₇=1 correction',isSub:true});
       rows.push({step:'—',action:'Set Q[0] to 0',F,A:b8(A),Q:b8(Q),remark:'correction complete',isSub:true});
       count++;
     } else {
       if(q0) A=(A+M)&0xFF;
       rows.push({step:count+1,action:q0?'Add M to A':'Add 0 to A',F,A:b8(A),Q:b8(Q),remark:`m7=${m7}, q0=${q0}`});
-
       if(count!==7){
-        const newF=F;
         const newA=((F<<7)|(A>>1))&0xFF;
         const newQ=((A&1)<<7|(Q>>1))&0xFF;
-        A=newA; Q=newQ; F=newF;
-        rows.push({step:count+1,action:'Right-shift F.A.Q',F,A:b8(A),Q:b8(Q),remark:'MSB filled with F',isShift:true});
+        A=newA;Q=newQ;
+        rows.push({step:count+1,action:'Right-shift F.A.Q',F,A:b8(A),Q:b8(Q),remark:'MSB ← F',isShift:true});
       }
       count++;
     }
   }
 
-  const productA=b8(A);
-  const productQ=b8(Q).substring(0,7);
-  const productFull=productA+productQ;
+  const pA=b8(A),pQ=b8(Q).substring(0,7);
+  const productFull=pA+pQ;
   const finalInt=tcToInt(productFull);
   const exact=Mval*Qval;
   const ok=finalInt===exact;
 
-  rows.push({step:'—',action:'Result: P = A ∥ Q[7:1]',F,A:b8(A),Q:b8(Q),remark:`P = ${productA} ${productQ}`,isResult:true});
+  rows.push({step:'—',action:'Result: P = A ∥ Q[7:1]',F,A:b8(A),Q:b8(Q),remark:`P = ${pA} ${pQ}`,isResult:true});
 
-  const x7=(Qval<0)?1:0, y7=(Mval<0)?1:0;
-  let cN,cL,cSty;
-  if(!x7&&!y7){cN=1;cL='Case 1 — both positive';cSty='background:#E6F1FB;color:#0C447C;border:0.5px solid #B5D4F4'}
-  else if(!x7&&y7){cN=2;cL='Case 2 — X positive, Y negative';cSty='background:#EAF3DE;color:#27500A;border:0.5px solid #C0DD97'}
-  else if(x7&&!y7){cN=3;cL='Case 3 — X negative, Y positive';cSty='background:#FAEEDA;color:#633806;border:0.5px solid #FAC775'}
-  else{cN=4;cL='Case 4 — both negative';cSty='background:#FAECE7;color:#712B13;border:0.5px solid #F5C4B3'}
+  const x7=(Qval<0)?1:0,y7=(Mval<0)?1:0;
+  let cL,cColor;
+  if(!x7&&!y7){cL='Case 1 — both positive';cColor='#3b82f6'}
+  else if(!x7&&y7){cL='Case 2 — X+, Y−';cColor='#22c55e'}
+  else if(x7&&!y7){cL='Case 3 — X−, Y+';cColor='#f59e0b'}
+  else{cL='Case 4 — both negative';cColor='#ef4444'}
 
-  let html=`<div class="badge" style="${cSty}">${cL}</div>`;
-
-  html+=`<div class="tbl-wrap"><table><thead><tr>
-    <th>Step</th><th style="text-align:left">Action</th><th>F</th><th>Accumulator A</th><th>Register Q</th><th style="text-align:left">Remark</th>
+  let html=`<div class="card" style="animation-delay:.05s">`;
+  html+=`<span class="badge" style="background:${cColor}22;color:${cColor};border:1px solid ${cColor}44">${cL}</span>`;
+  html+=`<div class="tbl-wrap"><table>
+  <thead><tr>
+    <th>Step</th><th class="left">Action</th><th>F</th>
+    <th>Accumulator A</th><th>Register Q</th><th class="left">Remark</th>
   </tr></thead><tbody>`;
 
   let ri=0;
   for(const r of rows){
-    const base=ri%2===0?'even':'odd';
-    const extra=r.isShift?' shift-row':r.isResult||r.isSub?' result-row':'';
+    const cls=(ri%2===0?'even':'')+(r.isShift?' shift-row':'')+(r.isResult||r.isSub?' result-row':'');
     const fCell=r.F===0?`<span class="f0">0</span>`:`<span class="f1">${r.F}</span>`;
-    html+=`<tr class="${base}${extra}">
-      <td>${r.step}</td>
-      <td class="left">${r.action}</td>
-      <td>${fCell}</td>
-      <td>${fmt(r.A)}</td>
-      <td>${fmt(r.Q)}</td>
-      <td class="left" style="font-size:11px;color:var(--color-text-secondary)">${r.remark}</td>
+    html+=`<tr class="${cls}">
+      <td>${r.step}</td><td class="left">${r.action}</td><td>${fCell}</td>
+      <td>${fmt(r.A)}</td><td>${fmt(r.Q)}</td>
+      <td class="left" style="color:var(--muted);font-size:11px">${r.remark}</td>
     </tr>`;
     ri++;
   }
-  html+='</tbody></table></div>';
-
-  html+=`<div class="summary">
-    <div class="sc"><div class="lbl">M (multiplicand Y)</div><div class="val">${b8(M)} (${Mval})</div></div>
-    <div class="sc"><div class="lbl">X (multiplier)</div><div class="val">${b8(Qval&0xFF)} (${Qval})</div></div>
-    <div class="sc"><div class="lbl">Product A∥Q[7:1]</div><div class="val">${productFull}</div></div>
-    <div class="sc"><div class="lbl">Result</div><div class="val" style="font-family:var(--font-sans)">${finalInt} ${ok?'<span style="color:var(--color-text-success)">✓</span>':'<span style="color:var(--color-text-danger)">⚠ expected '+exact+'</span>'}</div></div>
-  </div>`;
+  html+=`</tbody></table></div>
+  <div class="summary">
+    <div class="sc"><div class="lbl">M (Y)</div><div class="val">${b8(M)} <span style="color:var(--muted)">(${Mval})</span></div></div>
+    <div class="sc"><div class="lbl">X</div><div class="val">${b8(Qval&0xFF)} <span style="color:var(--muted)">(${Qval})</span></div></div>
+    <div class="sc"><div class="lbl">Product (15-bit)</div><div class="val">${productFull}</div></div>
+    <div class="sc"><div class="lbl">Result</div><div class="val ${ok?'ok':'fail'}">${finalInt} ${ok?'✓':'⚠ expected '+exact}</div></div>
+  </div></div>`;
 
   out.innerHTML=html;
 }
