@@ -1,4 +1,24 @@
+# robots.txt — SpDly Studios Portfolio
+# https://spdly.is-a.dev/robots.txt
+
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /e/
+Disallow: /tools/internal/
+Crawl-delay: 1
 
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0.5
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: AhrefsBot
+Allow: /
+Crawl-delay: 2
+
+Host: https://spdly.is-a.dev
 Sitemap: https://spdly.is-a.dev/sitemap.xml
