@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Number Converter · SpDly Studios</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root[data-theme="light"] {
+      --bg: #f5f3ef;
+      --surface: #ffffff;
+      --border: #e2ddd6;
+      --text: #1a1714;
+      --text-muted: #7a7470;
+      --accent: #c0622a;
+      --accent-soft: #f7ede5;
+      --input-bg: #faf9f7;
+      --shadow: 0 2px 12px rgba(0,0,0,0.07);
+      --badge-bg: #ede9e3;
+    }
+    :root[data-theme="dark"] {
+      --bg: #141210;
+      --surface: #1f1c19;
+      --border: #2e2a26;
+      --text: #f0ece6;
+      --text-muted: #7a7470;
+      --accent: #e07a45;
+      --accent-soft: #2a1e14;
+      --input-bg: #161310;
+      --shadow: 0 2px 12px rgba(0,0,0,0.3);
+      --badge-bg: #2a2620;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Source Sans 3', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 2rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .brand {
+      font-family: 'Lora', serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    nav { display: flex; gap: 1.25rem; align-items: center; }
+    nav a {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    nav a:hover, nav a.active { color: var(--accent); }
+
+    .theme-btn {
+      background: var(--badge-bg);
+      border: none;
+      border-radius: 20px;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.85rem;
+      font-family: 'Source Sans 3', sans-serif;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .theme-btn:hover { color: var(--text); }
+
+    main {
+      flex: 1;
+      max-width: 680px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 2.5rem 1.5rem;
+    }
+
+    h1 {
+      font-family: 'Lora', serif;
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      line-height: 1.3;
+    }
+    .subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 2.25rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.75rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 1.25rem;
+    }
+
+    .card-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      margin-bottom: 0.6rem;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      font-size: 1.1rem;
+      font-family: 'Source Sans 3', sans-serif;
+      background: var(--input-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 0.5rem;
+    }
+    input[type="text"]:focus { border-color: var(--accent); }
+
+    .base-select-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.25rem;
+    }
+
+    .base-btn {
+      background: var(--badge-bg);
+      border: 1.5px solid transparent;
+      border-radius: 8px;
+      padding: 0.4rem 0.9rem;
+      font-size: 0.88rem;
+      font-family: 'Source Sans 3', sans-serif;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      font-weight: 500;
+    }
+    .base-btn:hover { color: var(--text); border-color: var(--border); }
+    .base-btn.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .error {
+      font-size: 0.83rem;
+      color: #d94040;
+      margin-top: 0.25rem;
+      min-height: 1.1em;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .result-box {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: border-color 0.15s;
+      position: relative;
+    }
+    .result-box:hover { border-color: var(--accent); }
+
+    .result-name {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .result-value {
+      font-size: 1.05rem;
+      font-weight: 500;
+      word-break: break-all;
+      line-height: 1.4;
+      color: var(--text);
+    }
+
+    .copy-hint {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+    }
+
+    .copied-toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text);
+      color: var(--bg);
+      padding: 0.5rem 1.2rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .copied-toast.show { opacity: 1; }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="brand" href="https://spdly.is-a.dev">SpDly</a>
+  <nav>
+    <a href="converter.html" class="active">Number Base</a>
+    <a href="ieee754.html">IEEE 754</a>
+    <button class="theme-btn" onclick="toggleTheme()">☀ / ☾</button>
+  </nav>
+</header>
+
+<main>
+  <h1>Number Base Converter</h1>
+  <p class="subtitle">Type a number in any base — see it in all others instantly.</p>
+
+  <div class="card">
+    <div class="card-label">Input</div>
+    <div class="base-select-row" id="baseButtons">
+      <button class="base-btn active" data-base="10" onclick="selectBase(10)">Decimal</button>
+      <button class="base-btn" data-base="2" onclick="selectBase(2)">Binary</button>
+      <button class="base-btn" data-base="16" onclick="selectBase(16)">Hexadecimal</button>
+      <button class="base-btn" data-base="8" onclick="selectBase(8)">Octal</button>
+    </div>
+    <input type="text" id="inputNum" placeholder="Enter a number…" oninput="convert()" />
+    <div class="error" id="errMsg"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Results</div>
+    <div class="results-grid" id="results">
+      <div class="result-box" onclick="copyVal('decVal')">
+        <div class="result-name">Decimal (Base 10)</div>
+        <div class="result-value" id="decVal">—</div>
+        <div class="copy-hint">Click to copy</div>
+      </div>
+      <div class="result-box" onclick="copyVal('binVal')">
+        <div class="result-name">Binary (Base 2)</div>
+        <div class="result-value" id="binVal">—</div>
+        <div class="copy-hint">Click to copy</div>
+      </div>
+      <div class="result-box" onclick="copyVal('hexVal')">
+        <div class="result-name">Hexadecimal (Base 16)</div>
+        <div class="result-value" id="hexVal">—</div>
+        <div class="copy-hint">Click to copy</div>
+      </div>
+      <div class="result-box" onclick="copyVal('octVal')">
+        <div class="result-name">Octal (Base 8)</div>
+        <div class="result-value" id="octVal">—</div>
+        <div class="copy-hint">Click to copy</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">What do the bases mean?</div>
+    <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.7; margin-top:0.4rem;">
+      <strong style="color:var(--text)">Decimal (10)</strong> — everyday numbers using digits 0–9.<br>
+      <strong style="color:var(--text)">Binary (2)</strong> — how computers store data: only 0 and 1.<br>
+      <strong style="color:var(--text)">Hexadecimal (16)</strong> — compact notation used in programming; digits 0–9 and letters A–F.<br>
+      <strong style="color:var(--text)">Octal (8)</strong> — base-8 system using digits 0–7, common in Unix permissions.
+    </p>
+  </div>
+</main>
+
+<div class="copied-toast" id="toast">Copied!</div>
+
+<footer>
+  © SpDly Studios &nbsp;·&nbsp; <a href="https://spdly.is-a.dev">spdly.is-a.dev</a>
+</footer>
+
+<script>
+  let currentBase = 10;
+
+  const validChars = {
+    2:  /^[01]+$/,
+    8:  /^[0-7]+$/,
+    10: /^-?[0-9]+$/,
+    16: /^[0-9a-fA-F]+$/
+  };
+
+  const placeholders = {
+    2:  'e.g. 1010',
+    8:  'e.g. 17',
+    10: 'e.g. 255',
+    16: 'e.g. FF'
+  };
+
+  function selectBase(base) {
+    currentBase = base;
+    document.querySelectorAll('.base-btn').forEach(b => {
+      b.classList.toggle('active', parseInt(b.dataset.base) === base);
+    });
+    document.getElementById('inputNum').placeholder = placeholders[base];
+    document.getElementById('inputNum').value = '';
+    clearResults();
+    document.getElementById('errMsg').textContent = '';
+  }
+
+  function convert() {
+    const raw = document.getElementById('inputNum').value.trim();
+    const err = document.getElementById('errMsg');
+
+    if (!raw) { clearResults(); err.textContent = ''; return; }
+
+    if (!validChars[currentBase].test(raw)) {
+      const baseNames = {2:'binary',8:'octal',10:'decimal',16:'hexadecimal'};
+      err.textContent = `"${raw}" is not a valid ${baseNames[currentBase]} number.`;
+      clearResults(); return;
+    }
+
+    err.textContent = '';
+    const decimal = parseInt(raw, currentBase);
+
+    if (isNaN(decimal)) { err.textContent = 'Could not parse number.'; clearResults(); return; }
+
+    document.getElementById('decVal').textContent = decimal.toString(10);
+    document.getElementById('binVal').textContent = decimal.toString(2);
+    document.getElementById('hexVal').textContent = decimal.toString(16).toUpperCase();
+    document.getElementById('octVal').textContent = decimal.toString(8);
+  }
+
+  function clearResults() {
+    ['decVal','binVal','hexVal','octVal'].forEach(id => {
+      document.getElementById(id).textContent = '—';
+    });
+  }
+
+  function copyVal(id) {
+    const val = document.getElementById(id).textContent;
+    if (val === '—') return;
+    navigator.clipboard.writeText(val).then(() => showToast());
+  }
+
+  function showToast() {
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 1500);
+  }
+
+  function toggleTheme() {
+    const root = document.documentElement;
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('theme', root.dataset.theme);
+  }
+
+  (function() {
+    const saved = localStorage.getItem('theme') ||
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.dataset.theme = saved;
+  })();
+</script>
+</body>
+</html>
