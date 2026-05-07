@@ -624,6 +624,10 @@
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="m22 10-10-8-10 8"/><path d="M6 12v6a6 6 0 0 0 12 0v-6"/></svg>
         Education
       </div>
+      <div class="nav-item" data-panel="tools">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3m6-16h8a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H9m0-4l4 4m4-4l-4 4"/></svg>
+        Tools
+      </div>
       <div class="nav-item" data-panel="presentations">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M2 3h20v13H2zM8 21l4-5 4 5"/></svg>
         Presentations
@@ -687,6 +691,7 @@
             <button class="btn btn-ghost" onclick="nav('experience');setTimeout(()=>openAddExperience(),200)">+ Add Experience</button>
             <button class="btn btn-ghost" onclick="nav('research');setTimeout(()=>openAddResearch(),200)">+ Add Research</button>
             <button class="btn btn-ghost" onclick="nav('education');setTimeout(()=>openAddEducation(),200)">+ Add Education</button>
+            <button class="btn btn-ghost" onclick="nav('tools');setTimeout(()=>openAddTool(),200)">+ Add Tool</button>
             <button class="btn btn-ghost" onclick="nav('skills')">Edit Skills</button>
             <button class="btn btn-ghost" onclick="nav('about')">Edit Hero</button>
           </div>
@@ -766,6 +771,23 @@
         <div class="save-bar">
           <span class="save-bar-hint">Most recent first</span>
           <button class="btn btn-success" onclick="saveEducation()">💾 Save to Firestore</button>
+        </div>
+      </div>
+
+      <!-- ── Tools Panel ── -->
+      <div class="panel" id="panel-tools">
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Tools & Utilities</div><div class="card-sub">Calculators, converters, and utilities organized by domain</div></div>
+            <button class="btn btn-primary" onclick="openAddTool()">+ Add Tool</button>
+          </div>
+          <div id="tools-list">
+            <div style="color:var(--muted);font-size:.85rem">Loading…</div>
+          </div>
+        </div>
+        <div class="save-bar">
+          <span class="save-bar-hint">Tools are grouped by domain on the frontend</span>
+          <button class="btn btn-success" onclick="saveTools()">💾 Save to Firestore</button>
         </div>
       </div>
 
@@ -932,7 +954,7 @@
    ═══════════════════════════════════════════════════════════ */
 
 let db, auth, currentUser;
-let appData = { projects:[], experience:[], research:[], education:[], presentations:{presentations:[],training:[]}, skills:[], about:{}, config:{}, contact:{}, forms:[] };
+let appData = { projects:[], experience:[], research:[], education:[], tools:[], presentations:{presentations:[],training:[]}, skills:[], about:{}, config:{}, contact:{}, forms:[] };
 let modalCallback = null;
 
 /* ── Firebase init ──────────────────────────────────────── */
@@ -994,7 +1016,7 @@ function nav(panelId) {
   document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + panelId));
   const labels = {
     dashboard:'Dashboard', projects:'Projects', experience:'Experience',
-    research:'Research', education:'Education', presentations:'Presentations & Training',
+    research:'Research', education:'Education', tools:'Tools & Utilities', presentations:'Presentations & Training',
     skills:'Skills', about:'About & Hero', contact:'Contact', forms:'Form Submissions'
   };
   document.getElementById('panel-title').textContent = labels[panelId] || panelId;
@@ -1033,9 +1055,9 @@ async function fsSet(section, data) {
 
 /* ── Load all data ──────────────────────────────────────── */
 async function loadAllData() {
-  const [proj, exp, res, edu, pres, skl, abt, cfg, ct] = await Promise.all([
+  const [proj, exp, res, edu, tools, pres, skl, abt, cfg, ct] = await Promise.all([
     fsGet('projects'), fsGet('experience'), fsGet('research'),
-    fsGet('education'), fsGet('presentations'), fsGet('skills'),
+    fsGet('education'), fsGet('tools'), fsGet('presentations'), fsGet('skills'),
     fsGet('about'), fsGet('config'), fsGet('contact')
   ]);
 
@@ -1044,6 +1066,7 @@ async function loadAllData() {
   appData.experience   = (exp  && exp.items)   ? exp.items   : getStaticExperience();
   appData.research     = (res  && res.items)   ? res.items   : getStaticResearch();
   appData.education    = (edu  && edu.items)   ? edu.items   : getStaticEducation();
+  appData.tools        = (tools && tools.items) ? tools.items : getStaticTools();
   appData.presentations= pres || getStaticPresentations();
   appData.skills       = (skl  && skl.groups)  ? skl.groups  : getStaticSkills();
   appData.about        = abt  || getStaticAbout();
@@ -1059,6 +1082,7 @@ function renderAll() {
   renderExperience();
   renderResearch();
   renderEducation();
+  renderTools();
   renderPresentations();
   renderSkills();
   renderAbout();
@@ -1373,6 +1397,131 @@ function editEducation(idx) {
 
 function deleteEducation(i) { if (!confirm('Delete?')) return; appData.education.splice(i,1); renderEducation(); }
 async function saveEducation() { await fsSet('education', { items: appData.education }); showToast('Education saved!', 'success'); updateDashboardStats(); }
+
+/* ════════════════════════════════════════════════
+   TOOLS & UTILITIES
+   ════════════════════════════════════════════════ */
+function renderTools() {
+  const list = document.getElementById('tools-list');
+  list.innerHTML = '';
+  if (!appData.tools.length) { list.innerHTML = '<p style="color:var(--muted)">No tools yet.</p>'; return; }
+  appData.tools.forEach((t, i) => {
+    const div = document.createElement('div');
+    div.className = 'list-item';
+    div.innerHTML = `
+      <div class="list-item-body">
+        <div class="list-item-title">${t.title}</div>
+        <div class="list-item-sub">${t.domain || 'General'} · ${t.field || 'Utility'}</div>
+        <div class="list-item-tags">
+          ${t.icon ? '<span class="tag-sm">' + t.icon + '</span>' : ''}
+          ${(t.tags||[]).slice(0,2).map(tag=>`<span class="tag-sm">${tag}</span>`).join('')}
+        </div>
+      </div>
+      <div class="list-item-actions">
+        <button class="btn btn-ghost btn-sm" onclick="editTool(${i})">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteTool(${i})">Delete</button>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+function openAddTool() { openToolModal(-1); }
+function editTool(i)   { openToolModal(i); }
+
+function openToolModal(idx) {
+  const isNew = idx === -1;
+  const t = isNew ? {
+    id:'', title:'', description:'', icon:'⚙️', domain:'', field:'',
+    url:'', isExternal:false, tags:[]
+  } : JSON.parse(JSON.stringify(appData.tools[idx]));
+
+  document.getElementById('modal-title').textContent = isNew ? 'Add Tool' : 'Edit Tool';
+  document.getElementById('modal-body').innerHTML = `
+    <div class="field"><label>Tool ID (slug, no spaces)</label><input id="tf-id" value="${esc(t.id)}" placeholder="my-tool" /></div>
+    <div class="field"><label>Title</label><input id="tf-title" value="${esc(t.title)}" /></div>
+    <div class="field"><label>Description</label><textarea id="tf-desc">${esc(t.description)}</textarea></div>
+    <div class="fields-row">
+      <div class="field"><label>Icon (emoji or text)</label><input id="tf-icon" value="${esc(t.icon)}" placeholder="⚙️" /></div>
+      <div class="field"><label>Domain</label><input id="tf-domain" value="${esc(t.domain)}" placeholder="Signal Processing" /></div>
+    </div>
+    <div class="fields-row">
+      <div class="field"><label>Field/Category</label><input id="tf-field" value="${esc(t.field)}" placeholder="DSP" /></div>
+      <div class="field"><label>URL</label><input id="tf-url" value="${esc(t.url)}" placeholder="https://… or /tools/my-tool.html" /></div>
+    </div>
+    <div class="field">
+      <label>External Link?</label>
+      <input type="checkbox" id="tf-external" ${t.isExternal?'checked':''} style="margin-top:.35rem" />
+      <span style="font-size:.75rem;color:var(--muted);margin-left:.5rem">Check if link goes outside your site</span>
+    </div>
+    <div class="field"><label>Tags (comma-separated)</label><div id="tf-tags" class="tag-input-wrap"></div></div>`;
+  
+  initTagInput('tf-tags', t.tags || []);
+  document.getElementById('modal-save-btn').textContent = isNew ? 'Add Tool' : 'Save Changes';
+
+  modalCallback = () => {
+    const updated = readToolForm();
+    if (!updated.title) { showToast('Title is required', 'error'); return false; }
+    if (isNew) appData.tools.push(updated);
+    else appData.tools[idx] = updated;
+    renderTools();
+    return true;
+  };
+  openModal();
+}
+
+function readToolForm() {
+  return {
+    id:           v('tf-id').replace(/\s+/g,'-').toLowerCase(),
+    title:        v('tf-title'),
+    description:  v('tf-desc'),
+    icon:         v('tf-icon'),
+    domain:       v('tf-domain'),
+    field:        v('tf-field'),
+    url:          v('tf-url'),
+    isExternal:   document.getElementById('tf-external').checked,
+    tags:         getTagInputValue('tf-tags'),
+  };
+}
+
+function deleteTool(i) {
+  if (!confirm('Delete this tool?')) return;
+  appData.tools.splice(i, 1);
+  renderTools();
+  showToast('Tool removed (unsaved)', 'info');
+}
+
+async function saveTools() {
+  await fsSet('tools', { items: appData.tools });
+  showToast('Tools saved!', 'success');
+  updateDashboardStats();
+}
+
+function getStaticTools() {
+  return [
+    {
+      id: 'robertson-multiplier',
+      title: 'Robertson\'s Multiplier',
+      description: 'Calculate multiplier values for Robertson\'s method in signal processing',
+      icon: '🧮',
+      domain: 'Signal Processing',
+      field: 'DSP',
+      url: 'tools/robertsons-multiplier.html',
+      isExternal: false,
+      tags: ['Calculator', 'Math']
+    },
+    {
+      id: 'pipeline-hazard',
+      title: 'Pipeline Hazard Analyzer',
+      description: 'Analyze and visualize pipeline hazards in processor architecture',
+      icon: '⚡',
+      domain: 'Computer Architecture',
+      field: 'Design',
+      url: 'tools/pipeline-hazard-analysis.html',
+      isExternal: false,
+      tags: ['Analysis', 'CPU Design']
+    }
+  ];
+}
 
 /* ════════════════════════════════════════════════
    PRESENTATIONS & TRAINING

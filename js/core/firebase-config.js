@@ -20,6 +20,7 @@ const DB_PATHS = {
   SKILLS:       'portfolio/skills',        // skill groups
   CONTACT:      'portfolio/contact',       // contact links
   ABOUT:        'portfolio/about',         // about section text + stats
+  TOOLS:        'portfolio/tools',         // tools & utilities organized by domain/field
 };
 
 if (typeof module !== 'undefined' && module.exports) {
