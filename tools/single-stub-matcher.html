@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Single Stub Matcher — SpDly Studios</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Nunito:wght@300;400;500;600;700&family=Fira+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f4f1eb;
+  --surface: #ffffff;
+  --surface2: #ede9e1;
+  --border: #d8d3c8;
+  --text: #1c1a17;
+  --text-muted: #72695e;
+  --accent: #1a6b4a;
+  --accent2: #2e86ab;
+  --accent3: #e07b39;
+  --accent-soft: #e8f4f0;
+  --accent2-soft: #e3f2f8;
+  --red: #c0392b;
+  --purple: #7d3c98;
+  --shadow: 0 2px 14px rgba(0,0,0,0.07);
+  --shadow-lg: 0 8px 36px rgba(0,0,0,0.11);
+  --radius: 14px;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Nunito', sans-serif;
+  --font-mono: 'Fira Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-body); background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+
+/* ── Header ── */
+header {
+  background: var(--surface);
+  border-bottom: 2px solid var(--border);
+  padding: 16px 36px;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: var(--shadow);
+}
+.logo {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: var(--accent); display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 20px; color: #fff; font-weight: 700;
+  flex-shrink: 0; letter-spacing: -1px;
+}
+header h1 { font-family: var(--font-display); font-size: 20px; color: var(--text); font-weight: 500; letter-spacing: -0.2px; }
+header p { font-size: 12.5px; color: var(--text-muted); margin-top: 1px; }
+.status { margin-left: auto; }
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+}
+.badge-idle { background: var(--surface2); color: var(--text-muted); }
+.badge-ok { background: #e8f4f0; color: var(--accent); }
+.badge-warn { background: #fef3e2; color: #c07a00; }
+
+/* ── Layout ── */
+.layout {
+  flex: 1; display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 20px; padding: 22px 24px;
+  max-width: 1380px; width: 100%; margin: 0 auto;
+  align-items: start;
+}
+.sidebar { display: flex; flex-direction: column; gap: 14px; }
+
+/* ── Cards ── */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px 20px; box-shadow: var(--shadow);
+}
+.card-title {
+  font-family: var(--font-display); font-size: 14.5px; font-weight: 500;
+  color: var(--text); margin-bottom: 14px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 9px;
+}
+.pill {
+  width: 24px; height: 24px; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; flex-shrink: 0;
+}
+.pill-green { background: var(--accent-soft); color: var(--accent); }
+.pill-blue { background: var(--accent2-soft); color: var(--accent2); }
+.pill-orange { background: #fef3e2; color: var(--accent3); }
+
+/* ── Inputs ── */
+label { display: block; font-size: 11.5px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
+.input-group { margin-bottom: 13px; }
+.input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+input[type="number"], select {
+  width: 100%; padding: 9px 11px;
+  border: 1.5px solid var(--border); border-radius: 9px;
+  background: var(--bg); color: var(--text);
+  font-family: var(--font-body); font-size: 14px;
+  outline: none; transition: border-color .15s, box-shadow .15s;
+  appearance: none;
+}
+input:focus, select:focus { border-color: var(--accent2); box-shadow: 0 0 0 3px rgba(46,134,171,0.12); }
+.hint { font-size: 11px; color: var(--text-muted); margin-top: 3px; font-style: italic; }
+
+/* ── Radio toggle (stub type) ── */
+.stub-toggle { display: flex; border: 1.5px solid var(--border); border-radius: 9px; overflow: hidden; margin-bottom: 13px; }
+.stub-toggle label {
+  flex: 1; text-align: center; padding: 8px 4px;
+  cursor: pointer; font-size: 12.5px; font-weight: 600;
+  text-transform: none; letter-spacing: 0;
+  color: var(--text-muted); background: var(--bg);
+  transition: background .12s, color .12s;
+  border: none; margin: 0;
+}
+.stub-toggle input[type="radio"] { display: none; }
+.stub-toggle input:checked + label { background: var(--accent); color: #fff; }
+
+/* ── Buttons ── */
+.btn { width: 100%; padding: 11px; border: none; border-radius: 9px; font-family: var(--font-body); font-size: 14px; font-weight: 700; cursor: pointer; transition: all .15s; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #155c3d; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(26,107,74,0.3); }
+.btn-secondary { background: var(--surface2); color: var(--text-muted); margin-top: 8px; font-weight: 500; font-size: 13px; }
+.btn-secondary:hover { background: var(--border); color: var(--text); }
+
+/* ── Chart ── */
+.chart-wrap {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  overflow: hidden; display: flex; flex-direction: column;
+}
+.chart-toolbar {
+  padding: 9px 14px; border-bottom: 1px solid var(--border);
+  background: var(--surface2); display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+}
+.tbtn {
+  padding: 5px 12px; border: 1.5px solid var(--border); border-radius: 7px;
+  background: var(--surface); color: var(--text); font-family: var(--font-body);
+  font-size: 12px; font-weight: 600; cursor: pointer; transition: all .12s;
+  display: flex; align-items: center; gap: 4px;
+}
+.tbtn:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.tbtn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.zoom-hint { font-size: 11px; color: var(--text-muted); margin-left: auto; font-style: italic; }
+.chart-body { position: relative; overflow: hidden; min-height: 560px; cursor: grab; }
+.chart-body.panning { cursor: grabbing; }
+#smithSvg { width: 100%; height: 100%; display: block; }
+
+.legend-bar {
+  padding: 9px 14px; border-top: 1px solid var(--border);
+  background: var(--surface2); display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
+}
+.leg { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--text-muted); }
+.ldot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.ldash { width: 18px; height: 2px; flex-shrink: 0; border-top: 2px dashed; }
+
+/* ── Solution tabs ── */
+.sol-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+.sol-tab {
+  padding: 6px 16px; border: 1.5px solid var(--border); border-radius: 8px;
+  background: var(--surface2); color: var(--text-muted); font-family: var(--font-body);
+  font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all .12s;
+}
+.sol-tab.active { background: var(--accent2); color: #fff; border-color: var(--accent2); }
+
+/* ── Results ── */
+.results-area { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 14px; }
+.results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 14px; }
+
+table.rtable { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.rtable thead th {
+  background: var(--surface2); padding: 7px 12px; text-align: left;
+  font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.5px; color: var(--text-muted); border-bottom: 1px solid var(--border);
+}
+table.rtable tbody td { padding: 7px 12px; border-bottom: 1px solid var(--border); }
+table.rtable tbody td:first-child { color: var(--text-muted); font-size: 12px; font-weight: 500; }
+table.rtable tbody td:last-child { font-family: var(--font-mono); font-size: 12px; color: var(--accent2); font-weight: 500; }
+table.rtable tbody td.highlight { color: var(--accent); font-weight: 700; }
+table.rtable tbody tr:hover { background: var(--surface2); }
+table.rtable tbody tr:last-child td { border-bottom: none; }
+
+.solution-banner {
+  background: var(--accent-soft); border: 1.5px solid #9ed4c1;
+  border-radius: 10px; padding: 12px 16px;
+  display: flex; flex-wrap: wrap; gap: 20px; align-items: center;
+  font-size: 13px;
+}
+.sol-kv { display: flex; flex-direction: column; gap: 2px; }
+.sol-kv span:first-child { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-muted); font-weight: 700; }
+.sol-kv span:last-child { font-family: var(--font-mono); font-size: 15px; color: var(--accent); font-weight: 500; }
+
+.solution-banner.sol2 { background: var(--accent2-soft); border-color: #91c8e0; }
+.solution-banner.sol2 .sol-kv span:last-child { color: var(--accent2); }
+
+footer {
+  background: var(--surface); border-top: 1.5px solid var(--border);
+  padding: 14px 36px; text-align: center;
+  font-size: 12px; color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+}
+footer a { color: var(--accent2); text-decoration: none; font-weight: 600; }
+footer a:hover { text-decoration: underline; }
+.sep { color: var(--border); }
+
+@media(max-width:900px){
+  .layout { grid-template-columns: 1fr; }
+  .results-area { grid-column: 1; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">S</div>
+  <div>
+    <h1>Single Stub Matcher</h1>
+    <p>Smith Chart · Transmission Line Design Tool</p>
+  </div>
+  <div class="status">
+    <span class="badge badge-idle" id="badge">● Ready</span>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- ── Sidebar ── -->
+  <div class="sidebar">
+    <div class="card">
+      <div class="card-title"><div class="pill pill-green">⚡</div>Load & Line</div>
+
+      <div class="input-group">
+        <label>Load Impedance Z<sub>L</sub></label>
+        <div class="input-row">
+          <div>
+            <input type="number" id="zlR" placeholder="75" value="75">
+            <div class="hint">Real (Ω)</div>
+          </div>
+          <div>
+            <input type="number" id="zlI" placeholder="30" value="30">
+            <div class="hint">Imaginary (Ω)</div>
+          </div>
+        </div>
+        <div class="hint">Z<sub>L</sub> = R + jX</div>
+      </div>
+
+      <div class="input-group">
+        <label>Characteristic Impedance Z₀</label>
+        <input type="number" id="z0" placeholder="50" value="50" min="0.001">
+        <div class="hint">Typically 50 Ω</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><div class="pill pill-blue">⊏</div>Stub Configuration</div>
+
+      <div class="input-group">
+        <label>Stub Type</label>
+        <div class="stub-toggle">
+          <input type="radio" name="stubEnd" id="scEnd" value="sc" checked>
+          <label for="scEnd">Short Circuit</label>
+          <input type="radio" name="stubEnd" id="ocEnd" value="oc">
+          <label for="ocEnd">Open Circuit</label>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Stub Topology</label>
+        <div class="stub-toggle">
+          <input type="radio" name="stubPos" id="shunt" value="shunt" checked>
+          <label for="shunt">Shunt</label>
+          <input type="radio" name="stubPos" id="series" value="series">
+          <label for="series">Series</label>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Show Solution</label>
+        <select id="solSelect">
+          <option value="1">Solution 1</option>
+          <option value="2">Solution 2</option>
+          <option value="both">Both</option>
+        </select>
+      </div>
+
+      <button class="btn btn-primary" onclick="solve()">Design Stub Matching</button>
+      <button class="btn btn-secondary" onclick="resetAll()">↺ Clear & Reset</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><div class="pill pill-orange">?</div>Quick Guide</div>
+      <div style="font-size:12px;color:var(--text-muted);line-height:1.75;">
+        <p>① Enter Z<sub>L</sub> and Z₀</p>
+        <p>② Choose stub end (SC/OC) and topology</p>
+        <p>③ Click <em>Design Stub Matching</em></p>
+        <p>④ Two solutions appear — both are valid</p>
+        <br>
+        <p><strong>d</strong> = distance from load to stub</p>
+        <p><strong>ℓ</strong> = length of the stub</p>
+        <p>Both expressed in wavelengths (λ)</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Chart ── -->
+  <div class="chart-wrap">
+    <div class="chart-toolbar">
+      <button class="tbtn active" id="btnPan" onclick="setTool('pan')">✋ Pan</button>
+      <button class="tbtn" onclick="zoomBy(1.3)">＋ Zoom In</button>
+      <button class="tbtn" onclick="zoomBy(0.77)">－ Zoom Out</button>
+      <button class="tbtn" onclick="resetView()">⊙ Fit</button>
+      <span class="zoom-hint">Scroll to zoom · Drag to pan</span>
+    </div>
+
+    <div class="chart-body" id="chartBody">
+      <svg id="smithSvg" viewBox="0 0 720 720" preserveAspectRatio="xMidYMid meet">
+        <g id="cg" transform="translate(360,360)"></g>
+      </svg>
+    </div>
+
+    <div class="legend-bar">
+      <div class="leg"><div class="ldot" style="background:#c0392b"></div> Load Z<sub>L</sub></div>
+      <div class="leg"><div class="ldash" style="border-color:#c0392b"></div> |Γ| circle</div>
+      <div class="leg"><div class="ldot" style="background:#1a6b4a"></div> Sol 1 stub point</div>
+      <div class="leg"><div class="ldot" style="background:#2e86ab"></div> Sol 2 stub point</div>
+      <div class="leg"><div class="ldot" style="background:#e07b39"></div> Stub tip</div>
+      <div class="leg"><div class="ldot" style="background:#2980b9;opacity:.4;border:2px solid #2980b9;border-radius:50%"></div> Unit conductance circle</div>
+    </div>
+  </div>
+
+  <!-- ── Results ── -->
+  <div class="results-area" id="resultsArea" style="display:none;">
+
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <span style="font-family:var(--font-display);font-size:17px;font-weight:500;">Matching Solutions</span>
+      <span style="font-size:12px;color:var(--text-muted)">— both solutions produce matched input impedance Z<sub>in</sub> = Z₀ after stub insertion</span>
+    </div>
+
+    <!-- Banner summaries -->
+    <div id="bannerSol1" class="solution-banner">
+      <div class="sol-kv"><span>Solution 1 — Stub Distance d₁</span><span id="s1d">—</span></div>
+      <div class="sol-kv"><span>Stub Length ℓ₁</span><span id="s1l">—</span></div>
+      <div class="sol-kv"><span>Stub Susceptance b_stub₁</span><span id="s1b">—</span></div>
+      <div class="sol-kv"><span>Matched Z<sub>in</sub></span><span id="s1zin">—</span></div>
+    </div>
+    <div id="bannerSol2" class="solution-banner sol2">
+      <div class="sol-kv"><span>Solution 2 — Stub Distance d₂</span><span id="s2d">—</span></div>
+      <div class="sol-kv"><span>Stub Length ℓ₂</span><span id="s2l">—</span></div>
+      <div class="sol-kv"><span>Stub Susceptance b_stub₂</span><span id="s2b">—</span></div>
+      <div class="sol-kv"><span>Matched Z<sub>in</sub></span><span id="s2zin">—</span></div>
+    </div>
+    <!-- Issue 10: complementary relationship note -->
+    <div id="complementaryNote" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--text-muted);display:none;">
+      <strong style="color:var(--text);">Complementary Solutions:</strong>
+      The two stub lengths are complementary — their electrical lengths sum to 0.5λ (i.e., ℓ₁ + ℓ₂ = 0.5λ). Either solution is physically valid; Solution 1 typically uses a shorter stub, Solution 2 is its complement.
+      <span id="complementaryCheck" style="font-family:var(--font-mono);color:var(--accent);margin-left:6px;"></span>
+    </div>
+
+    <div class="results-grid">
+      <div class="card">
+        <div class="card-title"><div class="pill pill-green">Γ</div>Reflection & VSWR (Before Matching)</div>
+        <table class="rtable"><thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+        <tbody id="tRefl"></tbody></table>
+      </div>
+      <div class="card">
+        <div class="card-title"><div class="pill pill-blue">Z</div>Normalised Values & Conventions</div>
+        <table class="rtable"><thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+        <tbody id="tNorm"></tbody></table>
+      </div>
+      <div class="card">
+        <div class="card-title"><div class="pill pill-green">1</div>Solution 1 Details</div>
+        <table class="rtable"><thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+        <tbody id="tSol1"></tbody></table>
+      </div>
+      <div class="card">
+        <div class="card-title"><div class="pill pill-blue">2</div>Solution 2 Details</div>
+        <table class="rtable"><thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+        <tbody id="tSol2"></tbody></table>
+      </div>
+      <!-- Issue 8: Verification section -->
+      <div class="card" style="border-color:#9ed4c1;">
+        <div class="card-title"><div class="pill pill-green">✓</div>Verification — Solution 1 After Matching</div>
+        <table class="rtable"><thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+        <tbody id="tVerify1"></tbody></table>
+      </div>
+      <div class="card" style="border-color:#91c8e0;">
+        <div class="card-title"><div class="pill pill-blue">✓</div>Verification — Solution 2 After Matching</div>
+        <table class="rtable"><thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+        <tbody id="tVerify2"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+</div><!-- .layout -->
+
+<footer>
+  <span>© SpDly Studios</span>
+  <span class="sep">|</span>
+  <a href="https://spdly.is-a.dev" target="_blank" rel="noopener">spdly.is-a.dev</a>
+  <span class="sep">|</span>
+  <span>Single Stub Matcher v1.0</span>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  Complex Math
+// ═══════════════════════════════════════════════════════
+const C = {
+  add: (a,b)=>({r:a.r+b.r, i:a.i+b.i}),
+  sub: (a,b)=>({r:a.r-b.r, i:a.i-b.i}),
+  mul: (a,b)=>({r:a.r*b.r-a.i*b.i, i:a.r*b.i+a.i*b.r}),
+  div: (a,b)=>{ const d=b.r*b.r+b.i*b.i; return {r:(a.r*b.r+a.i*b.i)/d, i:(a.i*b.r-a.r*b.i)/d}; },
+  abs: a=>Math.sqrt(a.r*a.r+a.i*a.i),
+  arg: a=>Math.atan2(a.i,a.r),
+  conj: a=>({r:a.r,i:-a.i}),
+  fromPolar: (r,t)=>({r:r*Math.cos(t),i:r*Math.sin(t)}),
+};
+
+function fmt(v,d=4){
+  if(!isFinite(v)) return '∞';
+  if(Math.abs(v)<1e-9) return '0';
+  return parseFloat(v.toPrecision(d)).toString();
+}
+function fmtC(c,u=''){
+  return `${fmt(c.r)} ${c.i>=0?'+':'−'} j${fmt(Math.abs(c.i))}${u?' '+u:''}`;
+}
+function r2d(r){ return r*180/Math.PI; }
+function d2r(d){ return d*Math.PI/180; }
+function mod(x,m){ return ((x%m)+m)%m; }
+
+// ═══════════════════════════════════════════════════════
+//  SVG helpers
+// ═══════════════════════════════════════════════════════
+const NS='http://www.w3.org/2000/svg';
+function el(tag,attrs,txt){
+  const e=document.createElementNS(NS,tag);
+  for(const[k,v]of Object.entries(attrs)) e.setAttribute(k,v);
+  if(txt!==undefined) e.textContent=txt;
+  return e;
+}
+
+// ═══════════════════════════════════════════════════════
+//  Pan / Zoom
+// ═══════════════════════════════════════════════════════
+const CX=360, CY=360; // svg center
+let vx=0, vy=0, vs=1, isPan=false, sx0,sy0;
+const body=document.getElementById('chartBody');
+const cg=document.getElementById('cg');
+
+function applyT(){ cg.setAttribute('transform',`translate(${CX+vx},${CY+vy}) scale(${vs})`); }
+body.addEventListener('mousedown',e=>{ if(e.button!==0)return; isPan=true; sx0=e.clientX-vx; sy0=e.clientY-vy; body.classList.add('panning'); });
+window.addEventListener('mousemove',e=>{ if(!isPan)return; vx=e.clientX-sx0; vy=e.clientY-sy0; applyT(); });
+window.addEventListener('mouseup',()=>{ isPan=false; body.classList.remove('panning'); });
+body.addEventListener('wheel',e=>{ e.preventDefault(); const f=e.deltaY<0?1.12:0.89; vs=Math.max(0.25,Math.min(12,vs*f)); applyT(); },{passive:false});
+function zoomBy(f){ vs=Math.max(0.25,Math.min(12,vs*f)); applyT(); }
+function resetView(){ vx=0;vy=0;vs=1; applyT(); }
+function setTool(t){ document.getElementById('btnPan').classList.toggle('active',t==='pan'); }
+
+// ═══════════════════════════════════════════════════════
+//  Smith Chart Drawing
+// ═══════════════════════════════════════════════════════
+const R=290; // chart radius
+
+function drawBase(){
+  while(cg.firstChild) cg.removeChild(cg.firstChild);
+
+  // defs + clip
+  const defs=el('defs',{});
+  const cp=el('clipPath',{id:'sc'});
+  cp.appendChild(el('circle',{cx:0,cy:0,r:R}));
+  defs.appendChild(cp);
+  cg.appendChild(defs);
+
+  // background
+  cg.appendChild(el('circle',{cx:0,cy:0,r:R,fill:'#fefefe',stroke:'#9e9890','stroke-width':2}));
+
+  // constant resistance circles
+  [0.2,0.5,1,2,5].forEach(rv=>{
+    const cx=R*rv/(1+rv), r2=R/(1+rv);
+    cg.appendChild(el('circle',{cx,cy:0,r:r2,fill:'none',stroke:rv===1?'#b5b0aa':'#d8d3c8','stroke-width':rv===1?1.5:0.9}));
+  });
+
+  // constant reactance arcs
+  [0.2,0.5,1,2,5].forEach(xv=>{
+    [-xv,xv].forEach(x=>{
+      const cy2=R/x, rArc=Math.abs(R/x);
+      const pts=[];
+      for(let a=-Math.PI;a<=Math.PI;a+=0.018){
+        const px=R+rArc*Math.cos(a), py=cy2+rArc*Math.sin(a);
+        if(px*px+py*py<=R*R+1) pts.push([px,py]);
+      }
+      if(pts.length>1){
+        let d=`M${pts[0][0]},${pts[0][1]}`;
+        pts.slice(1).forEach(p=>d+=` L${p[0]},${p[1]}`);
+        cg.appendChild(el('path',{d,fill:'none',stroke:'#cdc9c3','stroke-width':'0.85','clip-path':'url(#sc)'}));
+      }
+    });
+  });
+
+  // unit conductance circle (g=1): center at (-R/2,0), radius R/2
+  // This is the target circle: stub junction must land on g=1
+  cg.appendChild(el('circle',{cx:-R/2,cy:0,r:R/2,fill:'none',stroke:'#2980b9','stroke-width':1.4,'stroke-dasharray':'5,4',opacity:'0.65'}));
+  // Label the g=1 circle directly on chart (issue 7)
+  cg.appendChild(el('text',{x:-R/2-18,y:-R/2-6,fill:'#2980b9','font-size':'9.5','font-family':'Nunito,sans-serif','font-weight':'700','opacity':'0.85'},'g=1'));
+  cg.appendChild(el('text',{x:-R/2-18,y:-R/2+5,fill:'#2980b9','font-size':'8.5','font-family':'Nunito,sans-serif','opacity':'0.7'},'(target)'));
+
+  // axes
+  cg.appendChild(el('line',{x1:-R,y1:0,x2:R,y2:0,stroke:'#9e9890','stroke-width':1.2}));
+
+  // outer ticks
+  for(let d2=0;d2<360;d2+=5){
+    const rad=d2r(d2), inner=d2%10===0?R-12:R-7;
+    cg.appendChild(el('line',{
+      x1:R*Math.cos(rad),y1:R*Math.sin(rad),
+      x2:inner*Math.cos(rad),y2:inner*Math.sin(rad),
+      stroke:'#b5b0aa','stroke-width':d2%10===0?1.1:0.6
+    }));
+  }
+
+  // Issue 5: CW direction arrow to indicate "toward generator" rotation
+  // Draw a small curved arrow at top of chart showing clockwise = WTG
+  {
+    const arrowR = R + 22;
+    // Arc from 80° to 100° (top of chart), clockwise in math = CW on screen
+    const a1=d2r(100), a2=d2r(80);
+    const ax1=arrowR*Math.cos(a1), ay1=-arrowR*Math.sin(a1);
+    const ax2=arrowR*Math.cos(a2), ay2=-arrowR*Math.sin(a2);
+    cg.appendChild(el('path',{d:`M${ax1},${ay1} A${arrowR},${arrowR},0,0,0,${ax2},${ay2}`,
+      fill:'none',stroke:'#8c8880','stroke-width':'1.2'}));
+    // Arrowhead at a2 end
+    const tang=d2r(80-90); // tangent direction at a2 (CW)
+    const hx=ax2+5*Math.cos(tang+d2r(150)), hy=ay2+5*Math.sin(tang+d2r(150));
+    const hx2=ax2+5*Math.cos(tang+d2r(210)), hy2=ay2+5*Math.sin(tang+d2r(210));
+    cg.appendChild(el('polygon',{points:`${ax2},${ay2} ${hx},${hy} ${hx2},${hy2}`,fill:'#8c8880'}));
+    cg.appendChild(el('text',{x:ax2+6,y:ay2+4,fill:'#8c8880','font-size':'8','font-family':'Nunito,sans-serif'},'WTG →'));
+  }
+
+  // r labels
+  [[0,'0'],[0.5,'0.5'],[1,'1'],[2,'2'],[5,'5']].forEach(([rv,lbl])=>{
+    const cx=R*rv/(1+rv), r2=R/(1+rv);
+    cg.appendChild(el('text',{x:cx+r2+2,y:9,fill:'#9e9890','font-size':'9','font-family':'Nunito,sans-serif'},lbl));
+  });
+
+  // center
+  cg.appendChild(el('circle',{cx:0,cy:0,r:4.5,fill:'#888'}));
+  cg.appendChild(el('text',{x:7,y:-6,fill:'#888','font-size':'10','font-family':'Nunito,sans-serif','font-weight':'700'},'Z₀'));
+
+  // border
+  cg.appendChild(el('circle',{cx:0,cy:0,r:R,fill:'none',stroke:'#8c8880','stroke-width':1.8}));
+}
+
+// Convert normalised impedance → SVG coords
+// Γ = (zn-1)/(zn+1); sx=Γ.r*R, sy=-Γ.i*R
+function znToSVG(zn){
+  const g=C.div(C.sub(zn,{r:1,i:0}),C.add(zn,{r:1,i:0}));
+  return {x:g.r*R, y:-g.i*R, gamma:g};
+}
+
+// Draw arc along the |Γ| circle from angle a1 to a2 (radians, CCW in math = CW in SVG)
+function arcPath(gammaAbs, a1, a2){
+  // SVG coords: x = |Γ|R cos(a), y = -|Γ|R sin(a)  (y flipped)
+  const rr=gammaAbs*R;
+  // In SVG the arc goes from a1 to a2 in math coords → need large-arc flag
+  // Sweep direction: math CCW = SVG CW → sweep-flag=0
+  const x1=rr*Math.cos(a1), y1=-rr*Math.sin(a1);
+  const x2=rr*Math.cos(a2), y2=-rr*Math.sin(a2);
+  let da=mod(a2-a1, 2*Math.PI);
+  const large=da>Math.PI?1:0;
+  return `M${x1},${y1} A${rr},${rr},0,${large},0,${x2},${y2}`;
+}
+
+// ═══════════════════════════════════════════════════════
+//  Single Stub Matching Math
+// ═══════════════════════════════════════════════════════
+function computeStubMatch(ZLr, ZLi, Z0val, stubEnd, topology){
+  const ZL={r:ZLr, i:ZLi}, Z0={r:Z0val,i:0};
+  const zn=C.div(ZL,Z0);  // normalised load impedance
+  const yn=C.div({r:1,i:0},zn); // normalised load admittance
+
+  // Γ_L
+  const gammaL=C.div(C.sub(zn,{r:1,i:0}),C.add(zn,{r:1,i:0}));
+  const gammaAbs=C.abs(gammaL);
+  const gammaAngle=C.arg(gammaL);
+
+  // For SHUNT stub: move toward generator until Re(y_d)=1
+  // y_d(d) = y(d) at distance d from load along line
+  // Γ(d) = Γ_L * e^{-j2βd},  β=2π/λ → βd = 2πd/λ
+  // |Γ(d)|=|Γ_L|, angle = gammaAngle - 2*(2π/λ)*d  but we work in normalised d=d/λ
+  // We need Re(y_d)=1:
+  //   y_d = (1-Γ(d))/(1+Γ(d))  ... admittance from Γ
+  //   Let Γ_d = |Γ|e^{jθ_d}
+  //   Re(y_d) = (1-|Γ|²)/(1+2|Γ|cosθ_d+|Γ|²) = 1
+  //   → |Γ|² - 2|Γ|cosθ_d = 0 → cosθ_d = |Γ|/2 ... wait, let's do properly:
+  //   Re(y_d)=1 → (1-|Γ|²) = (1+|Γ|²+2|Γ|cosθ_d)
+  //            → -2|Γ|² = 2|Γ|cosθ_d  → cosθ_d = -|Γ|
+  //   Two solutions: θ_d = ±acos(-|Γ|)
+  
+  const cosT = -gammaAbs;
+  if(Math.abs(cosT)>1) return null; // already matched
+  const thetaD1 = Math.acos(cosT);  // in (0,π)
+  const thetaD2 = -thetaD1;          // in (-π,0)
+
+  // d = (gammaAngle - theta_d) / (4π)  [in wavelengths], mod 0.5
+  function calcD(thetaD){
+    let d = (gammaAngle - thetaD) / (4*Math.PI);
+    d = mod(d, 0.5);
+    return d;
+  }
+
+  const d1 = calcD(thetaD1);
+  const d2 = calcD(thetaD2);
+
+  // Γ at the stub junction
+  const theta_d1_actual = gammaAngle - 4*Math.PI*d1;
+  const theta_d2_actual = gammaAngle - 4*Math.PI*d2;
+  const gammaD1 = C.fromPolar(gammaAbs, theta_d1_actual);
+  const gammaD2 = C.fromPolar(gammaAbs, theta_d2_actual);
+
+  // Admittance at junction (normalised)
+  const yd1 = C.div(C.sub({r:1,i:0},gammaD1), C.add({r:1,i:0},gammaD1));
+  const yd2 = C.div(C.sub({r:1,i:0},gammaD2), C.add({r:1,i:0},gammaD2));
+
+  // Stub susceptance needed: B_stub = -Im(y_d) (shunt cancels susceptance)
+  const Bstub1 = -yd1.i; // normalised
+  const Bstub2 = -yd2.i;
+
+  // Stub length for SC: ℓ_SC = -(1/2π) * arctan(1/B)  ... from B_stub = -cot(βℓ) → ℓ = (1/2π)arctan(-1/B)
+  // Stub length for OC: B_stub = tan(βℓ) → ℓ = (1/2π)arctan(B)
+  function stubLength(B, isOC){
+    let ell;
+    if(isOC){
+      ell = Math.atan(B)/(2*Math.PI);
+    } else {
+      // SC: B = -cot(βℓ) = -cos(βℓ)/sin(βℓ)
+      // ℓ = (1/2π)arctan(-1/B)
+      if(Math.abs(B)<1e-10) ell = 0.25; // B=0 → quarter wave
+      else ell = Math.atan(-1/B)/(2*Math.PI);
+    }
+    if(ell<0) ell+=0.5;
+    return ell;
+  }
+
+  const isOC = stubEnd==='oc';
+  const ell1 = stubLength(Bstub1, isOC);
+  const ell2 = stubLength(Bstub2, isOC);
+
+  // Actual stub susceptance from length (verify)
+  function bFromLen(ell, isOC2){
+    const beta_ell=2*Math.PI*ell;
+    return isOC2 ? Math.tan(beta_ell) : -1/Math.tan(beta_ell);
+  }
+
+  return {
+    ZL, Z0val, zn, yn, gammaL, gammaAbs, gammaAngle,
+    d1, d2, ell1, ell2,
+    Bstub1, Bstub2,
+    yd1, yd2,
+    gammaD1, gammaD2,
+    theta_d1: theta_d1_actual,
+    theta_d2: theta_d2_actual,
+    isOC, stubEnd, topology,
+  };
+}
+
+// ═══════════════════════════════════════════════════════
+//  Plot results on Smith Chart
+// ═══════════════════════════════════════════════════════
+function plotResults(res){
+  // Load point
+  const {x:lx, y:ly, gamma:gL} = znToSVG(res.zn);
+
+  // |Γ| circle
+  cg.appendChild(el('circle',{cx:0,cy:0,r:res.gammaAbs*R,fill:'none',stroke:'#c0392b','stroke-width':1.4,'stroke-dasharray':'6,4',opacity:'0.65'}));
+
+  // Arc from load to stub junction 1
+  const arcSVG1 = arcPath(res.gammaAbs, res.gammaAngle, res.theta_d1);
+  cg.appendChild(el('path',{d:arcSVG1,fill:'none',stroke:'#1a6b4a','stroke-width':2.2,opacity:'0.8'}));
+
+  // Arc from load to stub junction 2
+  const arcSVG2 = arcPath(res.gammaAbs, res.gammaAngle, res.theta_d2);
+  cg.appendChild(el('path',{d:arcSVG2,fill:'none',stroke:'#2e86ab','stroke-width':2.2,opacity:'0.8'}));
+
+  // Load point (red)
+  cg.appendChild(el('circle',{cx:lx,cy:ly,r:8,fill:'#c0392b',opacity:'0.18'}));
+  cg.appendChild(el('circle',{cx:lx,cy:ly,r:5,fill:'#c0392b'}));
+  addLabel(lx+9,ly-9,'ZL','#a93226','10.5');
+
+  // Junction point 1 (green) — Re(y)=1 circle
+  const j1x = res.gammaD1.r*R, j1y = -res.gammaD1.i*R;
+  cg.appendChild(el('circle',{cx:j1x,cy:j1y,r:8,fill:'#1a6b4a',opacity:'0.18'}));
+  cg.appendChild(el('circle',{cx:j1x,cy:j1y,r:5,fill:'#1a6b4a'}));
+  addLabel(j1x+9,j1y-9,'P₁','#155c3d','10.5');
+
+  // Junction point 2 (blue)
+  const j2x = res.gammaD2.r*R, j2y = -res.gammaD2.i*R;
+  cg.appendChild(el('circle',{cx:j2x,cy:j2y,r:8,fill:'#2e86ab',opacity:'0.18'}));
+  cg.appendChild(el('circle',{cx:j2x,cy:j2y,r:5,fill:'#2e86ab'}));
+  addLabel(j2x+9,j2y+14,'P₂','#1a5e7a','10.5');
+
+  // Center dot (matched)
+  cg.appendChild(el('circle',{cx:0,cy:0,r:5.5,fill:'#1a6b4a',opacity:'0.4'}));
+  cg.appendChild(el('circle',{cx:0,cy:0,r:3,fill:'#1a6b4a'}));
+  addLabel(8,-10,'Match','#1a6b4a','9.5');
+
+  // Stub tip markers (at Γ=1 short or Γ=-1 open on outer edge → just label)
+  // For SC: outer rim right (x=R,y=0); for OC: outer rim left (x=-R,y=0)
+  const tipX = res.isOC ? -R : R;
+  cg.appendChild(el('circle',{cx:tipX,cy:0,r:5,fill:'#e07b39',opacity:'0.85'}));
+  addLabel(tipX+(res.isOC?-22:8),8,res.isOC?'OC':'SC','#b56228','9.5');
+
+  // d annotations
+  const midA1 = (res.gammaAngle + res.theta_d1)/2;
+  const ma1r = (res.gammaAbs*R+18);
+  cg.appendChild(el('text',{x:ma1r*Math.cos(midA1),y:-ma1r*Math.sin(midA1)+4,fill:'#1a6b4a','font-size':'10','font-family':'Fira Mono,monospace','font-weight':'500'},`d₁=${fmt(res.d1,4)}λ`));
+
+  const midA2 = (res.gammaAngle + res.theta_d2)/2;
+  const ma2r = (res.gammaAbs*R+18);
+  cg.appendChild(el('text',{x:ma2r*Math.cos(midA2)-20,y:-ma2r*Math.sin(midA2)+4,fill:'#2e86ab','font-size':'10','font-family':'Fira Mono,monospace','font-weight':'500'},`d₂=${fmt(res.d2,4)}λ`));
+}
+
+function addLabel(x,y,txt,fill,size='11'){
+  cg.appendChild(el('text',{x,y,fill,'font-size':size,'font-family':'Nunito,sans-serif','font-weight':'700'},txt));
+}
+
+// ═══════════════════════════════════════════════════════
+//  Table helpers
+// ═══════════════════════════════════════════════════════
+function row(tbody,p,v,hi=false){
+  const tr=document.createElement('tr');
+  const td1=document.createElement('td'); td1.textContent=p;
+  const td2=document.createElement('td'); td2.textContent=v;
+  if(hi){ td1.classList.add('highlight'); td2.classList.add('highlight'); }
+  tr.appendChild(td1); tr.appendChild(td2); tbody.appendChild(tr);
+}
+
+// ── Angle normalisation helper ─────────────────────────────────────────────
+// All displayed angles use [0°, 360°) convention.
+function normDeg(rad){ let d=r2d(rad); while(d<0) d+=360; while(d>=360) d-=360; return d; }
+
+// ── Verification: compute Γ_in after shunt stub insertion ─────────────────
+// At junction: y_in = y_d + jB_stub_norm = 1 + j0  → Γ_in = 0, Z_in = Z0
+// We recompute explicitly to confirm numerically.
+function verifyMatch(yd, Bstub_norm, Z0v){
+  // Admittance at input = junction admittance + stub susceptance (shunt)
+  const y_in = { r: yd.r, i: yd.i + Bstub_norm };
+  // Convert back to impedance (normalised)
+  const z_in_norm = C.div({r:1,i:0}, y_in);
+  // Actual impedance
+  const Z_in = { r: z_in_norm.r * Z0v, i: z_in_norm.i * Z0v };
+  // Γ_in
+  const gamma_in = C.div(C.sub(z_in_norm,{r:1,i:0}), C.add(z_in_norm,{r:1,i:0}));
+  const gammaMag = C.abs(gamma_in);
+  const vswr_in = gammaMag < 1e-9 ? 1 : (1+gammaMag)/(1-gammaMag);
+  const rl_in = gammaMag < 1e-12 ? Infinity : -20*Math.log10(gammaMag);
+  return { y_in, z_in_norm, Z_in, gamma_in, gammaMag, vswr_in, rl_in };
+}
+
+// ═══════════════════════════════════════════════════════
+//  SOLVE
+// ═══════════════════════════════════════════════════════
+function solve(){
+  const ZLr=parseFloat(document.getElementById('zlR').value)||0;
+  const ZLi=parseFloat(document.getElementById('zlI').value)||0;
+  const Z0v=parseFloat(document.getElementById('z0').value)||50;
+  const stubEnd=document.querySelector('input[name="stubEnd"]:checked').value;
+  const topology=document.querySelector('input[name="stubPos"]:checked').value;
+
+  if(Z0v<=0){ alert('Z₀ must be positive.'); return; }
+
+  const res=computeStubMatch(ZLr,ZLi,Z0v,stubEnd,topology);
+  if(!res){ alert('Load is already matched! No stub needed.'); return; }
+
+  // Draw
+  drawBase();
+  plotResults(res);
+  resetView();
+
+  const fmt5=v=>fmt(v,5);
+
+  // ── Issue 2: Zin after matching (should be Z0 + j0) ──────────────────────
+  const v1 = verifyMatch(res.yd1, res.Bstub1, Z0v);
+  const v2 = verifyMatch(res.yd2, res.Bstub2, Z0v);
+  document.getElementById('s1d').textContent=`${fmt5(res.d1)} λ`;
+  document.getElementById('s1l').textContent=`${fmt5(res.ell1)} λ`;
+  document.getElementById('s1b').textContent=`${fmt(res.Bstub1,4)} (normalised)`;
+  document.getElementById('s1zin').textContent=`${fmtC(v1.Z_in,'Ω')}`;
+  document.getElementById('s2d').textContent=`${fmt5(res.d2)} λ`;
+  document.getElementById('s2l').textContent=`${fmt5(res.ell2)} λ`;
+  document.getElementById('s2b').textContent=`${fmt(res.Bstub2,4)} (normalised)`;
+  document.getElementById('s2zin').textContent=`${fmtC(v2.Z_in,'Ω')}`;
+
+  // ── Issue 10: complementary note ─────────────────────────────────────────
+  const ellSum = res.ell1 + res.ell2;
+  document.getElementById('complementaryNote').style.display='block';
+  document.getElementById('complementaryCheck').textContent=
+    `ℓ₁ + ℓ₂ = ${fmt5(res.ell1)} + ${fmt5(res.ell2)} = ${fmt5(ellSum)} λ ${Math.abs(ellSum-0.5)<0.01?'≈ 0.5λ ✓':'(≠ 0.5λ — near boundary)'}`;
+
+  // ── Tables ───────────────────────────────────────────────────────────────
+  const vswr=(1+res.gammaAbs)/(1-res.gammaAbs);
+  const rl=-20*Math.log10(res.gammaAbs);
+  const ml=-10*Math.log10(1-res.gammaAbs**2);
+
+  // Issue 3: normalise all angles to [0°, 360°)
+  const gammaAngleDeg = normDeg(res.gammaAngle);
+  const thetaD1deg    = normDeg(res.theta_d1);
+  const thetaD2deg    = normDeg(res.theta_d2);
+
+  // ── Reflection table (before matching) ───────────────────────────────────
+  const tR=document.getElementById('tRefl'); tR.innerHTML='';
+  row(tR,'ZL (Load)', fmtC(res.ZL,'Ω'));
+  row(tR,'Z₀', `${Z0v} Ω`);
+  row(tR,'Γ_L (rectangular)', fmtC(res.gammaL));
+  row(tR,'|Γ_L|', res.gammaAbs.toFixed(5));
+  // Issue 3: angle normalised to [0°, 360°)
+  row(tR,'∠Γ_L [0°–360°]', gammaAngleDeg.toFixed(3)+'°');
+  row(tR,'VSWR (before)', isFinite(vswr)?vswr.toFixed(4):'∞');
+  row(tR,'Return Loss (before)', isFinite(rl)?rl.toFixed(3)+' dB':'∞ dB');
+  row(tR,'Mismatch Loss (before)', ml.toFixed(3)+' dB');
+
+  // ── Normalised values & conventions (issues 4, 6, 9) ────────────────────
+  const tN=document.getElementById('tNorm'); tN.innerHTML='';
+  row(tN,'Chart Mode', 'Impedance-Z (shunt stub uses admittance y)');
+  row(tN,'Rotation convention', 'Clockwise = toward generator (WTG)');
+  row(tN,'zn (norm. load impedance)', fmtC(res.zn));
+  row(tN,'yn (norm. load admittance)', fmtC(res.yn));
+  // Issue 9: shunt uses admittance quantities explicitly
+  row(tN,'Matching quantity (shunt)', 'Normalised admittance y = g + jb');
+  row(tN,'Target at junction', 'g = 1 (unit conductance circle)');
+  // Issue 6: susceptance sign convention
+  row(tN,'Susceptance sign convention', 'b > 0: inductive  |  b < 0: capacitive');
+  // Issue 4: stub length equations documented
+  row(tN,'SC stub equation', 'b_stub = −cot(2πℓ/λ)  →  ℓ = λ·atan(−1/b)/(2π)');
+  row(tN,'OC stub equation', 'b_stub = +tan(2πℓ/λ)  →  ℓ = λ·atan(b)/(2π)');
+  row(tN,'Stub periodicity', 'ℓ ∈ [0, 0.5λ)  (half-wave period)');
+  row(tN,'Stub type', res.isOC?'Open Circuit (OC)':'Short Circuit (SC)');
+  row(tN,'Topology', res.topology==='shunt'?'Shunt (parallel)':'Series');
+
+  // ── Solution 1 ───────────────────────────────────────────────────────────
+  const tS1=document.getElementById('tSol1'); tS1.innerHTML='';
+  row(tS1,'Distance d₁ from load',`${fmt5(res.d1)} λ`,true);
+  row(tS1,'Stub length ℓ₁',`${fmt5(res.ell1)} λ`,true);
+  row(tS1,'d₁ in degrees',`${fmt(res.d1*360,5)}°`);
+  row(tS1,'ℓ₁ in degrees',`${fmt(res.ell1*360,5)}°`);
+  // Issue 3: angle normalised
+  row(tS1,'∠Γ at P₁ [0°–360°]', thetaD1deg.toFixed(3)+'°');
+  row(tS1,'y at junction P₁', fmtC(res.yd1));
+  row(tS1,'g at P₁ (should be 1)', fmt(res.yd1.r,5));
+  row(tS1,'b at P₁ (to cancel)', fmt(res.yd1.i,5));
+  // Issue 6: label stub susceptance type
+  row(tS1,'b_stub₁ (normalised)', fmt(res.Bstub1,5)+(res.Bstub1>0?' (inductive)':res.Bstub1<0?' (capacitive)':''));
+  row(tS1,'B_stub₁ (actual)', fmt(res.Bstub1/Z0v,5)+' S');
+  // Issue 2: Zin
+  row(tS1,'Z_in after matching', fmtC(v1.Z_in,'Ω'),true);
+  row(tS1,'z_in (normalised)', fmtC(v1.z_in_norm));
+
+  // ── Solution 2 ───────────────────────────────────────────────────────────
+  const tS2=document.getElementById('tSol2'); tS2.innerHTML='';
+  row(tS2,'Distance d₂ from load',`${fmt5(res.d2)} λ`,true);
+  row(tS2,'Stub length ℓ₂',`${fmt5(res.ell2)} λ`,true);
+  row(tS2,'d₂ in degrees',`${fmt(res.d2*360,5)}°`);
+  row(tS2,'ℓ₂ in degrees',`${fmt(res.ell2*360,5)}°`);
+  row(tS2,'∠Γ at P₂ [0°–360°]', thetaD2deg.toFixed(3)+'°');
+  row(tS2,'y at junction P₂', fmtC(res.yd2));
+  row(tS2,'g at P₂ (should be 1)', fmt(res.yd2.r,5));
+  row(tS2,'b at P₂ (to cancel)', fmt(res.yd2.i,5));
+  row(tS2,'b_stub₂ (normalised)', fmt(res.Bstub2,5)+(res.Bstub2>0?' (inductive)':res.Bstub2<0?' (capacitive)':''));
+  row(tS2,'B_stub₂ (actual)', fmt(res.Bstub2/Z0v,5)+' S');
+  row(tS2,'Z_in after matching', fmtC(v2.Z_in,'Ω'),true);
+  row(tS2,'z_in (normalised)', fmtC(v2.z_in_norm));
+
+  // ── Issue 8: Verification tables ─────────────────────────────────────────
+  function fillVerify(tbodyId, ver, label){
+    const t=document.getElementById(tbodyId); t.innerHTML='';
+    row(t,'y_in = y_junction + b_stub', fmtC(ver.y_in));
+    row(t,'z_in (normalised)',  fmtC(ver.z_in_norm));
+    row(t,'Z_in (actual Ω)',    fmtC(ver.Z_in,'Ω'), true);
+    row(t,'Γ_in (rectangular)', fmtC(ver.gamma_in));
+    row(t,'|Γ_in| (should be ≈ 0)', ver.gammaMag.toExponential(3));
+    row(t,'VSWR after matching', isFinite(ver.vswr_in) ? ver.vswr_in.toFixed(4) : '∞');
+    row(t,'Return Loss after matching', isFinite(ver.rl_in) ? ver.rl_in.toFixed(2)+' dB' : '∞ dB');
+    row(t,'Match quality', ver.gammaMag<1e-6 ? '✓ Perfect match' : ver.gammaMag<0.01 ? '✓ Near-perfect' : '⚠ Check inputs');
+  }
+  fillVerify('tVerify1', v1, 'Sol 1');
+  fillVerify('tVerify2', v2, 'Sol 2');
+
+  document.getElementById('resultsArea').style.display='flex';
+  document.getElementById('badge').className='badge badge-ok';
+  document.getElementById('badge').textContent='● Matched';
+}
+
+function resetAll(){
+  document.getElementById('resultsArea').style.display='none';
+  document.getElementById('badge').className='badge badge-idle';
+  document.getElementById('badge').textContent='● Ready';
+  drawBase(); resetView();
+}
+
+// Initial draw
+drawBase();
+</script>
+</body>
+</html>

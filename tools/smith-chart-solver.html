@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smith Chart Solver — SpDly Studios</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f5f0;
+    --surface: #ffffff;
+    --surface2: #f0ede6;
+    --border: #ddd9d0;
+    --text: #1a1816;
+    --text-muted: #6b6560;
+    --accent: #c0392b;
+    --accent2: #2980b9;
+    --accent3: #27ae60;
+    --accent-soft: #fdf0ee;
+    --chart-bg: #fefefe;
+    --grid: #e8e4de;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+    --radius: 12px;
+    --font-display: 'Lora', Georgia, serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 40px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--shadow);
+  }
+
+  .logo-icon {
+    width: 40px; height: 40px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-family: var(--font-display); font-size: 18px; font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  header h1 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+
+  header p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .main-layout {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    grid-template-rows: 1fr auto;
+    gap: 0;
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 24px;
+    gap: 20px;
+  }
+
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title .icon {
+    width: 22px; height: 22px;
+    background: var(--accent-soft);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    color: var(--accent);
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+
+  .input-group { margin-bottom: 14px; }
+
+  .input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  input[type="number"], input[type="text"] {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+  }
+
+  input:focus {
+    border-color: var(--accent2);
+    box-shadow: 0 0 0 3px rgba(41,128,185,0.1);
+  }
+
+  .unit-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 3px;
+  }
+
+  .complex-hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 11px;
+    border: none;
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.2px;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+  .btn-primary:hover { background: #a93226; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(192,57,43,0.3); }
+
+  .btn-secondary {
+    background: var(--surface2);
+    color: var(--text-muted);
+    margin-top: 8px;
+    font-weight: 400;
+    font-size: 13px;
+  }
+  .btn-secondary:hover { background: var(--border); color: var(--text); }
+
+  .chart-area {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .chart-toolbar {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface2);
+  }
+
+  .tool-btn {
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.12s;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .tool-btn:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .tool-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+  .chart-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    cursor: grab;
+    min-height: 500px;
+  }
+  .chart-container.panning { cursor: grabbing; }
+  .chart-container.zooming { cursor: zoom-in; }
+
+  #smithSvg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .results-grid {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .result-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .result-table thead th {
+    background: var(--surface2);
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .result-table tbody td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .result-table tbody td:first-child {
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .result-table tbody td:last-child {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--accent2);
+    font-weight: 500;
+  }
+
+  .result-table tbody tr:hover { background: var(--surface2); }
+  .result-table tbody tr:last-child td { border-bottom: none; }
+
+  .placeholder-msg {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 200px;
+    color: var(--text-muted);
+    font-size: 14px;
+    gap: 8px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .placeholder-msg .big-icon { font-size: 40px; opacity: 0.3; }
+
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  .legend-panel {
+    display: flex; flex-wrap: wrap; gap: 12px;
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+    background: var(--surface2);
+  }
+
+  .zoom-hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-left: auto;
+    font-style: italic;
+  }
+
+  footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 16px 40px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  footer a {
+    color: var(--accent2);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  footer a:hover { text-decoration: underline; }
+
+  .separator { color: var(--border); }
+
+  @media (max-width: 900px) {
+    .main-layout { grid-template-columns: 1fr; }
+    .results-grid { grid-column: 1; }
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .badge-ready { background: #e8f5e9; color: #2e7d32; }
+  .badge-idle { background: var(--surface2); color: var(--text-muted); }
+
+  .point-label-box {
+    background: rgba(255,255,255,0.92);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-icon">S</div>
+  <div>
+    <h1>Smith Chart Solver</h1>
+    <p>RF & Microwave Engineering Tool</p>
+  </div>
+  <div style="margin-left:auto" id="statusBadge">
+    <span class="status-badge badge-idle">● Waiting for Input</span>
+  </div>
+</header>
+
+<div class="main-layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="card">
+      <div class="card-title">
+        <div class="icon">⚡</div>
+        Input Parameters
+      </div>
+
+      <div class="input-group">
+        <label>Load Impedance Z<sub>L</sub></label>
+        <div class="input-row">
+          <div>
+            <input type="number" id="zlReal" placeholder="75" value="75">
+            <div class="unit-label">Real part (Ω)</div>
+          </div>
+          <div>
+            <input type="number" id="zlImag" placeholder="30" value="30">
+            <div class="unit-label">Imaginary part (Ω)</div>
+          </div>
+        </div>
+        <div class="complex-hint">Z<sub>L</sub> = R + jX</div>
+      </div>
+
+      <div class="input-group">
+        <label>Characteristic Impedance Z₀</label>
+        <input type="number" id="z0" placeholder="50" value="50" min="0.001">
+        <div class="unit-label">Z₀ in Ohms (Ω) — typically 50Ω</div>
+      </div>
+
+      <div class="input-group">
+        <label>Frequency</label>
+        <div class="input-row">
+          <input type="number" id="freq" placeholder="2.4" value="2.4" min="0.001">
+          <select id="freqUnit" style="padding:9px 8px;border:1px solid var(--border);border-radius:8px;background:var(--bg);font-family:var(--font-body);font-size:13px;cursor:pointer;outline:none;">
+            <option value="1e6">MHz</option>
+            <option value="1e9" selected>GHz</option>
+            <option value="1e3">kHz</option>
+            <option value="1">Hz</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="solve()">Plot on Smith Chart</button>
+      <button class="btn btn-secondary" onclick="reset()">↺ Reset</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <div class="icon">📖</div>
+        How to Read
+      </div>
+      <div style="font-size:12px;color:var(--text-muted);line-height:1.7;">
+        <p>• <strong>Red dot</strong> = Load point (Z<sub>L</sub>)</p>
+        <p>• <strong>Blue dot</strong> = Center (matched, Γ = 0)</p>
+        <p>• <strong>Dashed circle</strong> = Constant |Γ| locus</p>
+        <p>• Concentric circles = constant resistance</p>
+        <p>• Arcs = constant reactance</p>
+        <p style="margin-top:8px;">Scroll to zoom · Drag to pan</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHART AREA -->
+  <div class="chart-area">
+    <div class="chart-toolbar">
+      <button class="tool-btn active" id="btnPan" onclick="setTool('pan')">✋ Pan</button>
+      <button class="tool-btn" id="btnZoomIn" onclick="zoomBy(1.3)">＋ Zoom In</button>
+      <button class="tool-btn" id="btnZoomOut" onclick="zoomBy(0.77)">－ Zoom Out</button>
+      <button class="tool-btn" onclick="resetView()">⊙ Fit</button>
+      <span class="zoom-hint">Scroll to zoom · Drag to pan</span>
+    </div>
+
+    <div class="chart-container" id="chartContainer">
+      <svg id="smithSvg" viewBox="0 0 700 700" preserveAspectRatio="xMidYMid meet">
+        <g id="chartGroup" transform="translate(350,350)">
+          <!-- Chart drawn by JS -->
+        </g>
+      </svg>
+    </div>
+
+    <div class="legend-panel">
+      <div class="legend-item"><div class="legend-dot" style="background:#c0392b"></div> Load Z<sub>L</sub></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#2980b9"></div> Center (Z₀)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(192,57,43,0.35);border:1.5px dashed #c0392b;border-radius:50%"></div> |Γ| Circle</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#27ae60"></div> VSWR Circle</div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results-grid" id="resultsSection" style="display:none;">
+
+    <div class="card">
+      <div class="card-title"><div class="icon">Γ</div>Reflection Coefficient</div>
+      <table class="result-table">
+        <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+        <tbody id="tableReflection"></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><div class="icon">Z</div>Impedance & Admittance</div>
+      <table class="result-table">
+        <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+        <tbody id="tableImpedance"></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><div class="icon">∿</div>Transmission Line</div>
+      <table class="result-table">
+        <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+        <tbody id="tableTransmission"></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><div class="icon">◎</div>Power & Quality</div>
+      <table class="result-table">
+        <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+        <tbody id="tablePower"></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <span>© SpDly Studios</span>
+  <span class="separator">|</span>
+  <a href="https://spdly.is-a.dev" target="_blank" rel="noopener">spdly.is-a.dev</a>
+  <span class="separator">|</span>
+  <span>Smith Chart Solver v1.0</span>
+</footer>
+
+<script>
+// ─── Pan / Zoom State ──────────────────────────────────────────────────────
+let viewX = 0, viewY = 0, viewScale = 1;
+let isPanning = false, startX, startY;
+const container = document.getElementById('chartContainer');
+const group = document.getElementById('chartGroup');
+const svg = document.getElementById('smithSvg');
+
+function applyTransform() {
+  group.setAttribute('transform', `translate(${350 + viewX}, ${350 + viewY}) scale(${viewScale})`);
+}
+
+container.addEventListener('mousedown', e => {
+  if (e.button !== 0) return;
+  isPanning = true;
+  startX = e.clientX - viewX;
+  startY = e.clientY - viewY;
+  container.classList.add('panning');
+});
+
+window.addEventListener('mousemove', e => {
+  if (!isPanning) return;
+  viewX = e.clientX - startX;
+  viewY = e.clientY - startY;
+  applyTransform();
+});
+
+window.addEventListener('mouseup', () => {
+  isPanning = false;
+  container.classList.remove('panning');
+});
+
+container.addEventListener('wheel', e => {
+  e.preventDefault();
+  const factor = e.deltaY < 0 ? 1.12 : 0.89;
+  viewScale *= factor;
+  viewScale = Math.max(0.3, Math.min(10, viewScale));
+  applyTransform();
+}, { passive: false });
+
+function zoomBy(factor) {
+  viewScale *= factor;
+  viewScale = Math.max(0.3, Math.min(10, viewScale));
+  applyTransform();
+}
+
+function resetView() {
+  viewX = 0; viewY = 0; viewScale = 1;
+  applyTransform();
+}
+
+function setTool(t) {
+  document.getElementById('btnPan').classList.toggle('active', t === 'pan');
+}
+
+// ─── Complex Math ─────────────────────────────────────────────────────────
+function cadd(a, b) { return { r: a.r + b.r, i: a.i + b.i }; }
+function csub(a, b) { return { r: a.r - b.r, i: a.i - b.i }; }
+function cmul(a, b) { return { r: a.r*b.r - a.i*b.i, i: a.r*b.i + a.i*b.r }; }
+function cdiv(a, b) {
+  const d = b.r*b.r + b.i*b.i;
+  return { r: (a.r*b.r + a.i*b.i)/d, i: (a.i*b.r - a.r*b.i)/d };
+}
+function cabs(a) { return Math.sqrt(a.r*a.r + a.i*a.i); }
+function carg(a) { return Math.atan2(a.i, a.r); }
+function cconj(a) { return { r: a.r, i: -a.i }; }
+function cpolar(r, theta) { return { r: r*Math.cos(theta), i: r*Math.sin(theta) }; }
+
+function fmt(v, digits=4) {
+  if (Math.abs(v) < 1e-10) return '0';
+  if (Math.abs(v) >= 1e6) return (v/1e6).toFixed(3) + 'M';
+  if (Math.abs(v) >= 1e3) return (v/1e3).toFixed(3) + 'k';
+  return parseFloat(v.toPrecision(digits)).toString();
+}
+
+function fmtComplex(c, unit='') {
+  const r = fmt(c.r), im = fmt(Math.abs(c.i));
+  const sign = c.i >= 0 ? '+' : '−';
+  return `${r} ${sign} j${im}${unit ? ' ' + unit : ''}`;
+}
+
+function rad2deg(r) { return r * 180 / Math.PI; }
+function deg2rad(d) { return d * Math.PI / 180; }
+
+// ─── Smith Chart Drawing ───────────────────────────────────────────────────
+const R = 280; // chart radius in SVG units
+
+function svgEl(tag, attrs) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+  return el;
+}
+
+function drawSmithChart() {
+  const g = group;
+  // Clear
+  while (g.firstChild) g.removeChild(g.firstChild);
+
+  // Background circle
+  g.appendChild(svgEl('circle', { cx:0, cy:0, r:R, fill:'#fefefe', stroke:'#b0aba4', 'stroke-width':2 }));
+
+  // Constant resistance circles: center at (R*r/(1+r), 0), radius R/(1+r)
+  const rVals = [0, 0.2, 0.5, 1, 2, 5, 10];
+  const rColors = ['#d4cfc8','#dedad4','#e2ddd8','#e8e4de','#ede9e4','#f0ede8','#f3f0ec'];
+  rVals.forEach((rv, idx) => {
+    const cx = R * rv / (1 + rv);
+    const r2 = R / (1 + rv);
+    const el = svgEl('circle', {
+      cx: cx, cy: 0, r: r2,
+      fill: 'none', stroke: rColors[idx] || '#ddd',
+      'stroke-width': rv === 1 ? 1.5 : 1,
+      'stroke-dasharray': rv === 0 ? 'none' : 'none'
+    });
+    if (rv > 0) g.appendChild(el);
+  });
+
+  // Constant reactance arcs: center at (R, R/x), radius R/|x|
+  // These are arcs of circles clipped to the unit circle
+  const xVals = [0.2, 0.5, 1, 2, 5];
+  const xColor = '#cdc9c3';
+  xVals.forEach(xv => {
+    [-xv, xv].forEach(x => {
+      const cy2 = R / x;
+      const rArc = Math.abs(R / x);
+      // Arc endpoint on the real axis
+      // Draw as SVG arc path — approximate with many line points clipped
+      const pts = [];
+      for (let a = -Math.PI; a <= Math.PI; a += 0.02) {
+        const px = R + rArc * Math.cos(a);
+        const py = cy2 + rArc * Math.sin(a);
+        if (px*px + py*py <= R*R + 0.5) pts.push([px, py]);
+      }
+      if (pts.length > 2) {
+        let d = `M ${pts[0][0]} ${pts[0][1]}`;
+        for (let i = 1; i < pts.length; i++) d += ` L ${pts[i][0]} ${pts[i][1]}`;
+        const p = svgEl('path', { d, fill:'none', stroke: xColor, 'stroke-width':'0.9', 'clip-path':'url(#chartClip)' });
+        g.appendChild(p);
+      }
+    });
+  });
+
+  // Add clip path
+  const defs = svgEl('defs', {});
+  const cp = svgEl('clipPath', { id: 'chartClip' });
+  cp.appendChild(svgEl('circle', { cx:0, cy:0, r:R }));
+  defs.appendChild(cp);
+  g.insertBefore(defs, g.firstChild);
+
+  // Real axis
+  g.appendChild(svgEl('line', { x1:-R, y1:0, x2:R, y2:0, stroke:'#9e9890', 'stroke-width':1.2 }));
+
+  // Imaginary axis (vertical line at real axis center)
+  g.appendChild(svgEl('line', { x1:0, y1:-R, x2:0, y2:R, stroke:'#d0ccc6', 'stroke-width':0.7, 'stroke-dasharray':'4,4' }));
+
+  // Outer labels for resistance
+  const rLabels = [[0,'0'], [0.2,'0.2'], [0.5,'0.5'], [1,'1'], [2,'2'], [5,'5']];
+  rLabels.forEach(([rv, lbl]) => {
+    const cx = R * rv / (1 + rv);
+    const r2 = R / (1 + rv);
+    const lx = cx + r2 + 3;
+    const t = svgEl('text', { x: lx, y: 10, fill:'#8c8880', 'font-size':'10', 'font-family': 'DM Sans, sans-serif' });
+    t.textContent = lbl;
+    g.appendChild(t);
+  });
+
+  // Center dot
+  g.appendChild(svgEl('circle', { cx:0, cy:0, r:4, fill:'#2980b9' }));
+  const centerLabel = svgEl('text', { x:6, y:-8, fill:'#2980b9', 'font-size':'11', 'font-family':'DM Sans, sans-serif', 'font-weight':'500' });
+  centerLabel.textContent = 'Z₀';
+  g.appendChild(centerLabel);
+
+  // Outer ring ticks (angle scale for WTG / WTL)
+  for (let deg = 0; deg < 360; deg += 5) {
+    const rad = deg2rad(deg);
+    const inner = deg % 10 === 0 ? R - 12 : R - 7;
+    g.appendChild(svgEl('line', {
+      x1: R * Math.cos(rad), y1: R * Math.sin(rad),
+      x2: inner * Math.cos(rad), y2: inner * Math.sin(rad),
+      stroke: '#b5b0aa', 'stroke-width': deg % 10 === 0 ? 1.2 : 0.7
+    }));
+  }
+
+  // Boundary circle again on top
+  g.appendChild(svgEl('circle', { cx:0, cy:0, r:R, fill:'none', stroke:'#8c8880', 'stroke-width':1.8 }));
+}
+
+function plotPoint(zl, z0Val) {
+  const Z0 = { r: z0Val, i: 0 };
+  const ZL = { r: zl.r, i: zl.i };
+
+  // Normalised impedance
+  const zn = cdiv(ZL, Z0);
+
+  // Reflection coefficient Γ = (zn - 1) / (zn + 1)
+  const gamma = cdiv(csub(zn, {r:1,i:0}), cadd(zn, {r:1,i:0}));
+  const gammaAbs = cabs(gamma);
+  const gammaAngle = carg(gamma);
+
+  // SVG coords (note: Smith chart y is flipped — inductive up = SVG down)
+  const sx = gamma.r * R;
+  const sy = -gamma.i * R; // flip imaginary axis
+
+  const g = group;
+
+  // |Γ| circle (dashed)
+  g.appendChild(svgEl('circle', {
+    cx:0, cy:0, r: gammaAbs * R,
+    fill:'none', stroke:'#c0392b', 'stroke-width':1.4,
+    'stroke-dasharray':'6,4', opacity:'0.6'
+  }));
+
+  // VSWR circle (same as |Γ| circle but labeled)
+  // VSWR = (1+|Γ|)/(1-|Γ|)
+  const vswr = (1 + gammaAbs) / (1 - gammaAbs);
+  // VSWR circle intersects real axis at r = VSWR (normalized), i.e., x = R * (vswr-1)/(vswr+1)
+  const vswrCenter = R * (vswr - 1) / (vswr + 1);
+  const vswrRadius = R * gammaAbs; // same as |Γ|
+
+  // Constant |Γ| annotation at right
+  const annX = gammaAbs * R + 6;
+  const annT = svgEl('text', { x: annX, y: -8, fill:'#c0392b', 'font-size':'10', 'font-family':'DM Sans, sans-serif' });
+  annT.textContent = `|Γ|=${gammaAbs.toFixed(3)}`;
+  g.appendChild(annT);
+
+  // Line from center to point
+  g.appendChild(svgEl('line', { x1:0, y1:0, x2:sx, y2:sy, stroke:'#c0392b', 'stroke-width':1.2, 'stroke-dasharray':'3,3', opacity:'0.5' }));
+
+  // Load point
+  g.appendChild(svgEl('circle', { cx:sx, cy:sy, r:7, fill:'#c0392b', opacity:'0.2' }));
+  g.appendChild(svgEl('circle', { cx:sx, cy:sy, r:4.5, fill:'#c0392b' }));
+
+  // Label near point
+  const lblX = sx + 10, lblY = sy - 10;
+  const lbl = svgEl('text', { x:lblX, y:lblY, fill:'#a93226', 'font-size':'11', 'font-family':'DM Mono, monospace', 'font-weight':'500' });
+  lbl.textContent = `ZL(${fmt(zl.r)}${zl.i>=0?'+':'-'}j${fmt(Math.abs(zl.i))})Ω`;
+  g.appendChild(lbl);
+
+  // Conjugate point
+  const conjGamma = { r: gamma.r, i: -gamma.i };
+  const csx = conjGamma.r * R;
+  const csy = -conjGamma.i * R;
+  g.appendChild(svgEl('circle', { cx:csx, cy:csy, r:3.5, fill:'#8e44ad', opacity:'0.7' }));
+  const conjLbl = svgEl('text', { x:csx+8, y:csy+4, fill:'#6c3483', 'font-size':'9', 'font-family':'DM Mono, monospace' });
+  conjLbl.textContent = 'ZL*';
+  g.appendChild(conjLbl);
+
+  return { gamma, gammaAbs, gammaAngle, zn, vswr };
+}
+
+// ─── Populate Results Tables ───────────────────────────────────────────────
+function row(tbody, param, value) {
+  const tr = document.createElement('tr');
+  const td1 = document.createElement('td'); td1.textContent = param;
+  const td2 = document.createElement('td'); td2.textContent = value;
+  tr.appendChild(td1); tr.appendChild(td2);
+  tbody.appendChild(tr);
+}
+
+function populateResults(ZL, Z0val, freqHz, gamma, gammaAbs, gammaAngle, zn, vswr) {
+  const Z0 = { r: Z0val, i: 0 };
+
+  // Admittances
+  const YL = cdiv({r:1,i:0}, ZL);
+  const Y0 = 1 / Z0val;
+  const yn = cdiv({r:1,i:0}, zn); // normalised admittance
+
+  // Return Loss
+  const rl = -20 * Math.log10(gammaAbs);
+
+  // Transmission coeff T = 1 + Γ
+  const T = cadd({r:1,i:0}, gamma);
+  const Tabs = cabs(T);
+  const Tangle = carg(T);
+
+  // Mismatch Loss
+  const ml = -10 * Math.log10(1 - gammaAbs*gammaAbs);
+
+  // ── Angle convention ──────────────────────────────────────────────────────
+  // All angles normalised to [0°, 360°) for display (engineering convention).
+  // ∠Γ raw from atan2 is in (−π, +π]; we shift negative values by +360°.
+  let gammaAngleDeg = rad2deg(gammaAngle);       // raw: (−180°, +180°]
+  if (gammaAngleDeg < 0) gammaAngleDeg += 360;   // normalise → [0°, 360°)
+
+  // ── Transmission-line rotation convention ────────────────────────────────
+  // On the Smith chart (impedance mode):
+  //   • Rotating CLOCKWISE (decreasing ∠Γ) = moving TOWARD GENERATOR (WTG).
+  //   • Rotating COUNTER-CLOCKWISE (increasing ∠Γ) = moving TOWARD LOAD (WTL).
+  //   • One full revolution (360° of ∠Γ) = 0.5 λ of line length.
+  //
+  // WTG scale: starts at 0.000λ where ∠Γ = +180° (left rim, short-circuit
+  //   reference), increases CW to 0.500λ at the same point.
+  //   Formula: WTG = (∠Γ_deg + 180°) / 720°        [modulo 0.5λ]
+  //
+  // WTL scale runs the opposite direction:
+  //   WTL = 0.500 − WTG                             [modulo 0.5λ]
+  //
+  // V_max occurs where Γ is purely positive-real (∠Γ = 0°).
+  //   d_Vmax = ∠Γ_deg / 720°    [toward generator, in λ]
+  //   If result < 0, add 0.5λ to keep in [0, 0.5).
+  //
+  // V_min is λ/4 further toward the generator from V_max:
+  //   d_Vmin = d_Vmax + 0.25λ   [modulo 0.5λ]
+
+  const wtg = ((gammaAngleDeg + 180) % 360) / 720;   // [0, 0.5)
+  const wtl = ((0.5 - wtg) + 0.5) % 0.5;             // [0, 0.5)
+
+  // Distance from load to V_max (traveling toward generator, i.e., CW)
+  let dVmax = gammaAngleDeg / 720;        // ∠Γ° / 720
+  if (dVmax < 0) dVmax += 0.5;           // keep in [0, 0.5)
+
+  // Distance from load to V_min (quarter-wave further toward generator)
+  let dVmin = dVmax + 0.25;
+  if (dVmin >= 0.5) dVmin -= 0.5;        // modulo 0.5λ
+
+  // ── Wavelength at frequency ───────────────────────────────────────────────
+  const c = 3e8;
+  const lambda = c / freqHz;
+
+  // Power reflection / transmission
+  const Pr = gammaAbs * gammaAbs * 100;
+  const Pt = (1 - gammaAbs*gammaAbs) * 100;
+
+  // Q factor of load (series model)
+  const Qload = ZL.r !== 0 ? Math.abs(ZL.i / ZL.r) : Infinity;
+
+  // Clear and populate
+  const tR = document.getElementById('tableReflection');
+  const tI = document.getElementById('tableImpedance');
+  const tT = document.getElementById('tableTransmission');
+  const tP = document.getElementById('tablePower');
+  [tR, tI, tT, tP].forEach(t => { while(t.firstChild) t.removeChild(t.firstChild); });
+
+  // ── Angle for transmission coefficient — normalise to [0°, 360°) ─────────
+  let TangleDeg = rad2deg(carg(T));
+  if (TangleDeg < 0) TangleDeg += 360;
+
+  // Reflection
+  row(tR, 'Γ (Rectangular)', fmtComplex(gamma));
+  row(tR, '|Γ| (Magnitude)', gammaAbs.toFixed(5));
+  // ∠Γ displayed in [0°, 360°) convention
+  row(tR, '∠Γ (Degrees, 0°–360°)', gammaAngleDeg.toFixed(3) + '°');
+  row(tR, '∠Γ (Radians)', gammaAngle.toFixed(5) + ' rad');
+  row(tR, 'VSWR', isFinite(vswr) ? vswr.toFixed(4) : '∞');
+  row(tR, 'Return Loss', isFinite(rl) ? rl.toFixed(3) + ' dB' : '∞ dB');
+  row(tR, 'Mismatch Loss', ml.toFixed(3) + ' dB');
+
+  // Impedance & Admittance
+  row(tI, 'Chart Mode', 'Impedance (Z)');
+  row(tI, 'ZL (Load)', fmtComplex(ZL, 'Ω'));
+  row(tI, 'Z₀ (Char.)', `${Z0val} Ω`);
+  row(tI, 'zn (Normalised)', fmtComplex(zn));
+  row(tI, 'YL (Load Admit.)', fmtComplex(YL, 'S'));
+  row(tI, 'Y₀ (Char. Admit.)', `${fmt(Y0)} S`);
+  row(tI, 'yn (Norm. Admit.)', fmtComplex(yn));
+  row(tI, 'ZL Conjugate', fmtComplex({r:ZL.r,i:-ZL.i}, 'Ω'));
+  row(tI, 'Load Q Factor', isFinite(Qload) ? Qload.toFixed(4) : '∞');
+
+  // Transmission Line
+  // Convention note: CW rotation on chart = toward generator (WTG); CCW = toward load (WTL).
+  // One full revolution = 0.5λ. WTG origin at ∠Γ = 180° (left rim).
+  row(tT, 'Frequency', freqHz >= 1e9 ? (freqHz/1e9).toFixed(4)+' GHz' : freqHz >= 1e6 ? (freqHz/1e6).toFixed(4)+' MHz' : freqHz.toFixed(0)+' Hz');
+  row(tT, 'Wavelength λ (free space)', `${fmt(lambda)} m`);
+  row(tT, 'Rotation convention', 'CW = toward generator');
+  row(tT, 'WTG (Toward Generator, CW)', wtg.toFixed(4) + ' λ');
+  row(tT, 'WTL (Toward Load, CCW)', wtl.toFixed(4) + ' λ');
+  row(tT, 'T (Trans. Coeff.)', fmtComplex(T));
+  row(tT, '|T| (Magnitude)', Tabs.toFixed(5));
+  // ∠T normalised to [0°, 360°)
+  row(tT, '∠T (Degrees, 0°–360°)', TangleDeg.toFixed(3) + '°');
+  // d_Vmax = ∠Γ_deg / 720 (CW distance from load to first V-max)
+  row(tT, 'Distance to V_max (from load)', dVmax.toFixed(4) + ' λ');
+  // d_Vmin = d_Vmax + 0.25λ  (V-min is λ/4 further toward generator)
+  row(tT, 'Distance to V_min (from load)', dVmin.toFixed(4) + ' λ');
+
+  // Power
+  row(tP, 'Power Reflected', Pr.toFixed(3) + '%');
+  row(tP, 'Power Transmitted', Pt.toFixed(3) + '%');
+  row(tP, 'Reflected (dB)', (-rl).toFixed(3) + ' dB');
+  row(tP, 'Absorbed Power Ratio', (1-gammaAbs*gammaAbs).toFixed(5));
+  row(tP, 'Available Power Ratio', (gammaAbs*gammaAbs).toFixed(5));
+  // Removed: "VSWR Circle Radius (SVG units)" — renderer-internal value, not an RF parameter
+  row(tP, 'Input Impedance (matched)', `${Z0val} Ω`);
+}
+
+// ─── Main Solve ────────────────────────────────────────────────────────────
+function solve() {
+  const zlR = parseFloat(document.getElementById('zlReal').value);
+  const zlI = parseFloat(document.getElementById('zlImag').value) || 0;
+  const z0Val = parseFloat(document.getElementById('z0').value);
+  const freqVal = parseFloat(document.getElementById('freq').value);
+  const freqMult = parseFloat(document.getElementById('freqUnit').value);
+
+  if (isNaN(zlR) || isNaN(z0Val) || isNaN(freqVal) || z0Val <= 0 || freqVal <= 0) {
+    alert('Please enter valid positive numbers for all fields.');
+    return;
+  }
+
+  const ZL = { r: zlR, i: zlI };
+  const freqHz = freqVal * freqMult;
+
+  // Draw base chart
+  drawSmithChart();
+
+  // Plot point and get computed values
+  const { gamma, gammaAbs, gammaAngle, zn, vswr } = plotPoint(ZL, z0Val);
+
+  // Populate results
+  document.getElementById('resultsSection').style.display = 'grid';
+  populateResults(ZL, z0Val, freqHz, gamma, gammaAbs, gammaAngle, zn, vswr);
+
+  // Update status
+  document.getElementById('statusBadge').innerHTML = '<span class="status-badge badge-ready">● Solved</span>';
+
+  resetView();
+}
+
+function reset() {
+  document.getElementById('zlReal').value = '';
+  document.getElementById('zlImag').value = '';
+  document.getElementById('z0').value = '50';
+  document.getElementById('freq').value = '';
+  document.getElementById('resultsSection').style.display = 'none';
+  document.getElementById('statusBadge').innerHTML = '<span class="status-badge badge-idle">● Waiting for Input</span>';
+  drawSmithChart();
+  resetView();
+}
+
+// Initial draw
+drawSmithChart();
+</script>
+</body>
+</html>
