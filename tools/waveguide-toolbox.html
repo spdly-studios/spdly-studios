@@ -1,0 +1,2727 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Waveguide Toolbox — SpDly Studios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+<style>
+/* ═══════════════════════════════════════════════════════════
+   WAVEGUIDE TOOLBOX — CSS
+   Professional RF/Microwave Engineering Platform
+   © SpDly Studios — spdly.is-a.dev
+═══════════════════════════════════════════════════════════ */
+
+:root {
+  --bg: #0d1117;
+  --bg2: #161b22;
+  --bg3: #1c2230;
+  --bg4: #21283a;
+  --border: #30384d;
+  --border2: #3d4a62;
+  --text: #e6eaf3;
+  --text2: #98a4bb;
+  --text3: #64738f;
+  --accent: #4c8ef7;
+  --accent2: #6fa3fa;
+  --accent-glow: rgba(76,142,247,0.18);
+  --green: #3dd68c;
+  --amber: #f0a050;
+  --red: #f06060;
+  --purple: #b57aff;
+  --teal: #2dd4bf;
+  --card-shadow: 0 2px 16px rgba(0,0,0,0.32);
+  --radius: 10px;
+  --radius-sm: 6px;
+  --font: 'DM Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
+  --display: 'Playfair Display', serif;
+  --transition: 0.18s ease;
+}
+
+[data-theme="light"] {
+  --bg: #f4f6fb;
+  --bg2: #ffffff;
+  --bg3: #edf0f7;
+  --bg4: #e3e8f2;
+  --border: #cdd4e5;
+  --border2: #b8c2d8;
+  --text: #1a2035;
+  --text2: #4a5572;
+  --text3: #7a87a5;
+  --accent: #2563eb;
+  --accent2: #3b82f6;
+  --accent-glow: rgba(37,99,235,0.12);
+  --green: #16a34a;
+  --amber: #d97706;
+  --red: #dc2626;
+  --purple: #7c3aed;
+  --teal: #0d9488;
+  --card-shadow: 0 2px 12px rgba(0,0,0,0.09);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 15px; scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  transition: background var(--transition), color var(--transition);
+  overflow-x: hidden;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* ══════════════ HEADER ══════════════ */
+.header {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: 58px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  transition: background var(--transition);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.logo-icon {
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px;
+}
+
+.logo-text {
+  font-family: var(--display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.logo-badge {
+  font-size: 0.62rem;
+  font-weight: 600;
+  background: var(--accent-glow);
+  color: var(--accent2);
+  border: 1px solid var(--accent);
+  padding: 1px 6px;
+  border-radius: 20px;
+  letter-spacing: 0.04em;
+  margin-left: 2px;
+}
+
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+/* Waveguide type tabs */
+.wg-tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 3px;
+}
+
+.wg-tab {
+  padding: 5px 16px;
+  border-radius: 5px;
+  border: none;
+  background: transparent;
+  color: var(--text2);
+  font-family: var(--font);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.wg-tab.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.wg-tab:hover:not(.active) {
+  background: var(--bg4);
+  color: var(--text);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.icon-btn {
+  width: 34px; height: 34px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text2);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  transition: all var(--transition);
+}
+
+.icon-btn:hover { background: var(--bg4); color: var(--text); border-color: var(--border2); }
+
+/* ══════════════ LAYOUT ══════════════ */
+.app-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 0;
+  min-height: calc(100vh - 58px);
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  padding: 1.2rem;
+  overflow-y: auto;
+  max-height: calc(100vh - 58px);
+  position: sticky;
+  top: 58px;
+}
+
+.sidebar-section {
+  margin-bottom: 1.4rem;
+}
+
+.sidebar-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 0.65rem;
+  padding-left: 2px;
+}
+
+/* Input group */
+.input-group {
+  margin-bottom: 0.75rem;
+}
+
+.input-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text2);
+  margin-bottom: 0.3rem;
+}
+
+.input-label .tip-icon {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  color: var(--text3);
+  font-size: 9px;
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: help;
+  flex-shrink: 0;
+}
+
+.input-row {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.input-field {
+  flex: 1;
+  height: 34px;
+  padding: 0 10px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  outline: none;
+  transition: border-color var(--transition), background var(--transition);
+  min-width: 0;
+}
+
+.input-field:focus { border-color: var(--accent); background: var(--bg4); }
+.input-field::placeholder { color: var(--text3); font-family: var(--font); font-size: 0.8rem; }
+
+.unit-select {
+  width: 66px;
+  height: 34px;
+  padding: 0 4px;
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text2);
+  font-family: var(--font);
+  font-size: 0.75rem;
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--transition);
+  flex-shrink: 0;
+}
+
+.unit-select:focus { border-color: var(--accent); }
+
+/* Mode selectors */
+.mode-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.35rem;
+}
+
+.mode-btn {
+  padding: 6px 0;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text2);
+  font-family: var(--font);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+  transition: all var(--transition);
+}
+
+.mode-btn.active {
+  background: var(--accent-glow);
+  border-color: var(--accent);
+  color: var(--accent2);
+}
+
+.mode-btn:hover:not(.active):not(.disabled) {
+  background: var(--bg4);
+  color: var(--text);
+}
+
+.mode-btn.disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Mode index inputs */
+.mode-indices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+/* Preset selector */
+.preset-select {
+  width: 100%;
+  height: 34px;
+  padding: 0 10px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 0.8rem;
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--transition);
+}
+
+.preset-select:focus { border-color: var(--accent); }
+
+/* Reset button */
+.reset-btn {
+  width: 100%;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text2);
+  font-family: var(--font);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+}
+
+.reset-btn:hover { background: var(--red); border-color: var(--red); color: #fff; }
+
+/* ── Main Content ── */
+.main-content {
+  padding: 1.4rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+/* ══════════════ CARDS ══════════════ */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.card-header {
+  padding: 0.8rem 1.1rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--bg3);
+}
+
+.card-header-icon {
+  font-size: 15px;
+}
+
+.card-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.card-subtitle {
+  font-size: 0.73rem;
+  color: var(--text3);
+  margin-left: auto;
+}
+
+.card-body {
+  padding: 1rem 1.1rem;
+}
+
+/* ══════════════ STATUS BAR ══════════════ */
+.status-bar {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.8rem 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+}
+
+.status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--text3);
+  flex-shrink: 0;
+}
+
+.status-dot.propagating { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.status-dot.evanescent { background: var(--red); box-shadow: 0 0 6px var(--red); }
+.status-dot.cutoff { background: var(--amber); box-shadow: 0 0 6px var(--amber); }
+.status-dot.invalid { background: var(--text3); }
+
+.status-label { color: var(--text3); }
+.status-value { color: var(--text); font-weight: 600; }
+
+.mode-badge {
+  background: var(--accent-glow);
+  border: 1px solid var(--accent);
+  color: var(--accent2);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-family: var(--mono);
+  margin-left: auto;
+}
+
+/* ══════════════ RESULTS GRID ══════════════ */
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.7rem;
+}
+
+.result-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.8rem 0.9rem;
+  transition: border-color var(--transition), transform 0.1s;
+  position: relative;
+  cursor: help;
+}
+
+.result-card:hover {
+  border-color: var(--border2);
+  transform: translateY(-1px);
+}
+
+.result-card.updated {
+  border-color: var(--accent);
+  animation: flash-update 0.5s ease-out;
+}
+
+@keyframes flash-update {
+  0% { background: var(--accent-glow); }
+  100% { background: var(--bg3); }
+}
+
+.result-name {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.35rem;
+}
+
+.result-value {
+  font-family: var(--mono);
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--text);
+  word-break: break-all;
+}
+
+.result-value.pending { color: var(--text3); font-size: 0.78rem; font-family: var(--font); font-weight: 400; }
+.result-value.invalid { color: var(--red); font-size: 0.78rem; font-family: var(--font); }
+.result-value.ok { color: var(--green); }
+.result-value.warn { color: var(--amber); }
+
+.result-unit {
+  font-size: 0.68rem;
+  color: var(--text3);
+  margin-top: 2px;
+}
+
+/* ══════════════ VISUALIZATION ══════════════ */
+.viz-container {
+  width: 100%;
+  background: var(--bg3);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  min-height: 220px;
+}
+
+.viz-container svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.viz-legend {
+  display: flex;
+  gap: 1rem;
+  padding: 0.6rem 0.9rem;
+  border-top: 1px solid var(--border);
+  background: var(--bg4);
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  color: var(--text2);
+}
+
+.legend-line {
+  width: 20px; height: 2px;
+  border-radius: 1px;
+}
+
+/* ══════════════ FORMULA VIEWER ══════════════ */
+.formula-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.formula-item {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+}
+
+.formula-name {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.4rem;
+}
+
+.formula-eq {
+  font-size: 0.92rem;
+  margin-bottom: 0.4rem;
+  overflow-x: auto;
+}
+
+.formula-desc {
+  font-size: 0.75rem;
+  color: var(--text3);
+  line-height: 1.5;
+}
+
+/* ══════════════ THEORY SECTION ══════════════ */
+.theory-item {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.theory-header {
+  padding: 0.7rem 1rem;
+  background: var(--bg3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  user-select: none;
+  transition: background var(--transition);
+}
+
+.theory-header:hover { background: var(--bg4); }
+
+.theory-chevron {
+  font-size: 10px;
+  color: var(--text3);
+  transition: transform 0.2s;
+}
+
+.theory-body {
+  padding: 0.9rem 1rem;
+  font-size: 0.8rem;
+  color: var(--text2);
+  line-height: 1.7;
+  display: none;
+  border-top: 1px solid var(--border);
+  background: var(--bg2);
+}
+
+.theory-body.open { display: block; }
+.theory-header.open .theory-chevron { transform: rotate(90deg); }
+
+/* ══════════════ TABS (main content) ══════════════ */
+.content-tabs {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1rem;
+}
+
+.content-tab {
+  padding: 7px 14px;
+  border: none;
+  background: none;
+  color: var(--text3);
+  font-family: var(--font);
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all var(--transition);
+  margin-bottom: -1px;
+}
+
+.content-tab.active {
+  color: var(--accent2);
+  border-bottom-color: var(--accent);
+}
+
+.content-tab:hover:not(.active) { color: var(--text); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ══════════════ SWEEP GRAPH ══════════════ */
+.sweep-canvas-wrap {
+  width: 100%;
+  background: var(--bg3);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+canvas.sweep-canvas {
+  width: 100%;
+  display: block;
+}
+
+/* ══════════════ TOOLTIP ══════════════ */
+.tooltip-popup {
+  position: fixed;
+  z-index: 9999;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  max-width: 240px;
+  font-size: 0.75rem;
+  color: var(--text2);
+  line-height: 1.5;
+  box-shadow: var(--card-shadow);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.tooltip-popup.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tooltip-title {
+  font-weight: 700;
+  color: var(--accent2);
+  margin-bottom: 0.25rem;
+  font-size: 0.78rem;
+}
+
+/* ══════════════ NOTIFICATION ══════════════ */
+.notif {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  font-size: 0.78rem;
+  color: var(--text);
+  box-shadow: var(--card-shadow);
+  z-index: 9000;
+  transform: translateY(60px);
+  opacity: 0;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.notif.show { transform: translateY(0); opacity: 1; }
+
+/* ══════════════ MODE VALIDITY BADGE ══════════════ */
+.validity-box {
+  padding: 0.6rem 0.9rem;
+  border-radius: 7px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.5;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.validity-box.ok { background: rgba(61,214,140,0.09); border: 1px solid rgba(61,214,140,0.35); color: var(--green); }
+.validity-box.warn { background: rgba(240,160,80,0.09); border: 1px solid rgba(240,160,80,0.35); color: var(--amber); }
+.validity-box.err { background: rgba(240,96,96,0.09); border: 1px solid rgba(240,96,96,0.35); color: var(--red); }
+
+/* ══════════════ DIVIDER ══════════════ */
+.section-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.5rem 0;
+}
+
+/* ══════════════ FOOTER ══════════════ */
+.app-footer {
+  text-align: center;
+  padding: 1.2rem;
+  font-size: 0.72rem;
+  color: var(--text3);
+  border-top: 1px solid var(--border);
+}
+
+.app-footer a { color: var(--accent2); text-decoration: none; }
+.app-footer a:hover { text-decoration: underline; }
+
+/* ══════════════ RESPONSIVE ══════════════ */
+@media (max-width: 900px) {
+  .app-layout { grid-template-columns: 1fr; }
+  .sidebar { position: static; max-height: none; }
+  .header-center { display: none; }
+  .wg-tabs-mobile { display: flex; gap: 2px; overflow-x: auto; padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); background: var(--bg2); }
+}
+
+@media (min-width: 901px) {
+  .wg-tabs-mobile { display: none; }
+}
+
+.copy-btn {
+  padding: 5px 12px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text2);
+  font-family: var(--font);
+  font-size: 0.73rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 0.3rem;
+  transition: all var(--transition);
+}
+
+.copy-btn:hover { background: var(--bg4); color: var(--text); }
+
+.results-section-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin: 0.9rem 0 0.5rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.results-section-title:first-child { margin-top: 0; }
+
+.dominant-tag {
+  display: inline-block;
+  background: rgba(181,122,255,0.12);
+  border: 1px solid rgba(181,122,255,0.4);
+  color: var(--purple);
+  font-size: 0.67rem;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 20px;
+  margin-left: 0.4rem;
+}
+
+/* Sweep controls */
+.sweep-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 0.8rem;
+}
+
+.sweep-controls label {
+  font-size: 0.75rem;
+  color: var(--text2);
+}
+
+.sweep-controls input[type=range] {
+  flex: 1;
+  min-width: 80px;
+  accent-color: var(--accent);
+}
+
+.export-btn {
+  padding: 6px 14px;
+  border-radius: 5px;
+  border: 1px solid var(--accent);
+  background: var(--accent-glow);
+  color: var(--accent2);
+  font-family: var(--font);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 0.3rem;
+  transition: all var(--transition);
+}
+
+.export-btn:hover { background: var(--accent); color: #fff; }
+
+.katex { font-size: 0.95em !important; }
+.katex-display { margin: 0.3em 0 !important; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ TOOLTIP POPUP ═══════════════════ -->
+<div class="tooltip-popup" id="tooltipPopup">
+  <div class="tooltip-title" id="ttTitle"></div>
+  <div id="ttBody"></div>
+</div>
+
+<!-- ═══════════════════ NOTIFICATION ═══════════════════ -->
+<div class="notif" id="notif">
+  <span id="notifIcon">✓</span>
+  <span id="notifMsg"></span>
+</div>
+
+<!-- ═══════════════════ HEADER ═══════════════════ -->
+<header class="header">
+  <a class="logo" href="https://spdly.is-a.dev" target="_blank">
+    <div class="logo-icon">〜</div>
+    <span class="logo-text">Waveguide Toolbox</span>
+    <span class="logo-badge">v2.0</span>
+  </a>
+
+  <div class="header-center">
+    <div class="wg-tabs" id="wgTabs">
+      <button class="wg-tab active" data-wg="rectangular">Rectangular</button>
+      <button class="wg-tab" data-wg="circular">Circular</button>
+      <button class="wg-tab" data-wg="parallel">Parallel Plate</button>
+    </div>
+  </div>
+
+  <div class="header-actions">
+    <button class="icon-btn" id="themeBtn" title="Toggle theme">☀</button>
+    <button class="icon-btn" id="shareBtn" title="Share URL state">🔗</button>
+    <button class="export-btn" id="exportBtn">⬇ Export PDF</button>
+  </div>
+</header>
+
+<!-- Mobile tabs -->
+<div class="wg-tabs-mobile" id="wgTabsMobile">
+  <button class="wg-tab active" data-wg="rectangular">Rectangular</button>
+  <button class="wg-tab" data-wg="circular">Circular</button>
+  <button class="wg-tab" data-wg="parallel">Parallel Plate</button>
+</div>
+
+<!-- ═══════════════════ MAIN LAYOUT ═══════════════════ -->
+<div class="app-layout">
+
+<!-- ──────── SIDEBAR ──────── -->
+<aside class="sidebar">
+
+  <!-- Presets -->
+  <div class="sidebar-section">
+    <div class="sidebar-label">Presets</div>
+    <select class="preset-select" id="presetSelect">
+      <option value="">— Select Standard Waveguide —</option>
+      <optgroup label="Rectangular (EIA WR)">
+        <option value="WR-284">WR-284 (a=72.14mm, b=34.04mm)</option>
+        <option value="WR-229">WR-229 (a=58.17mm, b=29.08mm)</option>
+        <option value="WR-187">WR-187 (a=47.55mm, b=22.15mm)</option>
+        <option value="WR-159">WR-159 (a=40.39mm, b=20.19mm)</option>
+        <option value="WR-137">WR-137 (a=34.85mm, b=15.80mm)</option>
+        <option value="WR-112">WR-112 (a=28.50mm, b=12.62mm)</option>
+        <option value="WR-90">WR-90 (a=22.86mm, b=10.16mm)</option>
+        <option value="WR-75">WR-75 (a=19.05mm, b=9.525mm)</option>
+        <option value="WR-62">WR-62 (a=15.80mm, b=7.899mm)</option>
+        <option value="WR-51">WR-51 (a=12.95mm, b=6.477mm)</option>
+        <option value="WR-42">WR-42 (a=10.67mm, b=4.318mm)</option>
+        <option value="WR-28">WR-28 (a=7.112mm, b=3.556mm)</option>
+        <option value="WR-22">WR-22 (a=5.690mm, b=2.845mm)</option>
+        <option value="WR-19">WR-19 (a=4.775mm, b=2.388mm)</option>
+        <option value="WR-15">WR-15 (a=3.759mm, b=1.880mm)</option>
+        <option value="WR-12">WR-12 (a=3.099mm, b=1.549mm)</option>
+        <option value="WR-10">WR-10 (a=2.540mm, b=1.270mm)</option>
+      </optgroup>
+    </select>
+  </div>
+
+  <!-- Geometry Inputs -->
+  <div class="sidebar-section" id="rectInputs">
+    <div class="sidebar-label">Geometry</div>
+
+    <div class="input-group">
+      <div class="input-label">
+        Width <em>a</em>
+        <span class="tip-icon" data-tip="width">?</span>
+      </div>
+      <div class="input-row">
+        <input class="input-field" id="rectA" type="number" placeholder="e.g. 22.86" min="0" step="any">
+        <select class="unit-select" id="rectAUnit">
+          <option value="mm" selected>mm</option>
+          <option value="cm">cm</option>
+          <option value="m">m</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <div class="input-label">
+        Height <em>b</em>
+        <span class="tip-icon" data-tip="height">?</span>
+      </div>
+      <div class="input-row">
+        <input class="input-field" id="rectB" type="number" placeholder="e.g. 10.16" min="0" step="any">
+        <select class="unit-select" id="rectBUnit">
+          <option value="mm" selected>mm</option>
+          <option value="cm">cm</option>
+          <option value="m">m</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-section" id="circInputs" style="display:none">
+    <div class="sidebar-label">Geometry</div>
+    <div class="input-group">
+      <div class="input-label">
+        Radius <em>a</em>
+        <span class="tip-icon" data-tip="radius">?</span>
+      </div>
+      <div class="input-row">
+        <input class="input-field" id="circR" type="number" placeholder="e.g. 10" min="0" step="any">
+        <select class="unit-select" id="circRUnit">
+          <option value="mm" selected>mm</option>
+          <option value="cm">cm</option>
+          <option value="m">m</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-section" id="ppInputs" style="display:none">
+    <div class="sidebar-label">Geometry</div>
+    <div class="input-group">
+      <div class="input-label">
+        Plate Separation <em>d</em>
+        <span class="tip-icon" data-tip="separation">?</span>
+      </div>
+      <div class="input-row">
+        <input class="input-field" id="ppD" type="number" placeholder="e.g. 10" min="0" step="any">
+        <select class="unit-select" id="ppDUnit">
+          <option value="mm" selected>mm</option>
+          <option value="cm">cm</option>
+          <option value="m">m</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mode Selection -->
+  <div class="sidebar-section">
+    <div class="sidebar-label">Mode Type</div>
+    <div class="mode-grid" id="modeTypeGrid">
+      <button class="mode-btn active" data-mode="TE">TE</button>
+      <button class="mode-btn" data-mode="TM">TM</button>
+      <button class="mode-btn" data-mode="TEM" id="temBtn">TEM</button>
+    </div>
+
+    <div class="mode-indices" id="rectModeIdx">
+      <div class="input-group" style="margin:0">
+        <div class="input-label">m</div>
+        <input class="input-field" id="modeM" type="number" value="1" min="0" max="10" step="1">
+      </div>
+      <div class="input-group" style="margin:0">
+        <div class="input-label">n</div>
+        <input class="input-field" id="modeN" type="number" value="0" min="0" max="10" step="1">
+      </div>
+    </div>
+
+    <div class="mode-indices" id="circModeIdx" style="display:none">
+      <div class="input-group" style="margin:0">
+        <div class="input-label">n (azimuthal)</div>
+        <input class="input-field" id="circN" type="number" value="1" min="0" max="10" step="1">
+      </div>
+      <div class="input-group" style="margin:0">
+        <div class="input-label">m (radial)</div>
+        <input class="input-field" id="circM" type="number" value="1" min="1" max="10" step="1">
+      </div>
+    </div>
+
+    <div class="mode-indices" id="ppModeIdx" style="display:none">
+      <div class="input-group" style="margin:0; grid-column: span 2">
+        <div class="input-label">Mode n</div>
+        <input class="input-field" id="ppN" type="number" value="0" min="0" max="10" step="1">
+      </div>
+    </div>
+  </div>
+
+  <!-- Frequency -->
+  <div class="sidebar-section">
+    <div class="sidebar-label">Operating Frequency</div>
+    <div class="input-group">
+      <div class="input-label">
+        Frequency <em>f</em>
+        <span class="tip-icon" data-tip="freq">?</span>
+      </div>
+      <div class="input-row">
+        <input class="input-field" id="freq" type="number" placeholder="Optional" min="0" step="any">
+        <select class="unit-select" id="freqUnit">
+          <option value="Hz">Hz</option>
+          <option value="kHz">kHz</option>
+          <option value="MHz">MHz</option>
+          <option value="GHz" selected>GHz</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Material -->
+  <div class="sidebar-section">
+    <div class="sidebar-label">Fill Material</div>
+    <div class="input-group">
+      <div class="input-label">
+        Rel. Permittivity ε<sub>r</sub>
+        <span class="tip-icon" data-tip="er">?</span>
+      </div>
+      <input class="input-field" id="epsr" type="number" placeholder="1.0 (air)" value="1" min="1" step="any" style="width:100%">
+    </div>
+    <div class="input-group">
+      <div class="input-label">
+        Rel. Permeability μ<sub>r</sub>
+        <span class="tip-icon" data-tip="mur">?</span>
+      </div>
+      <input class="input-field" id="mur" type="number" placeholder="1.0 (air)" value="1" min="1" step="any" style="width:100%">
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- Actions -->
+  <div class="sidebar-section">
+    <div style="display:flex; gap:0.4rem;">
+      <button class="reset-btn" id="resetBtn">↺ Reset</button>
+      <button class="copy-btn" id="copyBtn" style="flex:1; justify-content:center">📋 Copy</button>
+    </div>
+  </div>
+
+</aside>
+
+<!-- ──────── MAIN CONTENT ──────── -->
+<main class="main-content" id="mainContent">
+
+  <!-- Status Bar -->
+  <div class="status-bar" id="statusBar">
+    <div class="status-item">
+      <div class="status-dot" id="propDot"></div>
+      <span class="status-label">Status:</span>
+      <span class="status-value" id="propStatus">Waiting for inputs</span>
+    </div>
+    <div class="status-item">
+      <span class="status-label">f<sub>c</sub>:</span>
+      <span class="status-value" id="statusFc">—</span>
+    </div>
+    <div class="status-item">
+      <span class="status-label">f/f<sub>c</sub>:</span>
+      <span class="status-value" id="statusRatio">—</span>
+    </div>
+    <div class="mode-badge" id="modeBadge">TE₁₀</div>
+  </div>
+
+  <!-- Validity Box -->
+  <div class="validity-box ok" id="validityBox" style="display:none"></div>
+
+  <!-- Content Tabs -->
+  <div class="card">
+    <div class="card-body" style="padding-bottom:0">
+      <div class="content-tabs" id="contentTabs">
+        <button class="content-tab active" data-panel="results">Results</button>
+        <button class="content-tab" data-panel="visualization">Field Visualization</button>
+        <button class="content-tab" data-panel="sweep">Frequency Sweep</button>
+        <button class="content-tab" data-panel="formulas">Formulas</button>
+        <button class="content-tab" data-panel="theory">Theory</button>
+      </div>
+    </div>
+
+    <!-- RESULTS PANEL -->
+    <div class="tab-panel active" id="panel-results">
+      <div class="card-body">
+        <div class="results-section-title">Fundamental Parameters</div>
+        <div class="results-grid" id="resultsGrid1"></div>
+
+        <div class="results-section-title">Propagation Characteristics</div>
+        <div class="results-grid" id="resultsGrid2"></div>
+
+        <div class="results-section-title">Velocity Parameters</div>
+        <div class="results-grid" id="resultsGrid3"></div>
+
+        <div class="results-section-title">Impedance Parameters</div>
+        <div class="results-grid" id="resultsGrid4"></div>
+
+        <div class="results-section-title">Mode Information</div>
+        <div class="results-grid" id="resultsGrid5"></div>
+
+        <div class="results-section-title">Advanced Parameters</div>
+        <div class="results-grid" id="resultsGrid6"></div>
+      </div>
+    </div>
+
+    <!-- VISUALIZATION PANEL -->
+    <div class="tab-panel" id="panel-visualization">
+      <div class="card-body">
+        <div class="viz-container" id="vizContainer" style="min-height:280px">
+          <svg id="vizSvg" viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+        <div class="viz-legend">
+          <div class="legend-item">
+            <div class="legend-line" style="background:#e05050"></div>
+            E-field (Electric)
+          </div>
+          <div class="legend-item">
+            <div class="legend-line" style="background:#50a0e0; border-top: 2px dashed #50a0e0; height:0"></div>
+            H-field (Magnetic)
+          </div>
+          <div class="legend-item">
+            <div class="legend-line" style="background:var(--green)"></div>
+            Propagation Direction
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SWEEP PANEL -->
+    <div class="tab-panel" id="panel-sweep">
+      <div class="card-body">
+        <div class="sweep-controls">
+          <label>f<sub>min</sub>: <span id="sweepMinLabel">0 GHz</span></label>
+          <input type="range" id="sweepMin" min="0" max="200" value="0">
+          <label>f<sub>max</sub>: <span id="sweepMaxLabel">30 GHz</span></label>
+          <input type="range" id="sweepMax" min="1" max="500" value="30">
+        </div>
+        <div class="sweep-canvas-wrap">
+          <canvas class="sweep-canvas" id="sweepCanvas" width="900" height="320"></canvas>
+        </div>
+        <div style="margin-top:0.5rem; font-size:0.72rem; color:var(--text3)">
+          Shows propagation constant β (solid) and attenuation α (dashed) vs frequency. Vertical dashed line marks cutoff.
+        </div>
+      </div>
+    </div>
+
+    <!-- FORMULAS PANEL -->
+    <div class="tab-panel" id="panel-formulas">
+      <div class="card-body">
+        <div class="formula-list" id="formulaList"></div>
+      </div>
+    </div>
+
+    <!-- THEORY PANEL -->
+    <div class="tab-panel" id="panel-theory">
+      <div class="card-body" id="theoryContent"></div>
+    </div>
+
+  </div><!-- end card -->
+
+  <footer class="app-footer">
+    © SpDly Studios &nbsp;·&nbsp; <a href="https://spdly.is-a.dev" target="_blank">spdly.is-a.dev</a>
+    &nbsp;·&nbsp; Waveguide Toolbox v2.0 &nbsp;·&nbsp; All equations use SI units internally
+  </footer>
+
+</main>
+</div><!-- end app-layout -->
+
+<!-- ═══════════════════ JAVASCRIPT ═══════════════════ -->
+<script>
+/* ═══════════════════════════════════════════════════════
+   WAVEGUIDE TOOLBOX — Core Engine
+   © SpDly Studios — spdly.is-a.dev
+═══════════════════════════════════════════════════════ */
+
+'use strict';
+
+// ── Physical Constants ──
+const C0 = 2.99792458e8;   // Speed of light [m/s]
+const MU0 = 4*Math.PI*1e-7; // Free space permeability [H/m]
+const EPS0 = 1/(MU0*C0*C0); // Free space permittivity [F/m]
+const ETA0 = MU0*C0;        // Free space impedance ≈ 376.73 Ω
+
+// ── Bessel function roots lookup ──
+// TE modes: zeros of J'_n(x) = 0
+const BESSEL_TE = {
+  '0,1':3.8317,'0,2':7.0156,'0,3':10.1735,
+  '1,1':1.8412,'1,2':5.3314,'1,3':8.5363,
+  '2,1':3.0542,'2,2':6.7061,'2,3':9.9695,
+  '3,1':4.2012,'3,2':8.0152,'3,3':11.3459,
+  '4,1':5.3175,'4,2':9.2824,
+  '5,1':6.4156,
+};
+// TM modes: zeros of J_n(x) = 0
+const BESSEL_TM = {
+  '0,1':2.4048,'0,2':5.5201,'0,3':8.6537,
+  '1,1':3.8317,'1,2':7.0156,'1,3':10.1735,
+  '2,1':5.1356,'2,2':8.4172,'2,3':11.6198,
+  '3,1':6.3802,'3,2':9.7610,
+  '4,1':7.5883,'4,2':11.0647,
+  '5,1':8.7715,
+};
+
+// ── Standard WR presets ──
+const PRESETS = {
+  'WR-284':{a:72.14e-3,b:34.04e-3},'WR-229':{a:58.17e-3,b:29.08e-3},
+  'WR-187':{a:47.55e-3,b:22.15e-3},'WR-159':{a:40.39e-3,b:20.19e-3},
+  'WR-137':{a:34.85e-3,b:15.80e-3},'WR-112':{a:28.50e-3,b:12.62e-3},
+  'WR-90' :{a:22.86e-3,b:10.16e-3},'WR-75' :{a:19.05e-3,b:9.525e-3},
+  'WR-62' :{a:15.80e-3,b:7.899e-3},'WR-51' :{a:12.95e-3,b:6.477e-3},
+  'WR-42' :{a:10.67e-3,b:4.318e-3},'WR-28' :{a:7.112e-3,b:3.556e-3},
+  'WR-22' :{a:5.690e-3,b:2.845e-3},'WR-19' :{a:4.775e-3,b:2.388e-3},
+  'WR-15' :{a:3.759e-3,b:1.880e-3},'WR-12' :{a:3.099e-3,b:1.549e-3},
+  'WR-10' :{a:2.540e-3,b:1.270e-3},
+};
+
+// ── Tooltip definitions ──
+const TIPS = {
+  width: {title:'Width a',body:'Broad wall dimension of the rectangular waveguide. Determines the cutoff frequency of TE₁₀ dominant mode.'},
+  height: {title:'Height b',body:'Narrow wall dimension. Typically b ≈ a/2 for standard waveguides.'},
+  radius: {title:'Radius a',body:'Inner radius of the circular waveguide. Used to compute Bessel function roots and cutoff frequencies.'},
+  separation: {title:'Plate Separation d',body:'Distance between parallel conducting plates. TEM propagates at all frequencies (f_c = 0 for TEM).'},
+  freq: {title:'Operating Frequency f',body:'The frequency at which the waveguide is driven. Propagation only occurs when f > f_c.'},
+  er: {title:'Relative Permittivity εr',body:'Dielectric constant of fill material. Air = 1.0. Higher εr lowers cutoff frequency and guide wavelength.'},
+  mur: {title:'Relative Permeability μr',body:'Magnetic permeability of fill material. For most dielectrics μr = 1.0.'},
+  fc: {title:'Cutoff Frequency fc',body:'Minimum frequency for propagation. Below fc, the wave is evanescent and decays exponentially.'},
+  lambda_g: {title:'Guide Wavelength λg',body:'Effective wavelength inside the waveguide, longer than free-space wavelength. λg = λ/√(1-(fc/f)²)'},
+  beta: {title:'Phase Constant β',body:'Rate of phase change along the guide axis. β = √(k²-kc²). Units: rad/m.'},
+  alpha: {title:'Attenuation Constant α',body:'Rate of amplitude decay below cutoff. α = √(kc²-k²). Units: Np/m.'},
+  vp: {title:'Phase Velocity vp',body:'Speed of phase fronts inside the guide. vp = ω/β. Always > c for guided modes.'},
+  vg: {title:'Group Velocity vg',body:'Speed of energy/information. vg·vp = c². Always < c.'},
+  zw: {title:'Wave Impedance ZTE/ZTM',body:'Ratio of transverse E to H fields. ZTE = η/√(1-(fc/f)²), ZTM = η·√(1-(fc/f)²).'},
+  gamma: {title:'Propagation Constant γ',body:'Complex propagation constant: γ = α + jβ. Describes both attenuation and phase shift.'},
+};
+
+// ─── APP STATE ───
+let state = {
+  wgType: 'rectangular', // 'rectangular' | 'circular' | 'parallel'
+  modeType: 'TE',        // 'TE' | 'TM' | 'TEM'
+  m: 1, n: 0,           // mode indices
+  a: null, b: null,      // rect dims [m]
+  r: null,               // circ radius [m]
+  d: null,               // pp separation [m]
+  f: null,               // frequency [Hz]
+  er: 1, mur: 1,        // material
+};
+
+let calcTimer = null;
+let sweepAnimId = null;
+
+// ═══════════════════════════════════════════
+//  UNIT CONVERSION
+// ═══════════════════════════════════════════
+function toMeters(v, unit) {
+  if (!isFinite(v) || v === null) return null;
+  switch(unit) { case 'mm': return v*1e-3; case 'cm': return v*1e-2; default: return v; }
+}
+
+function toHz(v, unit) {
+  if (!isFinite(v) || v === null) return null;
+  switch(unit) { case 'GHz': return v*1e9; case 'MHz': return v*1e6; case 'kHz': return v*1e3; default: return v; }
+}
+
+function formatEng(v, unit='', digits=4) {
+  if (v === null || !isFinite(v)) return null;
+  const abs = Math.abs(v);
+  if (abs === 0) return '0 ' + unit;
+  const exp = Math.floor(Math.log10(abs) / 3) * 3;
+  const prefixes = {'-15':'f','-12':'p','-9':'n','-6':'µ','-3':'m','0':'','3':'k','6':'M','9':'G','12':'T'};
+  const p = prefixes[String(exp)] ?? '';
+  const scaled = v / Math.pow(10, exp);
+  return parseFloat(scaled.toPrecision(digits)) + ' ' + p + unit;
+}
+
+function formatHz(v) {
+  if (v === null || !isFinite(v) || v < 0) return null;
+  if (v >= 1e9) return (v/1e9).toPrecision(5) + ' GHz';
+  if (v >= 1e6) return (v/1e6).toPrecision(5) + ' MHz';
+  if (v >= 1e3) return (v/1e3).toPrecision(5) + ' kHz';
+  return v.toPrecision(5) + ' Hz';
+}
+
+// ═══════════════════════════════════════════
+//  CORE PHYSICS ENGINE
+// ═══════════════════════════════════════════
+
+function computeRectangular(s) {
+  const {modeType, m, n, a, b, f, er, mur} = s;
+  const res = {};
+
+  // Validate mode
+  if (modeType === 'TEM') {
+    res.validity = {type:'err', msg:'TEM mode cannot propagate in a rectangular (single-conductor hollow) waveguide. TEM requires two conductors and a quasi-static field distribution. The TE₁₀ mode is the dominant mode here.'};
+    return res;
+  }
+  if (modeType === 'TE' && m === 0 && n === 0) {
+    res.validity = {type:'err', msg:'TE₀₀ mode is physically impossible. At least one of m or n must be nonzero for a valid TE mode.'};
+    return res;
+  }
+  if (modeType === 'TM' && (m === 0 || n === 0)) {
+    res.validity = {type:'err', msg:`TM${m}${n} mode is invalid. Both m and n must be ≥ 1 for TM modes in rectangular waveguides. TM₁₁ is the lowest valid TM mode.`};
+    return res;
+  }
+  if (!a || !b) { res.validity = {type:'warn', msg:'Enter waveguide dimensions to compute cutoff frequency.'}; return res; }
+  if (a <= 0 || b <= 0) { res.validity = {type:'err', msg:'Dimensions must be positive.'}; return res; }
+
+  res.validity = {type:'ok', msg:`${modeType}${m}${n} mode is valid for rectangular waveguide. ${m===1&&n===0?'This is the dominant (TE₁₀) mode.':''}`};
+
+  // Material properties
+  const mu = mur * MU0;
+  const eps = er * EPS0;
+  const eta = Math.sqrt(mu / eps);        // intrinsic impedance
+  const v = 1 / Math.sqrt(mu * eps);      // phase velocity in medium
+
+  // Cutoff wavenumber
+  const kc = Math.sqrt(Math.pow(m*Math.PI/a, 2) + Math.pow(n*Math.PI/b, 2));
+  const fc = kc * v / (2*Math.PI);
+  const lambdac = 2*Math.PI / kc;
+
+  res.kc = kc; res.fc = fc; res.lambdac = lambdac;
+  res.eta = eta; res.v_medium = v;
+
+  if (!f) return res;
+
+  const omega = 2*Math.PI*f;
+  const k = omega * Math.sqrt(mu*eps);
+  const lambda0 = C0 / (f*Math.sqrt(er*mur)); // wavelength in medium (free space if er=1,mur=1)
+  const lambda_free = C0 / f;
+
+  res.lambda0 = lambda_free;
+  res.k = k;
+
+  const ratio = f / fc;
+  res.ratio = ratio;
+
+  if (f > fc) {
+    // Propagating
+    const beta = Math.sqrt(k*k - kc*kc);
+    const lambdaG = 2*Math.PI / beta;
+    const vp = omega / beta;
+    const vg = (C0*C0) / (vp * er * mur); // vg·vp = v²
+    // More accurately: vg = v²/vp = (beta/k)*v
+    const vg2 = (beta/k) * v;
+    const vf = vp / C0; // velocity factor relative to c
+
+    res.propagating = true;
+    res.beta = beta;
+    res.alpha = 0;
+    res.lambdaG = lambdaG;
+    res.vp = vp;
+    res.vg = vg2;
+    res.vf = vp/C0;
+
+    // Wave impedance
+    if (modeType === 'TE') {
+      res.ZW = eta / Math.sqrt(1 - Math.pow(fc/f,2));
+    } else {
+      res.ZW = eta * Math.sqrt(1 - Math.pow(fc/f,2));
+    }
+    res.gamma_real = 0;
+    res.gamma_imag = beta;
+  } else {
+    // Evanescent
+    const alpha = Math.sqrt(kc*kc - k*k);
+    res.propagating = false;
+    res.alpha = alpha;
+    res.beta = 0;
+    res.lambdaG = null;
+    res.vp = null;
+    res.vg = null;
+    res.ZW = null;
+    res.gamma_real = alpha;
+    res.gamma_imag = 0;
+    res.attenuation_dB_m = 20*alpha/Math.LN10; // attenuation in dB/m
+  }
+
+  return res;
+}
+
+function computeCircular(s) {
+  const {modeType, m, n, r, f, er, mur} = s;
+  const res = {};
+
+  // m = azimuthal, n = radial
+  const key = `${m},${n}`;
+
+  if (modeType === 'TEM') {
+    res.validity = {type:'err', msg:'TEM mode cannot propagate in a circular (single-conductor hollow) waveguide. TEM requires two conductors. TE₁₁ is the dominant mode.'};
+    return res;
+  }
+
+  let pnm;
+  if (modeType === 'TE') {
+    pnm = BESSEL_TE[key];
+    if (!pnm) { res.validity={type:'err',msg:`No Bessel root data for TE${m}${n}. Supported: n=0..5, m=1..3.`}; return res; }
+  } else {
+    if (m === 0 && n === 0) { res.validity={type:'err',msg:'TM₀₀ is not a valid mode.'}; return res; }
+    pnm = BESSEL_TM[key];
+    if (!pnm) { res.validity={type:'err',msg:`No Bessel root data for TM${m}${n}. Supported: n=0..5, m=1..3.`}; return res; }
+  }
+
+  res.bessel_root = pnm;
+  if (!r) { res.validity={type:'warn',msg:'Enter radius to compute cutoff.'}; return res; }
+  if (r <= 0) { res.validity={type:'err',msg:'Radius must be positive.'}; return res; }
+
+  res.validity = {type:'ok', msg:`${modeType}${m}${n} is valid for circular waveguide. Bessel root p'_${m}${n} = ${pnm.toFixed(4)}. ${m===1&&n===1&&modeType==='TE'?'This is the dominant TE₁₁ mode.':''}`};
+
+  const mu = mur * MU0;
+  const eps = er * EPS0;
+  const eta = Math.sqrt(mu / eps);
+  const v = 1 / Math.sqrt(mu * eps);
+
+  const kc = pnm / r;
+  const fc = kc * v / (2*Math.PI);
+  const lambdac = 2*Math.PI / kc;
+
+  res.kc = kc; res.fc = fc; res.lambdac = lambdac;
+  res.eta = eta; res.v_medium = v;
+
+  if (!f) return res;
+
+  const omega = 2*Math.PI*f;
+  const k = omega * Math.sqrt(mu*eps);
+  res.lambda0 = C0 / f;
+  res.k = k;
+
+  const ratio = f / fc;
+  res.ratio = ratio;
+
+  if (f > fc) {
+    const beta = Math.sqrt(k*k - kc*kc);
+    const vg2 = (beta/k)*v;
+    const vp = omega/beta;
+
+    res.propagating = true;
+    res.beta = beta; res.alpha = 0;
+    res.lambdaG = 2*Math.PI/beta;
+    res.vp = vp; res.vg = vg2;
+
+    if (modeType === 'TE') {
+      res.ZW = eta / Math.sqrt(1 - Math.pow(fc/f,2));
+    } else {
+      res.ZW = eta * Math.sqrt(1 - Math.pow(fc/f,2));
+    }
+    res.gamma_real = 0; res.gamma_imag = beta;
+  } else {
+    const alpha = Math.sqrt(kc*kc - k*k);
+    res.propagating = false;
+    res.alpha = alpha; res.beta = 0;
+    res.lambdaG = null; res.vp = null; res.vg = null; res.ZW = null;
+    res.gamma_real = alpha; res.gamma_imag = 0;
+    res.attenuation_dB_m = 20*alpha/Math.LN10;
+  }
+
+  return res;
+}
+
+function computeParallelPlate(s) {
+  const {modeType, n, d, f, er, mur} = s;
+  const res = {};
+
+  if (!d) { res.validity={type:'warn',msg:'Enter plate separation to compute parameters.'}; return res; }
+  if (d <= 0) { res.validity={type:'err',msg:'Plate separation must be positive.'}; return res; }
+
+  const mu = mur * MU0;
+  const eps = er * EPS0;
+  const eta = Math.sqrt(mu / eps);
+  const v = 1 / Math.sqrt(mu * eps);
+
+  if (modeType === 'TEM') {
+    // TEM: fc=0, always propagates
+    res.validity = {type:'ok', msg:'TEM mode propagates in parallel-plate waveguide at all frequencies (f_c = 0). This requires two conductors, which the parallel plate guide provides.'};
+    res.fc = 0; res.lambdac = Infinity; res.kc = 0;
+    res.eta = eta; res.v_medium = v;
+
+    if (!f) return res;
+
+    const omega = 2*Math.PI*f;
+    const k = omega*Math.sqrt(mu*eps);
+    res.k = k;
+    res.lambda0 = C0/f;
+    res.ratio = Infinity;
+    res.propagating = true;
+    res.beta = k; res.alpha = 0;
+    res.lambdaG = v/f; // = lambda in medium
+    res.vp = v; res.vg = v;
+    res.ZW = eta; // TEM impedance = intrinsic impedance
+    res.gamma_real = 0; res.gamma_imag = k;
+    return res;
+  }
+
+  // TE_n or TM_n
+  if (modeType === 'TE' && n === 0) {
+    res.validity = {type:'err', msg:'TE₀ mode is invalid. n must be ≥ 1 for TE modes.'}; return res;
+  }
+
+  let kc, fc, lambdac;
+  if (modeType === 'TM' && n === 0) {
+    // TM₀ = TEM in parallel plate
+    res.validity = {type:'ok', msg:'TM₀ in parallel-plate guide is equivalent to TEM mode (f_c = 0). It propagates at all frequencies.'};
+    kc = 0; fc = 0; lambdac = Infinity;
+  } else {
+    kc = n * Math.PI / d;
+    fc = kc * v / (2*Math.PI);
+    lambdac = 2*Math.PI / kc;
+    res.validity = {type:'ok', msg:`${modeType}${n} mode in parallel-plate waveguide. ${n===1?'This is the lowest-order non-TEM mode.':''}`};
+  }
+
+  res.kc = kc; res.fc = fc; res.lambdac = lambdac;
+  res.eta = eta; res.v_medium = v;
+
+  if (!f) return res;
+
+  const omega = 2*Math.PI*f;
+  const k = omega*Math.sqrt(mu*eps);
+  res.k = k; res.lambda0 = C0/f;
+  res.ratio = fc === 0 ? Infinity : f/fc;
+
+  if (fc === 0 || f > fc) {
+    const beta = Math.sqrt(k*k - kc*kc);
+    const vg = (beta/k)*v;
+    const vp = omega/beta;
+
+    res.propagating = true;
+    res.beta = beta; res.alpha = 0;
+    res.lambdaG = 2*Math.PI/beta;
+    res.vp = vp; res.vg = vg;
+    if (modeType === 'TE') res.ZW = eta/Math.sqrt(1-Math.pow(fc/f,2));
+    else res.ZW = eta*Math.sqrt(1-Math.pow(fc/f,2));
+    res.gamma_real = 0; res.gamma_imag = beta;
+  } else {
+    const alpha = Math.sqrt(kc*kc - k*k);
+    res.propagating = false;
+    res.alpha = alpha; res.beta = 0;
+    res.lambdaG = null; res.vp = null; res.vg = null; res.ZW = null;
+    res.gamma_real = alpha; res.gamma_imag = 0;
+    res.attenuation_dB_m = 20*alpha/Math.LN10;
+  }
+
+  return res;
+}
+
+// ═══════════════════════════════════════════
+//  COMPUTE ROUTER + UI UPDATE
+// ═══════════════════════════════════════════
+
+function readInputs() {
+  const s = Object.assign({}, state);
+
+  const toM = (id, unitId) => {
+    const v = parseFloat(document.getElementById(id)?.value);
+    const u = document.getElementById(unitId)?.value || 'm';
+    return isFinite(v) && v > 0 ? toMeters(v, u) : null;
+  };
+
+  s.a = toM('rectA','rectAUnit');
+  s.b = toM('rectB','rectBUnit');
+  s.r = toM('circR','circRUnit');
+  s.d = toM('ppD','ppDUnit');
+  s.f = (() => {
+    const v = parseFloat(document.getElementById('freq').value);
+    const u = document.getElementById('freqUnit').value;
+    return isFinite(v) && v > 0 ? toHz(v, u) : null;
+  })();
+  s.er = Math.max(1, parseFloat(document.getElementById('epsr').value) || 1);
+  s.mur = Math.max(1, parseFloat(document.getElementById('mur').value) || 1);
+  s.m = parseInt(document.getElementById('modeM')?.value) || 0;
+  s.n = parseInt(document.getElementById('modeN')?.value) || 0;
+  // For circular
+  s.circN = parseInt(document.getElementById('circN')?.value) || 1;
+  s.circM = parseInt(document.getElementById('circM')?.value) || 1;
+  // For PP
+  s.ppN = parseInt(document.getElementById('ppN')?.value) || 0;
+  // Remap for circular
+  if (s.wgType === 'circular') { s.m = s.circN; s.n = s.circM; }
+  if (s.wgType === 'parallel') { s.n = s.ppN; }
+
+  return s;
+}
+
+function runCalculation() {
+  const s = readInputs();
+  let res;
+  if (s.wgType === 'rectangular') res = computeRectangular(s);
+  else if (s.wgType === 'circular') res = computeCircular(s);
+  else res = computeParallelPlate(s);
+
+  updateUI(res, s);
+  updateViz(res, s);
+  updateSweep(res, s);
+  updateFormulas(s);
+  updateURLState(s);
+}
+
+// ─── Schedule recalc (debounced) ───
+function scheduleCalc() {
+  clearTimeout(calcTimer);
+  calcTimer = setTimeout(runCalculation, 80);
+}
+
+// ═══════════════════════════════════════════
+//  UI UPDATER
+// ═══════════════════════════════════════════
+
+function makeResultCard(id, name, value, unit, tipKey, cls='') {
+  const v = value !== null && value !== undefined && isFinite(value) ? value : null;
+  let dispVal, dispCls;
+
+  if (v === null && typeof value === 'string') {
+    // String message
+    dispVal = value; dispCls = 'pending';
+  } else if (v === null) {
+    dispVal = '—'; dispCls = 'pending';
+  } else {
+    dispVal = v; dispCls = cls;
+  }
+
+  return `<div class="result-card" id="rc-${id}" data-tip="${tipKey||''}">
+    <div class="result-name">${name}</div>
+    <div class="result-value ${dispCls}" id="rv-${id}">${typeof dispVal==='number'?formatDispVal(dispVal,unit):dispVal}</div>
+    ${unit && v!==null?`<div class="result-unit">${unit}</div>`:''}
+  </div>`;
+}
+
+function formatDispVal(v, unit) {
+  if (v === null || !isFinite(v)) return '—';
+  if (unit === 'Hz' || unit === 'GHz') return formatHz(v);
+  if (unit === 'Ω') return formatEng(v, 'Ω');
+  if (unit === 'm') return formatEng(v, 'm');
+  if (unit === 'rad/m') return formatEng(v, 'rad/m');
+  if (unit === 'Np/m') return formatEng(v, 'Np/m');
+  if (unit === 'm/s') return formatEng(v, 'm/s');
+  if (unit === 'dB/m') return v.toFixed(3) + ' dB/m';
+  if (unit === '') return v.toPrecision(5);
+  return formatEng(v, unit);
+}
+
+function setResultCard(id, value, unit, cls='') {
+  const el = document.getElementById('rv-'+id);
+  if (!el) return;
+  const parent = document.getElementById('rc-'+id);
+  let disp, dcls;
+
+  if (typeof value === 'string') { disp=value; dcls='pending'; }
+  else if (value===null||!isFinite(value)) { disp='—'; dcls='pending'; }
+  else { disp=formatDispVal(value,unit); dcls=cls; }
+
+  if (el.textContent !== disp) {
+    el.textContent = disp;
+    el.className = 'result-value '+dcls;
+    parent?.classList.add('updated');
+    setTimeout(()=>parent?.classList.remove('updated'), 600);
+  }
+}
+
+function P(v) { return v===null?null:v; } // passthrough
+
+function updateUI(res, s) {
+  // Validity box
+  const vb = document.getElementById('validityBox');
+  if (res.validity) {
+    vb.style.display = 'flex';
+    vb.className = 'validity-box ' + res.validity.type;
+    vb.innerHTML = (res.validity.type==='ok'?'✓ ':res.validity.type==='warn'?'⚠ ':'✗ ') + res.validity.msg;
+  } else {
+    vb.style.display = 'none';
+  }
+
+  // Status bar
+  const fc = res.fc;
+  const f = s.f;
+  const statusFc = document.getElementById('statusFc');
+  const statusRatio = document.getElementById('statusRatio');
+  const propStatus = document.getElementById('propStatus');
+  const propDot = document.getElementById('propDot');
+  const modeBadge = document.getElementById('modeBadge');
+
+  statusFc.textContent = fc!==undefined&&fc!==null ? formatHz(fc) : '—';
+
+  if (res.validity?.type==='err' && !res.fc) {
+    propStatus.textContent = 'Invalid Mode';
+    propDot.className = 'status-dot invalid';
+    statusRatio.textContent = '—';
+  } else if (!f) {
+    propStatus.textContent = 'Frequency not set';
+    propDot.className = 'status-dot';
+    statusRatio.textContent = '—';
+  } else if (res.propagating === true) {
+    propStatus.textContent = 'Propagating ✓';
+    propDot.className = 'status-dot propagating';
+    statusRatio.textContent = res.ratio ? res.ratio.toFixed(3) : '—';
+  } else if (res.propagating === false) {
+    propStatus.textContent = 'Evanescent (below cutoff)';
+    propDot.className = 'status-dot evanescent';
+    statusRatio.textContent = res.ratio ? res.ratio.toFixed(3) : '—';
+  } else {
+    propStatus.textContent = fc!==undefined ? 'Frequency needed' : 'Waiting for inputs';
+    propDot.className = 'status-dot';
+  }
+
+  // Mode badge
+  const mStr = getModeString(s);
+  modeBadge.textContent = mStr;
+
+  // ── GRID 1: Fundamental Parameters ──
+  buildResultsGrid('resultsGrid1', [
+    {id:'fc', name:'Cutoff Frequency', val:res.fc, unit:'Hz', tip:'fc'},
+    {id:'lambdac', name:'Cutoff Wavelength', val:res.lambdac, unit:'m', tip:''},
+    {id:'lambda0', name:'Free-Space Wavelength', val:res.lambda0, unit:'m', tip:''},
+    {id:'kc', name:'Cutoff Wavenumber k_c', val:res.kc, unit:'rad/m', tip:''},
+    {id:'k', name:'Wavenumber k', val:res.k, unit:'rad/m', tip:''},
+    {id:'eta', name:'Intrinsic Impedance η', val:res.eta, unit:'Ω', tip:'zw'},
+  ]);
+
+  // ── GRID 2: Propagation ──
+  buildResultsGrid('resultsGrid2', [
+    {id:'beta', name:'Phase Constant β', val:res.beta, unit:'rad/m', tip:'beta', cls: res.propagating?'ok':''},
+    {id:'alpha', name:'Attenuation Constant α', val:res.alpha>0?res.alpha:null, unit:'Np/m', tip:'alpha', cls:'warn'},
+    {id:'lambdaG', name:'Guide Wavelength λ_g', val:res.lambdaG, unit:'m', tip:'lambda_g'},
+    {id:'ratio', name:'Frequency Ratio f/f_c', val:res.ratio, unit:'', tip:''},
+    {id:'gamma_r', name:'γ (real, α)', val:res.gamma_real, unit:'Np/m', tip:'gamma'},
+    {id:'gamma_i', name:'γ (imag, β)', val:res.gamma_imag, unit:'rad/m', tip:'gamma'},
+    {id:'attn_db', name:'Attn below cutoff', val:res.attenuation_dB_m, unit:'dB/m', tip:'alpha'},
+  ]);
+
+  // ── GRID 3: Velocity ──
+  buildResultsGrid('resultsGrid3', [
+    {id:'vp', name:'Phase Velocity v_p', val:res.vp, unit:'m/s', tip:'vp'},
+    {id:'vg', name:'Group Velocity v_g', val:res.vg, unit:'m/s', tip:'vg'},
+    {id:'vm', name:'Medium Velocity', val:res.v_medium, unit:'m/s', tip:''},
+    {id:'vf', name:'Velocity Factor v_p/c', val:res.vp?res.vp/C0:null, unit:'', tip:'vg'},
+  ]);
+
+  // ── GRID 4: Impedance ──
+  buildResultsGrid('resultsGrid4', [
+    {id:'zw', name:'Wave Impedance Z_w', val:res.ZW, unit:'Ω', tip:'zw'},
+    {id:'eta2', name:'Intrinsic η', val:res.eta, unit:'Ω', tip:'zw'},
+    {id:'zratio', name:'Z_w / η', val:res.ZW&&res.eta?res.ZW/res.eta:null, unit:'', tip:''},
+  ]);
+
+  // ── GRID 5: Mode Info ──
+  const domMode = getDominantMode(s);
+  buildResultsGrid('resultsGrid5', [
+    {id:'mode', name:'Selected Mode', val:mStr, unit:'', tip:''},
+    {id:'dommode', name:'Dominant Mode', val:domMode, unit:'', tip:''},
+    {id:'modevalid', name:'Mode Validity', val:res.validity?.type==='ok'?'Valid':'Invalid/N/A', unit:'', tip:'', cls:res.validity?.type==='ok'?'ok':'invalid'},
+    {id:'broot', name:'Bessel Root', val:res.bessel_root?res.bessel_root.toFixed(4):null, unit:'', tip:''},
+  ]);
+
+  // ── GRID 6: Advanced ──
+  buildResultsGrid('resultsGrid6', [
+    {id:'epsr', name:'Fill εr', val:s.er, unit:'', tip:'er'},
+    {id:'mur2', name:'Fill μr', val:s.mur, unit:'', tip:'mur'},
+    {id:'ereff', name:'Eff. Refractive Index', val:Math.sqrt(s.er*s.mur), unit:'', tip:''},
+    {id:'skinD', name:'Penetration Depth (below fc)', val:res.alpha>0?1/res.alpha:null, unit:'m', tip:'alpha'},
+  ]);
+}
+
+function buildResultsGrid(gridId, items) {
+  const grid = document.getElementById(gridId);
+  if (!grid) return;
+  if (!grid.dataset.built) {
+    grid.innerHTML = items.map(it => makeResultCard(it.id, it.name, null, it.unit, it.tip, it.cls||'')).join('');
+    grid.dataset.built = '1';
+  }
+  items.forEach(it => {
+    let v = it.val;
+    // Convert string labels
+    if (it.id==='mode'||it.id==='dommode'||it.id==='modevalid'||it.id==='broot') {
+      const el = document.getElementById('rv-'+it.id);
+      if (el) {
+        el.textContent = v!==null&&v!==undefined?v:'—';
+        el.className = 'result-value '+(it.cls||'');
+      }
+      return;
+    }
+    setResultCard(it.id, typeof v==='number'?v:null, it.unit, it.cls||'');
+  });
+}
+
+function getModeString(s) {
+  const t = s.modeType;
+  if (s.wgType==='rectangular') return `${t}${s.m}${s.n}`;
+  if (s.wgType==='circular') return `${t}${s.circN||s.m}${s.circM||s.n}`;
+  if (s.wgType==='parallel') return t==='TEM'?'TEM':`${t}${s.ppN||s.n}`;
+  return t;
+}
+
+function getDominantMode(s) {
+  if (s.wgType==='rectangular') return 'TE₁₀';
+  if (s.wgType==='circular') return 'TE₁₁';
+  if (s.wgType==='parallel') return 'TEM';
+  return '—';
+}
+
+// ═══════════════════════════════════════════
+//  VISUALIZATION
+// ═══════════════════════════════════════════
+
+function updateViz(res, s) {
+  const svg = document.getElementById('vizSvg');
+  const theme = document.documentElement.getAttribute('data-theme');
+  const isDark = theme !== 'light';
+  const wallColor = isDark ? '#3d4a62' : '#aab2c8';
+  const bgColor = isDark ? '#1c2230' : '#edf0f7';
+  const eColor = '#e05050';
+  const hColor = '#4090d0';
+  const gColor = '#3dd68c';
+
+  svg.innerHTML = '';
+
+  const W = 600, H = 280;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+
+  if (s.wgType === 'rectangular') drawRectViz(svg,s,res,W,H,wallColor,bgColor,eColor,hColor,gColor,isDark);
+  else if (s.wgType === 'circular') drawCircViz(svg,s,res,W,H,wallColor,bgColor,eColor,hColor,gColor,isDark);
+  else drawPPViz(svg,s,res,W,H,wallColor,bgColor,eColor,hColor,gColor,isDark);
+}
+
+function svgEl(tag, attrs) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [k,v] of Object.entries(attrs)) el.setAttribute(k, v);
+  return el;
+}
+
+function drawRectViz(svg, s, res, W, H, wallColor, bgColor, eColor, hColor, gColor, isDark) {
+  const margin = 40, thick = 8;
+  const wx = margin, wy = margin;
+  const ww = W - 2*margin, wh = H - 2*margin - 20;
+
+  // Background
+  svg.appendChild(svgEl('rect',{x:0,y:0,width:W,height:H,fill:bgColor}));
+  // Waveguide fill
+  svg.appendChild(svgEl('rect',{x:wx+thick,y:wy+thick,width:ww-2*thick,height:wh-2*thick,fill:isDark?'#0d1117':'#f4f6fb'}));
+  // Walls
+  svg.appendChild(svgEl('rect',{x:wx,y:wy,width:ww,height:wh,fill:'none',stroke:wallColor,'stroke-width':thick,'stroke-linejoin':'round'}));
+
+  const m = s.m, n = s.n||0;
+  const modeType = s.modeType;
+  const inner_x = wx+thick, inner_y = wy+thick;
+  const inner_w = ww-2*thick, inner_h = wh-2*thick;
+
+  if (res.validity?.type === 'err') {
+    const t = svgEl('text',{x:W/2,y:H/2,'text-anchor':'middle','dominant-baseline':'middle',fill:isDark?'#f06060':'#dc2626','font-size':'13','font-family':'DM Sans,sans-serif'});
+    t.textContent = 'Invalid Mode — No Field Distribution';
+    svg.appendChild(t);
+    return;
+  }
+
+  // Draw E-field lines (TE_mn)
+  const numLinesX = Math.max(m,1)*4+2;
+  const numLinesY = Math.max(n,1)*4+2;
+
+  if (modeType === 'TE') {
+    // E-field: transverse (arrows perpendicular to propagation)
+    // For TE10: E_y only, sinusoidal in x
+    const nx = 10, ny = 6;
+    for (let i=1; i<=nx; i++) {
+      for (let j=1; j<=ny; j++) {
+        const px = inner_x + (i/(nx+1))*inner_w;
+        const py = inner_y + (j/(ny+1))*inner_h;
+        const xN = (i-1)/(nx-1); // 0..1
+        const yN = (j-1)/(ny-1);
+        const ex = (n===0?0:Math.cos(n*Math.PI*yN))*Math.sin(m*Math.PI*xN);
+        const ey = Math.sin(m*Math.PI*(i/(nx+1)));
+        const mag = Math.sqrt(ex*ex+ey*ey);
+        if (mag < 0.15) continue;
+        const scale = 12*mag;
+        const ex2 = ex/mag, ey2 = ey/mag;
+        // Arrow
+        const x2 = px+ex2*scale, y2 = py-ey2*scale;
+        const line = svgEl('line',{x1:px,y1:py,x2:x2,y2:y2,stroke:eColor,'stroke-width':'1.5','stroke-opacity':'0.8'});
+        svg.appendChild(line);
+        // Arrowhead
+        const ah = svgEl('circle',{cx:x2,cy:y2,r:'2',fill:eColor,'fill-opacity':'0.8'});
+        svg.appendChild(ah);
+      }
+    }
+    // H-field contours (dashed circles/loops) for TE10
+    for (let i=1; i<=m*2; i++) {
+      const cx = inner_x + (i/(m*2+1))*inner_w;
+      const el = svgEl('ellipse',{cx,cy:inner_y+inner_h/2,rx:(inner_w/(m*2+1))*0.4,ry:inner_h*0.3,fill:'none',stroke:hColor,'stroke-width':'1.2','stroke-dasharray':'4 3','stroke-opacity':'0.6'});
+      svg.appendChild(el);
+    }
+  } else if (modeType === 'TM') {
+    // TM: H is transverse (tangential loops), E has longitudinal component
+    const nx = 9, ny = 7;
+    for (let i=1; i<=nx; i++) {
+      for (let j=1; j<=ny; j++) {
+        const px = inner_x+(i/(nx+1))*inner_w;
+        const py = inner_y+(j/(ny+1))*inner_h;
+        const ex = Math.cos(m*Math.PI*(i/(nx+1)))*Math.sin(n*Math.PI*(j/(ny+1)));
+        const ey = Math.sin(m*Math.PI*(i/(nx+1)))*Math.cos(n*Math.PI*(j/(ny+1)));
+        const mag = Math.sqrt(ex*ex+ey*ey);
+        if (mag < 0.12) continue;
+        const scale = 12;
+        const x2 = px+(ex/mag)*scale, y2 = py-(ey/mag)*scale;
+        const line = svgEl('line',{x1:px,y1:py,x2:x2,y2:y2,stroke:eColor,'stroke-width':'1.5','stroke-opacity':'0.85'});
+        svg.appendChild(line);
+        svg.appendChild(svgEl('circle',{cx:x2,cy:y2,r:'2',fill:eColor}));
+      }
+    }
+    // H-field loops
+    for (let i=1; i<=m; i++) {
+      for (let j=1; j<=Math.max(n,1); j++) {
+        const cx = inner_x+(i/(m+1))*inner_w;
+        const cy = inner_y+(j/(Math.max(n,1)+1))*inner_h;
+        const rx = inner_w/(m+1)*0.35;
+        const ry = inner_h/(Math.max(n,1)+1)*0.35;
+        svg.appendChild(svgEl('ellipse',{cx,cy,rx,ry,fill:'none',stroke:hColor,'stroke-width':'1.2','stroke-dasharray':'4 3','stroke-opacity':'0.65'}));
+      }
+    }
+  } else if (modeType === 'TEM') {
+    const t = svgEl('text',{x:W/2,y:H/2,'text-anchor':'middle','dominant-baseline':'middle',fill:isDark?'#f06060':'#dc2626','font-size':'13','font-family':'DM Sans,sans-serif'});
+    t.textContent = 'TEM invalid in hollow rectangular guide';
+    svg.appendChild(t);
+    return;
+  }
+
+  // Propagation arrow
+  const arrowY = wy+wh+14;
+  const ax1=wx+20, ax2=W-wx-20;
+  svg.appendChild(svgEl('line',{x1:ax1,y1:arrowY,x2:ax2,y2:arrowY,stroke:gColor,'stroke-width':'2'}));
+  const at = svgEl('text',{x:(ax1+ax2)/2,y:arrowY-6,'text-anchor':'middle',fill:gColor,'font-size':'10','font-family':'DM Sans,sans-serif'});
+  at.textContent = res.propagating?'→ Propagating (z-direction) →':'⊘ Evanescent (decaying field)';
+  svg.appendChild(at);
+  // Arrow tip
+  svg.appendChild(svgEl('polygon',{points:`${ax2},${arrowY} ${ax2-7},${arrowY-3} ${ax2-7},${arrowY+3}`,fill:gColor}));
+
+  // Labels
+  const la = svgEl('text',{x:wx-6,y:wy+wh/2,'text-anchor':'middle','dominant-baseline':'middle',fill:isDark?'#64738f':'#7a87a5','font-size':'10','font-family':'DM Sans,sans-serif',transform:`rotate(-90,${wx-6},${wy+wh/2})`});
+  la.textContent = 'b';
+  svg.appendChild(la);
+  const lb = svgEl('text',{x:wx+ww/2,y:wy-6,'text-anchor':'middle',fill:isDark?'#64738f':'#7a87a5','font-size':'10','font-family':'DM Sans,sans-serif'});
+  lb.textContent = 'a';
+  svg.appendChild(lb);
+
+  // Mode label
+  const ml = svgEl('text',{x:W-wx+2,y:wy+12,'text-anchor':'end',fill:isDark?'#4c8ef7':'#2563eb','font-size':'11','font-family':'DM Mono,monospace','font-weight':'600'});
+  ml.textContent = `${s.modeType}${s.m}${s.n}`;
+  svg.appendChild(ml);
+}
+
+function drawCircViz(svg, s, res, W, H, wallColor, bgColor, eColor, hColor, gColor, isDark) {
+  svg.appendChild(svgEl('rect',{x:0,y:0,width:W,height:H,fill:bgColor}));
+  const cx = W/2, cy = H/2, R = Math.min(W,H)/2-30;
+
+  // Fill circle
+  svg.appendChild(svgEl('circle',{cx,cy,r:R,fill:isDark?'#0d1117':'#f4f6fb',stroke:wallColor,'stroke-width':'7'}));
+
+  const m=s.circN||s.m||1, n=s.circM||s.n||1;
+  const modeType = s.modeType;
+
+  if (res.validity?.type==='err') {
+    const t=svgEl('text',{x:cx,y:cy,'text-anchor':'middle','dominant-baseline':'middle',fill:eColor,'font-size':'12','font-family':'DM Sans,sans-serif'});
+    t.textContent='Invalid Mode';svg.appendChild(t);return;
+  }
+
+  // Draw field distribution
+  const numPts = 200;
+  for (let i=0;i<numPts;i++) {
+    const theta = (2*Math.PI*i)/numPts;
+    const r2 = R*0.7*(0.3+0.7*Math.random()); // simplified
+    const px = cx+r2*Math.cos(theta);
+    const py = cy+r2*Math.sin(theta);
+    let ex,ey;
+    if (modeType==='TE') {
+      // Approximate E-field: tangential to coordinate curves
+      ex = -Math.sin(theta)*Math.cos(m*theta)*Math.pow(r2/R,m);
+      ey = Math.cos(theta)*Math.cos(m*theta)*Math.pow(r2/R,m);
+    } else {
+      ex = Math.cos(theta)*Math.sin(m*theta)*Math.pow(r2/R,Math.max(m-1,0));
+      ey = Math.sin(theta)*Math.sin(m*theta)*Math.pow(r2/R,Math.max(m-1,0));
+    }
+    const mag=Math.sqrt(ex*ex+ey*ey);
+    if(mag<0.2)continue;
+    const sc=9/mag;
+    svg.appendChild(svgEl('line',{x1:px,y1:py,x2:px+ex*sc,y2:py+ey*sc,stroke:modeType==='TE'?eColor:hColor,'stroke-width':'1.3','stroke-opacity':'0.7'}));
+  }
+
+  // H-field rings (n concentric)
+  for(let i=1;i<=n;i++){
+    const rr=R*(i/(n+1));
+    svg.appendChild(svgEl('circle',{cx,cy,r:rr,fill:'none',stroke:hColor,'stroke-width':'1.2','stroke-dasharray':'5 3','stroke-opacity':'0.55'}));
+  }
+
+  // Mode label
+  const ml=svgEl('text',{x:W-10,y:20,'text-anchor':'end',fill:isDark?'#4c8ef7':'#2563eb','font-size':'12','font-family':'DM Mono,monospace','font-weight':'600'});
+  ml.textContent=`${s.modeType}${m}${n}`;
+  svg.appendChild(ml);
+
+  // Arrow
+  const arrowY=H-12;
+  const ax1=30,ax2=W-30;
+  svg.appendChild(svgEl('line',{x1:ax1,y1:arrowY,x2:ax2,y2:arrowY,stroke:gColor,'stroke-width':'2'}));
+  svg.appendChild(svgEl('polygon',{points:`${ax2},${arrowY} ${ax2-7},${arrowY-3} ${ax2-7},${arrowY+3}`,fill:gColor}));
+  const at=svgEl('text',{x:(ax1+ax2)/2,y:arrowY-6,'text-anchor':'middle',fill:gColor,'font-size':'9','font-family':'DM Sans,sans-serif'});
+  at.textContent=res.propagating?'z-direction (propagating)':'evanescent';
+  svg.appendChild(at);
+}
+
+function drawPPViz(svg, s, res, W, H, wallColor, bgColor, eColor, hColor, gColor, isDark) {
+  svg.appendChild(svgEl('rect',{x:0,y:0,width:W,height:H,fill:bgColor}));
+  const margin=30, plateH=12;
+  const py1=margin+plateH, py2=H-margin-plateH;
+  const pw=W-2*margin;
+
+  // Plates
+  svg.appendChild(svgEl('rect',{x:margin,y:margin,width:pw,height:plateH,fill:wallColor,rx:'3'}));
+  svg.appendChild(svgEl('rect',{x:margin,y:H-margin-plateH,width:pw,height:plateH,fill:wallColor,rx:'3'}));
+
+  const modeType=s.modeType, n=s.ppN||s.n||0;
+
+  if (modeType==='TEM'||n===0) {
+    // TEM: uniform E in y, H in x
+    const nx=12;
+    for(let i=0;i<nx;i++){
+      const px=margin+(i+0.5)*(pw/nx);
+      // E arrows (vertical, uniform)
+      const ey1=py1+4, ey2=py2-4;
+      svg.appendChild(svgEl('line',{x1:px,y1:ey2,x2:px,y2:ey1,stroke:eColor,'stroke-width':'1.5','stroke-opacity':'0.85'}));
+      svg.appendChild(svgEl('polygon',{points:`${px},${ey1} ${px-3},${ey1+6} ${px+3},${ey1+6}`,fill:eColor,'fill-opacity':'0.85'}));
+    }
+    // H arrows (horizontal dashed)
+    const hy=(py1+py2)/2;
+    svg.appendChild(svgEl('line',{x1:margin+10,y1:hy,x2:W-margin-10,y2:hy,stroke:hColor,'stroke-width':'1.8','stroke-dasharray':'8 4','stroke-opacity':'0.7'}));
+    svg.appendChild(svgEl('polygon',{points:`${W-margin-10},${hy} ${W-margin-20},${hy-4} ${W-margin-20},${hy+4}`,fill:hColor,'fill-opacity':'0.7'}));
+    const lbl=svgEl('text',{x:margin,y:hy-8,fill:isDark?'#64738f':'#7a87a5','font-size':'10','font-family':'DM Sans,sans-serif'});
+    lbl.textContent='H →'; svg.appendChild(lbl);
+  } else {
+    // TE_n or TM_n
+    const nx=14, numNodes=n;
+    for(let i=0;i<nx;i++){
+      const px=margin+(i+0.5)*(pw/nx);
+      const xN=(i+0.5)/nx;
+      if(modeType==='TE'){
+        // E in x (parallel to plates), varies as sin(nπy/d) at center
+        const amp=Math.sin(n*Math.PI*xN*1.5);
+        const ey=(py1+py2)/2, ex=px+amp*18;
+        svg.appendChild(svgEl('line',{x1:px,y1:ey,x2:ex,y2:ey,stroke:eColor,'stroke-width':'1.5','stroke-opacity':'0.8'}));
+        if(Math.abs(amp)>0.05)svg.appendChild(svgEl('polygon',{points:`${ex},${ey} ${ex-(amp>0?6:-6)},${ey-3} ${ex-(amp>0?6:-6)},${ey+3}`,fill:eColor,'fill-opacity':'0.8'}));
+      } else {
+        // TM_n: E in y, varies sinusoidally
+        const numY=5;
+        for(let j=0;j<numY;j++){
+          const frac=(j+0.5)/numY;
+          const py=py1+(py2-py1)*frac;
+          const amp=Math.sin(n*Math.PI*frac);
+          const sc=18*amp;
+          svg.appendChild(svgEl('line',{x1:px,y1:py,x2:px,y2:py-sc,stroke:eColor,'stroke-width':'1.3','stroke-opacity':'0.8'}));
+          if(Math.abs(amp)>0.1)svg.appendChild(svgEl('polygon',{points:`${px},${py-sc} ${px-3},${py-sc+(sc>0?6:-6)} ${px+3},${py-sc+(sc>0?6:-6)}`,fill:eColor,'fill-opacity':'0.8'}));
+        }
+      }
+    }
+    // Dashed H loops
+    for(let i=1;i<=n;i++){
+      const hy=py1+(py2-py1)*(i/(n+1));
+      svg.appendChild(svgEl('line',{x1:margin+10,y1:hy,x2:W-margin-10,y2:hy,stroke:hColor,'stroke-width':'1.1','stroke-dasharray':'5 3','stroke-opacity':'0.55'}));
+    }
+  }
+
+  // Labels
+  const la=svgEl('text',{x:margin-6,y:(py1+py2)/2,'text-anchor':'middle','dominant-baseline':'middle',fill:isDark?'#64738f':'#7a87a5','font-size':'10','font-family':'DM Sans,sans-serif',transform:`rotate(-90,${margin-6},${(py1+py2)/2})`});
+  la.textContent='d'; svg.appendChild(la);
+
+  // Mode label
+  const ml=svgEl('text',{x:W-margin,y:margin+30,'text-anchor':'end',fill:isDark?'#4c8ef7':'#2563eb','font-size':'12','font-family':'DM Mono,monospace','font-weight':'600'});
+  ml.textContent=modeType==='TEM'?'TEM':`${modeType}${n}`;
+  svg.appendChild(ml);
+
+  // Arrow
+  const arrowY=H-8;
+  const ax1=margin,ax2=W-margin;
+  svg.appendChild(svgEl('line',{x1:ax1,y1:arrowY,x2:ax2,y2:arrowY,stroke:gColor,'stroke-width':'2'}));
+  svg.appendChild(svgEl('polygon',{points:`${ax2},${arrowY} ${ax2-7},${arrowY-3} ${ax2-7},${arrowY+3}`,fill:gColor}));
+}
+
+// ═══════════════════════════════════════════
+//  FREQUENCY SWEEP GRAPH
+// ═══════════════════════════════════════════
+
+function updateSweep(res, s) {
+  const canvas = document.getElementById('sweepCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+
+  const fMinGHz = parseFloat(document.getElementById('sweepMin').value)||0;
+  const fMaxGHz = parseFloat(document.getElementById('sweepMax').value)||30;
+  document.getElementById('sweepMinLabel').textContent = fMinGHz.toFixed(0)+' GHz';
+  document.getElementById('sweepMaxLabel').textContent = fMaxGHz.toFixed(0)+' GHz';
+
+  ctx.clearRect(0,0,W,H);
+
+  const bg = isDark?'#1c2230':'#edf0f7';
+  const gridCol = isDark?'#30384d':'#cdd4e5';
+  const textCol = isDark?'#98a4bb':'#4a5572';
+  const betaCol = '#4c8ef7';
+  const alphaCol = '#f06060';
+  const fcCol = '#f0a050';
+
+  ctx.fillStyle = bg;
+  ctx.fillRect(0,0,W,H);
+
+  const pad = {l:60,r:20,t:20,b:40};
+  const gW=W-pad.l-pad.r, gH=H-pad.t-pad.b;
+
+  // Grid
+  ctx.strokeStyle=gridCol; ctx.lineWidth=1;
+  const nGridX=8, nGridY=6;
+  for(let i=0;i<=nGridX;i++){
+    const x=pad.l+(i/nGridX)*gW;
+    ctx.beginPath(); ctx.moveTo(x,pad.t); ctx.lineTo(x,pad.t+gH); ctx.stroke();
+    ctx.fillStyle=textCol; ctx.font='11px DM Sans,sans-serif'; ctx.textAlign='center';
+    const fLabel=(fMinGHz+(i/nGridX)*(fMaxGHz-fMinGHz)).toFixed(1);
+    ctx.fillText(fLabel+' G',x,pad.t+gH+16);
+  }
+  for(let i=0;i<=nGridY;i++){
+    const y=pad.t+(i/nGridY)*gH;
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+gW,y); ctx.stroke();
+  }
+
+  // Compute sweep
+  if (res.validity?.type==='err') return;
+  const fc = res.fc;
+  if (!fc && fc !== 0) return;
+
+  // Get material params from state
+  const mu = s.mur*MU0, eps2 = s.er*EPS0;
+  const v2 = 1/Math.sqrt(mu*eps2);
+  const kc = res.kc || 0;
+
+  const Npts = 300;
+  let maxBeta=0, maxAlpha=0;
+  const betaPts=[], alphaPts=[];
+
+  for(let i=0;i<Npts;i++){
+    const fHz=(fMinGHz+(i/(Npts-1))*(fMaxGHz-fMinGHz))*1e9;
+    const omega=2*Math.PI*fHz;
+    const k=omega*Math.sqrt(mu*eps2);
+    const k2sq=k*k-kc*kc;
+    if(k2sq>=0){
+      const beta=Math.sqrt(k2sq);
+      betaPts.push({f:fHz,v:beta});
+      alphaPts.push({f:fHz,v:0});
+      if(beta>maxBeta)maxBeta=beta;
+    } else {
+      const alpha=Math.sqrt(-k2sq);
+      betaPts.push({f:fHz,v:0});
+      alphaPts.push({f:fHz,v:alpha});
+      if(alpha>maxAlpha)maxAlpha=alpha;
+    }
+  }
+
+  const maxY=Math.max(maxBeta,maxAlpha,1);
+
+  function toX(fHz){return pad.l+((fHz/1e9-fMinGHz)/(fMaxGHz-fMinGHz))*gW;}
+  function toY(v){return pad.t+gH-(v/maxY)*gH;}
+
+  // Y axis labels
+  ctx.fillStyle=textCol; ctx.font='10px DM Mono,monospace'; ctx.textAlign='right';
+  for(let i=0;i<=nGridY;i++){
+    const v=(i/nGridY)*maxY;
+    ctx.fillText(formatEng(v,''),pad.l-4,pad.t+gH-(i/nGridY)*gH+4);
+  }
+  ctx.fillStyle=textCol; ctx.font='11px DM Sans,sans-serif'; ctx.textAlign='center';
+  ctx.save(); ctx.translate(14,pad.t+gH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('β, α (rad/m, Np/m)',0,0); ctx.restore();
+
+  // Cutoff line
+  if(fc>0){
+    const xcf=toX(fc);
+    if(xcf>=pad.l&&xcf<=pad.l+gW){
+      ctx.strokeStyle=fcCol; ctx.lineWidth=1.5; ctx.setLineDash([5,4]);
+      ctx.beginPath(); ctx.moveTo(xcf,pad.t); ctx.lineTo(xcf,pad.t+gH); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle=fcCol; ctx.font='10px DM Sans,sans-serif'; ctx.textAlign='left';
+      ctx.fillText('fc='+formatHz(fc),xcf+3,pad.t+14);
+    }
+  } else {
+    // fc=0: label
+    ctx.fillStyle=fcCol; ctx.font='10px DM Sans,sans-serif'; ctx.textAlign='left';
+    ctx.fillText('fc=0 (TEM)',pad.l+4,pad.t+14);
+  }
+
+  // Beta curve
+  ctx.strokeStyle=betaCol; ctx.lineWidth=2.2; ctx.setLineDash([]);
+  ctx.beginPath();
+  let first=true;
+  for(const p of betaPts){
+    const x=toX(p.f),y=toY(p.v);
+    if(first){ctx.moveTo(x,y);first=false;}else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+
+  // Alpha curve
+  ctx.strokeStyle=alphaCol; ctx.lineWidth=2.2; ctx.setLineDash([6,4]);
+  ctx.beginPath();
+  first=true;
+  for(const p of alphaPts){
+    const x=toX(p.f),y=toY(p.v);
+    if(first){ctx.moveTo(x,y);first=false;}else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Current freq marker
+  if(s.f){
+    const xf=toX(s.f);
+    if(xf>=pad.l&&xf<=pad.l+gW){
+      ctx.strokeStyle=isDark?'#3dd68c':'#16a34a'; ctx.lineWidth=1.5; ctx.setLineDash([3,3]);
+      ctx.beginPath(); ctx.moveTo(xf,pad.t); ctx.lineTo(xf,pad.t+gH); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  }
+
+  // Legend
+  const lx=pad.l+10, ly=pad.t+8;
+  ctx.fillStyle=betaCol; ctx.fillRect(lx,ly,18,3);
+  ctx.fillStyle=textCol; ctx.font='10px DM Sans,sans-serif'; ctx.textAlign='left';
+  ctx.fillText('β (propagation)',lx+22,ly+4);
+  ctx.strokeStyle=alphaCol; ctx.lineWidth=1.5; ctx.setLineDash([4,3]);
+  ctx.beginPath(); ctx.moveTo(lx,ly+12); ctx.lineTo(lx+18,ly+12); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=textCol;
+  ctx.fillText('α (attenuation)',lx+22,ly+16);
+}
+
+// ═══════════════════════════════════════════
+//  FORMULA VIEWER
+// ═══════════════════════════════════════════
+
+function updateFormulas(s) {
+  const list = document.getElementById('formulaList');
+  const wg = s.wgType, mode = s.modeType;
+
+  const formulas = [];
+
+  if (wg === 'rectangular') {
+    formulas.push({
+      name: 'Cutoff Wavenumber',
+      eq: `$k_c = \\sqrt{\\left(\\frac{m\\pi}{a}\\right)^2 + \\left(\\frac{n\\pi}{b}\\right)^2}$`,
+      desc: 'Determines the cutoff condition. m and n are mode indices. a and b are waveguide cross-section dimensions.'
+    });
+    formulas.push({
+      name: 'Cutoff Frequency',
+      eq: `$f_c = \\frac{k_c}{2\\pi\\sqrt{\\mu\\epsilon}} = \\frac{1}{2\\sqrt{\\mu_r\\mu_0\\epsilon_r\\epsilon_0}}\\sqrt{\\left(\\frac{m}{a}\\right)^2+\\left(\\frac{n}{b}\\right)^2}$`,
+      desc: 'Minimum frequency for mode propagation. For TE₁₀ (dominant): fc = c/(2a√(εr·μr)).'
+    });
+    if (mode==='TE') {
+      formulas.push({name:'TE Wave Impedance',eq:`$Z_{TE} = \\frac{\\eta}{\\sqrt{1-(f_c/f)^2}}$`,desc:'Always > η (intrinsic impedance). Approaches ∞ at cutoff, approaches η as f→∞.'});
+    } else if (mode==='TM') {
+      formulas.push({name:'TM Wave Impedance',eq:`$Z_{TM} = \\eta\\sqrt{1-(f_c/f)^2}$`,desc:'Always < η. Approaches 0 at cutoff, approaches η as f→∞.'});
+    }
+  }
+
+  if (wg === 'circular') {
+    formulas.push({
+      name: 'Cutoff Wavenumber (Circular)',
+      eq: `$k_c = \\frac{p'_{nm}}{a}$ (TE) or $k_c = \\frac{p_{nm}}{a}$ (TM)`,
+      desc: "p'ₙₘ = mth zero of J'ₙ(x) for TE modes. pₙₘ = mth zero of Jₙ(x) for TM modes. a is the guide radius."
+    });
+    formulas.push({
+      name: 'Dominant Mode TE₁₁',
+      eq: `$f_{c,TE_{11}} = \\frac{p'_{11}}{2\\pi a\\sqrt{\\mu\\epsilon}} = \\frac{1.8412}{2\\pi a\\sqrt{\\mu\\epsilon}}$`,
+      desc: 'TE₁₁ has the smallest Bessel root (1.8412) and thus the lowest cutoff frequency in a circular guide.'
+    });
+  }
+
+  if (wg === 'parallel') {
+    formulas.push({
+      name: 'Cutoff Frequency (PP)',
+      eq: `$f_c = \\frac{n}{2d\\sqrt{\\mu\\epsilon}}$ (n=0 for TEM: $f_c=0$)`,
+      desc: 'TEM has zero cutoff. TE_n and TM_n higher-order modes have cutoff at n/(2d√(με)).'
+    });
+  }
+
+  // Common formulas
+  formulas.push({name:'Phase Constant (above cutoff)',eq:`$\\beta = \\sqrt{k^2 - k_c^2}$, where $k = \\omega\\sqrt{\\mu\\epsilon}$`,desc:'β is real and positive when f > fc (propagating mode). Phase changes as e^{-jβz} along z.'});
+  formulas.push({name:'Attenuation Constant (below cutoff)',eq:`$\\alpha = \\sqrt{k_c^2 - k^2}$`,desc:'α is real below cutoff (evanescent mode). Fields decay as e^{-αz} — pure attenuation, no propagation.'});
+  formulas.push({name:'Guide Wavelength',eq:`$\\lambda_g = \\frac{2\\pi}{\\beta} = \\frac{\\lambda_0/\\sqrt{\\epsilon_r\\mu_r}}{\\sqrt{1-(f_c/f)^2}}$`,desc:'Effective wavelength inside the guide. Always longer than free-space wavelength for guided modes.'});
+  formulas.push({name:'Phase Velocity',eq:`$v_p = \\frac{\\omega}{\\beta} = \\frac{v}{\\sqrt{1-(f_c/f)^2}} > v$`,desc:'Phase fronts travel faster than c (and faster than wave speed in medium v). This does not violate relativity — energy travels at group velocity.'});
+  formulas.push({name:'Group Velocity',eq:`$v_g = \\frac{\\partial\\omega}{\\partial\\beta} = v\\sqrt{1-(f_c/f)^2} < v$`,desc:'Energy (signal) propagates at group velocity. vp · vg = v² (where v = 1/√(με) in the medium).'});
+  formulas.push({name:'Intrinsic Impedance',eq:`$\\eta = \\sqrt{\\frac{\\mu}{\\epsilon}} = \\sqrt{\\frac{\\mu_r}{\\epsilon_r}}\\cdot 377\\,\\Omega$`,desc:'Intrinsic impedance of the fill medium. For air: η₀ ≈ 376.73 Ω.'});
+  formulas.push({name:'Propagation Constant',eq:`$\\gamma = \\alpha + j\\beta$`,desc:'Complex propagation constant. Below cutoff: γ = α (pure attenuation). Above: γ = jβ (pure phase shift).'});
+
+  list.innerHTML = formulas.map(f => `
+    <div class="formula-item">
+      <div class="formula-name">${f.name}</div>
+      <div class="formula-eq">${f.eq}</div>
+      <div class="formula-desc">${f.desc}</div>
+    </div>
+  `).join('');
+
+  // Trigger KaTeX re-render
+  setTimeout(()=>{
+    if (window.renderMathInElement) {
+      renderMathInElement(list, {delimiters:[{left:'$',right:'$',display:false},{left:'$$',right:'$$',display:true}]});
+    }
+  }, 50);
+}
+
+// ═══════════════════════════════════════════
+//  THEORY CONTENT
+// ═══════════════════════════════════════════
+
+function buildTheory() {
+  const container = document.getElementById('theoryContent');
+  const sections = [
+    {title:'What is a Waveguide?', body:`A waveguide is a structure that guides electromagnetic waves from one point to another. Unlike a transmission line, which can support TEM modes, a hollow metallic waveguide supports only TE and TM modes above a minimum cutoff frequency. Waveguides are used at microwave frequencies (≥1 GHz) where coaxial cables become lossy.`},
+    {title:'TE, TM, and TEM Modes Explained', body:`<b>TE (Transverse Electric):</b> The electric field has no component in the direction of propagation (E_z = 0). The magnetic field has a longitudinal component (H_z ≠ 0).<br><br><b>TM (Transverse Magnetic):</b> The magnetic field has no longitudinal component (H_z = 0), but E_z ≠ 0.<br><br><b>TEM (Transverse Electromagnetic):</b> Both E and H are transverse (E_z = H_z = 0). Requires two conductors. Propagates at all frequencies (fc = 0).`},
+    {title:'Why TEM Cannot Exist in Hollow Waveguides', body:`TEM mode requires E_z = H_z = 0 everywhere. Applying Gauss's law inside a hollow (single-conductor) guide: ∇·E = 0 with zero tangential E on a closed surface implies E = 0 inside, a trivial solution. Physically, TEM requires two distinct conductors to sustain a quasi-static field distribution — like a coaxial cable or parallel plate guide. A hollow rectangular or circular guide has only one conductor boundary and cannot support TEM.`},
+    {title:'Cutoff Frequency and Evanescent Waves', body:`Each mode has a cutoff frequency fc below which the mode cannot propagate. Instead, the field decays exponentially along z (evanescent wave). The attenuation constant α = √(kc²−k²) gives the rate of decay in Np/m. This is NOT the same as resistive loss — it is geometric attenuation due to the guide boundary conditions. Evanescent modes are used intentionally in waveguide filters and attenuators.`},
+    {title:'Dominant Mode', body:`The dominant mode is the mode with the lowest cutoff frequency — it begins propagating first as frequency increases from zero. For rectangular guides, TE₁₀ is dominant (fc = c/2a). For circular guides, TE₁₁ is dominant (fc = 1.8412·c/2πa). Waveguides are usually operated in a frequency range where only the dominant mode propagates (single-mode operation), avoiding mode interference and dispersion.`},
+    {title:'Guide Wavelength vs Free-Space Wavelength', body:`The guide wavelength λg is always longer than the free-space wavelength λ₀: λg = λ₀/√(1−(fc/f)²). This means phase fronts travel faster inside the guide than in free space. However, the group velocity (energy velocity) vg = c·√(1−(fc/f)²) is always less than c. The product vp·vg = c² (for air-filled guides).`},
+    {title:'Wave Impedance and Mode Behavior', body:`TE mode impedance ZTE = η/√(1−(fc/f)²) > η — increases toward infinity at cutoff. TM mode impedance ZTM = η·√(1−(fc/f)²) < η — decreases to zero at cutoff. These differences affect matching networks and connector design.`},
+    {title:'Dielectric-Filled Waveguides', body:`Filling a waveguide with a dielectric (εr > 1) reduces the cutoff frequency by a factor of 1/√(εr·μr), and reduces guide wavelength and phase velocity. This can miniaturize waveguides. However, dielectric loss (tan δ) introduces additional attenuation not captured in the lossless model used here.`},
+    {title:'Applications', body:`Rectangular waveguides: radar systems, satellite communications, high-power microwave transmission, antenna feeds. Circular waveguides: rotating joints, some satellite feeds, circular horn antennas. Parallel plate: used to model strip lines, analyze 2D field distributions, and study TEM propagation fundamentals.`},
+  ];
+
+  container.innerHTML = sections.map((s,i)=>`
+    <div class="theory-item">
+      <div class="theory-header" onclick="toggleTheory(this)" data-idx="${i}">
+        ${s.title}
+        <span class="theory-chevron">▶</span>
+      </div>
+      <div class="theory-body">${s.body}</div>
+    </div>
+  `).join('');
+}
+
+function toggleTheory(header) {
+  const body = header.nextElementSibling;
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  header.classList.toggle('open', !isOpen);
+}
+
+// ═══════════════════════════════════════════
+//  TOOLTIP SYSTEM
+// ═══════════════════════════════════════════
+
+const tipPopup = document.getElementById('tooltipPopup');
+const ttTitle = document.getElementById('ttTitle');
+const ttBody = document.getElementById('ttBody');
+let tipTimeout;
+
+function showTip(el, key) {
+  const tip = TIPS[key];
+  if (!tip) return;
+  ttTitle.textContent = tip.title;
+  ttBody.textContent = tip.body;
+  positionTip(el);
+  tipPopup.classList.add('visible');
+}
+
+function hideTip() {
+  tipPopup.classList.remove('visible');
+}
+
+function positionTip(el) {
+  const rect = el.getBoundingClientRect();
+  let x = rect.right + 8, y = rect.top;
+  if (x + 250 > window.innerWidth) x = rect.left - 258;
+  if (y + 120 > window.innerHeight) y = window.innerHeight - 130;
+  tipPopup.style.left = x + 'px';
+  tipPopup.style.top = y + 'px';
+}
+
+document.addEventListener('mouseover', e => {
+  const el = e.target.closest('[data-tip]');
+  if (el) { clearTimeout(tipTimeout); tipTimeout = setTimeout(()=>showTip(el, el.dataset.tip), 300); }
+});
+document.addEventListener('mouseout', e => {
+  if (e.target.closest('[data-tip]')) { clearTimeout(tipTimeout); hideTip(); }
+});
+
+// Result cards with tip keys
+const RESULT_TIPS = {fc:'fc',lambdac:'',lambda0:'',kc:'',k:'',eta:'zw',beta:'beta',alpha:'alpha',lambdaG:'lambda_g',vp:'vp',vg:'vg',zw:'zw'};
+
+// ═══════════════════════════════════════════
+//  NOTIFICATION
+// ═══════════════════════════════════════════
+
+function showNotif(msg, icon='✓') {
+  const el = document.getElementById('notif');
+  document.getElementById('notifMsg').textContent = msg;
+  document.getElementById('notifIcon').textContent = icon;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 2800);
+}
+
+// ═══════════════════════════════════════════
+//  URL STATE
+// ═══════════════════════════════════════════
+
+function updateURLState(s) {
+  const params = new URLSearchParams();
+  params.set('wg', s.wgType);
+  params.set('mode', s.modeType);
+  if (s.a) params.set('a', (s.a*1000).toFixed(4));
+  if (s.b) params.set('b', (s.b*1000).toFixed(4));
+  if (s.r) params.set('r', (s.r*1000).toFixed(4));
+  if (s.d) params.set('d', (s.d*1000).toFixed(4));
+  if (s.f) params.set('f', (s.f/1e9).toFixed(6));
+  params.set('er', s.er); params.set('mur', s.mur);
+  params.set('m', s.m); params.set('n', s.n);
+  history.replaceState(null, '', '?' + params.toString());
+}
+
+function loadURLState() {
+  const p = new URLSearchParams(location.search);
+  if (!p.has('wg')) return;
+  const wg = p.get('wg');
+  if (['rectangular','circular','parallel'].includes(wg)) {
+    state.wgType = wg;
+    switchWGType(wg, false);
+  }
+  if (p.has('a')&&p.get('a')) { document.getElementById('rectA').value=p.get('a'); document.getElementById('rectAUnit').value='mm'; }
+  if (p.has('b')&&p.get('b')) { document.getElementById('rectB').value=p.get('b'); document.getElementById('rectBUnit').value='mm'; }
+  if (p.has('r')&&p.get('r')) { document.getElementById('circR').value=p.get('r'); document.getElementById('circRUnit').value='mm'; }
+  if (p.has('d')&&p.get('d')) { document.getElementById('ppD').value=p.get('d'); document.getElementById('ppDUnit').value='mm'; }
+  if (p.has('f')&&p.get('f')) { document.getElementById('freq').value=p.get('f'); document.getElementById('freqUnit').value='GHz'; }
+  if (p.has('er')) document.getElementById('epsr').value=p.get('er');
+  if (p.has('mur')) document.getElementById('mur').value=p.get('mur');
+  if (p.has('mode')) {
+    const mode = p.get('mode');
+    if (['TE','TM','TEM'].includes(mode)) { state.modeType=mode; updateModeBtns(mode); }
+  }
+  if (p.has('m')) { document.getElementById('modeM').value=p.get('m'); document.getElementById('circN').value=p.get('m'); }
+  if (p.has('n')) { document.getElementById('modeN').value=p.get('n'); document.getElementById('circM').value=p.get('n'); document.getElementById('ppN').value=p.get('n'); }
+}
+
+// ═══════════════════════════════════════════
+//  WAVEGUIDE TYPE SWITCHING
+// ═══════════════════════════════════════════
+
+function switchWGType(wg, calc=true) {
+  state.wgType = wg;
+
+  // Update tab buttons
+  document.querySelectorAll('.wg-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.wg === wg);
+  });
+
+  // Show/hide geometry inputs
+  document.getElementById('rectInputs').style.display = wg==='rectangular'?'':'none';
+  document.getElementById('circInputs').style.display = wg==='circular'?'':'none';
+  document.getElementById('ppInputs').style.display = wg==='parallel'?'':'none';
+
+  // Show/hide mode index inputs
+  document.getElementById('rectModeIdx').style.display = wg!=='parallel'?'':'none';
+  document.getElementById('circModeIdx').style.display = wg==='circular'?'':'none';
+  document.getElementById('ppModeIdx').style.display = wg==='parallel'?'':'none';
+
+  // TEM button availability
+  const temBtn = document.getElementById('temBtn');
+  if (wg==='parallel') {
+    temBtn.classList.remove('disabled');
+    temBtn.title = 'TEM propagates in parallel-plate guide';
+  } else {
+    temBtn.classList.add('disabled');
+    if (state.modeType === 'TEM') { state.modeType='TE'; updateModeBtns('TE'); }
+    temBtn.title = 'TEM not valid in hollow single-conductor guide';
+  }
+
+  // Presets only for rectangular
+  document.getElementById('presetSelect').style.display = wg==='rectangular'?'':'none';
+
+  // Clear built grids to force rebuild
+  ['resultsGrid1','resultsGrid2','resultsGrid3','resultsGrid4','resultsGrid5','resultsGrid6'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) { el.innerHTML=''; delete el.dataset.built; }
+  });
+
+  if (calc) scheduleCalc();
+}
+
+function updateModeBtns(mode) {
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.mode === mode);
+  });
+}
+
+// ═══════════════════════════════════════════
+//  COPY & EXPORT
+// ═══════════════════════════════════════════
+
+function copyResults() {
+  const s = readInputs();
+  let res;
+  if (s.wgType==='rectangular') res=computeRectangular(s);
+  else if (s.wgType==='circular') res=computeCircular(s);
+  else res=computeParallelPlate(s);
+
+  const lines = [
+    'Waveguide Toolbox — Results',
+    '© SpDly Studios — spdly.is-a.dev',
+    '─'.repeat(40),
+    `Type: ${s.wgType.charAt(0).toUpperCase()+s.wgType.slice(1)} Waveguide`,
+    `Mode: ${getModeString(s)}`,
+    `Status: ${res.propagating?'Propagating':'Evanescent/Invalid'}`,
+    '',
+    res.fc!==undefined?`Cutoff Frequency: ${formatHz(res.fc)}`:'',
+    res.fc!==undefined&&res.lambdac?`Cutoff Wavelength: ${formatEng(res.lambdac,'m')}`:'',
+    s.f?`Operating Frequency: ${formatHz(s.f)}`:'',
+    res.ratio?`f/fc Ratio: ${res.ratio.toFixed(4)}`:'',
+    res.beta?`Phase Constant β: ${formatEng(res.beta,'rad/m')}`:'',
+    res.alpha>0?`Attenuation α: ${formatEng(res.alpha,'Np/m')}`:'',
+    res.lambdaG?`Guide Wavelength: ${formatEng(res.lambdaG,'m')}`:'',
+    res.vp?`Phase Velocity: ${formatEng(res.vp,'m/s')}`:'',
+    res.vg?`Group Velocity: ${formatEng(res.vg,'m/s')}`:'',
+    res.ZW?`Wave Impedance: ${formatEng(res.ZW,'Ω')}`:'',
+    res.eta?`Intrinsic Impedance: ${formatEng(res.eta,'Ω')}`:'',
+  ].filter(Boolean).join('\n');
+
+  navigator.clipboard.writeText(lines).then(()=>showNotif('Results copied to clipboard','📋')).catch(()=>showNotif('Copy failed','✗'));
+}
+
+function exportPDF() {
+  showNotif('Opening print dialog for PDF export…','⬇');
+  setTimeout(()=>window.print(), 400);
+}
+
+// ═══════════════════════════════════════════
+//  THEME
+// ═══════════════════════════════════════════
+
+function initTheme() {
+  const saved = localStorage.getItem('wg-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  updateThemeBtn(saved);
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('wg-theme', next);
+  updateThemeBtn(next);
+  scheduleCalc(); // re-render graphs
+}
+
+function updateThemeBtn(theme) {
+  document.getElementById('themeBtn').textContent = theme === 'dark' ? '☀' : '🌙';
+}
+
+// ═══════════════════════════════════════════
+//  CONTENT TABS
+// ═══════════════════════════════════════════
+
+document.getElementById('contentTabs').addEventListener('click', e => {
+  const tab = e.target.closest('.content-tab');
+  if (!tab) return;
+  document.querySelectorAll('.content-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  tab.classList.add('active');
+  document.getElementById('panel-'+tab.dataset.panel).classList.add('active');
+
+  if (tab.dataset.panel==='sweep') { scheduleCalc(); }
+  if (tab.dataset.panel==='formulas') { updateFormulas(readInputs()); }
+});
+
+// ═══════════════════════════════════════════
+//  EVENT WIRING
+// ═══════════════════════════════════════════
+
+function wireEvents() {
+  // WG type tabs
+  document.querySelectorAll('.wg-tab').forEach(btn => {
+    btn.addEventListener('click', ()=>switchWGType(btn.dataset.wg));
+  });
+
+  // Mode type buttons
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', ()=>{
+      if (btn.classList.contains('disabled')) return;
+      state.modeType = btn.dataset.mode;
+      updateModeBtns(btn.dataset.mode);
+      // Show/hide mode indices for TEM
+      document.getElementById('rectModeIdx').style.display =
+        (state.modeType==='TEM'||state.wgType==='parallel')?'none':'';
+      document.getElementById('circModeIdx').style.display =
+        (state.modeType==='TEM'||state.wgType!=='circular')?'none':'';
+      document.getElementById('ppModeIdx').style.display =
+        (state.wgType==='parallel'&&state.modeType!=='TEM')?'':'none';
+      scheduleCalc();
+    });
+  });
+
+  // All inputs
+  document.querySelectorAll('input, select').forEach(el => {
+    el.addEventListener('input', scheduleCalc);
+    el.addEventListener('change', scheduleCalc);
+  });
+
+  // Presets
+  document.getElementById('presetSelect').addEventListener('change', e => {
+    const p = PRESETS[e.target.value];
+    if (!p) return;
+    document.getElementById('rectA').value = (p.a*1000).toFixed(3);
+    document.getElementById('rectAUnit').value = 'mm';
+    document.getElementById('rectB').value = (p.b*1000).toFixed(3);
+    document.getElementById('rectBUnit').value = 'mm';
+    scheduleCalc();
+  });
+
+  // Buttons
+  document.getElementById('themeBtn').addEventListener('click', toggleTheme);
+  document.getElementById('shareBtn').addEventListener('click', ()=>{
+    navigator.clipboard.writeText(location.href).then(()=>showNotif('URL copied to clipboard','🔗')).catch(()=>showNotif('Copy failed','✗'));
+  });
+  document.getElementById('copyBtn').addEventListener('click', copyResults);
+  document.getElementById('exportBtn').addEventListener('click', exportPDF);
+  document.getElementById('resetBtn').addEventListener('click', ()=>{
+    document.querySelectorAll('.input-field').forEach(el=>{ if(!['epsr','mur','modeM','modeN','circN','circM','ppN'].includes(el.id)) el.value=''; });
+    document.getElementById('epsr').value='1';
+    document.getElementById('mur').value='1';
+    document.getElementById('modeM').value='1';
+    document.getElementById('modeN').value='0';
+    document.getElementById('circN').value='1';
+    document.getElementById('circM').value='1';
+    document.getElementById('ppN').value='0';
+    document.getElementById('presetSelect').value='';
+    scheduleCalc();
+    showNotif('All inputs reset','↺');
+  });
+
+  // Sweep sliders
+  document.getElementById('sweepMin').addEventListener('input', scheduleCalc);
+  document.getElementById('sweepMax').addEventListener('input', scheduleCalc);
+}
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  initTheme();
+  buildTheory();
+  wireEvents();
+  loadURLState();
+  scheduleCalc();
+});
+
+// Handle KaTeX after it loads
+document.addEventListener('DOMContentLoaded', ()=>{
+  setTimeout(()=>{
+    if (window.renderMathInElement) {
+      renderMathInElement(document.body, {
+        delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],
+        throwOnError: false
+      });
+    }
+  }, 800);
+});
+</script>
+</body>
+</html>
