@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+
+<!-- ═══ PRIMARY META ═══ -->
+<title>HSI Neural Inference — SpDly Studios</title>
+<meta name="description" content="Hyperspectral image (HSI) neural inference tool. Run pre-trained deep learning models for spectral analysis and pixel classification.">
+<meta name="keywords" content="hyperspectral image, HSI, neural inference, deep learning, spectral classification, image analysis, machine learning">
+<meta name="author" content="Shivaprasad V">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="theme-color" content="#6366f1">
+<meta name="color-scheme" content="dark">
+<link rel="canonical" href="https://spdly.is-a.dev/tools/hsi/inference.html">
+
+<!-- ═══ OPEN GRAPH ═══ -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SpDly Studios">
+<meta property="og:title" content="HSI Neural Inference — SpDly Studios">
+<meta property="og:description" content="Hyperspectral image neural inference tool for spectral analysis and classification.">
+<meta property="og:url" content="https://spdly.is-a.dev/tools/hsi/inference.html">
+<meta property="og:image" content="https://spdly.is-a.dev/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_IN">
+
+<!-- ═══ TWITTER / X CARD ═══ -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:creator" content="@SpDly14">
+<meta name="twitter:site" content="@SpDly14">
+<meta name="twitter:title" content="HSI Neural Inference — SpDly Studios">
+<meta name="twitter:description" content="Hyperspectral image neural inference tool for spectral analysis">
+<meta name="twitter:image" content="https://spdly.is-a.dev/assets/og-image.png">
+
+<!-- ═══ FAVICONS ═══ -->
+<link rel="icon" type="image/svg+xml" href="../../assets/logo.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../../assets/logo.svg">
+<link rel="manifest" href="/manifest.json">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=DM+Mono:wght@300;400;500&family=Playfair+Display:wght@700&display=swap');
+
+:root {
+  --bg: #080b10;
+  --surface: #0f1218;
+  --surface2: #161b24;
+  --surface3: #1c2230;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.11);
+  --text: #e6e8f0;
+  --text2: #8d95a8;
+  --text3: #525c70;
+  --accent: #5eead4;
+  --accent2: #2dd4bf;
+  --blue: #60a5fa;
+  --green: #4ade80;
+  --red: #f87171;
+  --orange: #fb923c;
+  --purple: #a78bfa;
+  --yellow: #fbbf24;
+  --radius: 12px;
+  --radius2: 8px;
+  --font: 'DM Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
+  --display: 'Playfair Display', serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* HEADER */
+.header {
+  background: linear-gradient(135deg, #0a0f18 0%, #0f1a2a 60%, #0c1520 100%);
+  border-bottom: 1px solid var(--border2);
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(20px);
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(94,234,212,0.3), transparent);
+}
+
+.brand { display: flex; align-items: center; gap: 14px; }
+
+.brand-logo {
+  width: 42px; height: 42px;
+  background: linear-gradient(135deg, var(--accent), var(--blue));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--display);
+  font-size: 18px; font-weight: 700; color: #000;
+  box-shadow: 0 0 20px rgba(94,234,212,0.25);
+  flex-shrink: 0;
+}
+
+.brand-text h1 {
+  font-family: var(--display);
+  font-size: 22px;
+  background: linear-gradient(90deg, var(--accent), var(--blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+}
+
+.brand-text .sub {
+  font-size: 12px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.header-status { display: flex; gap: 12px; align-items: center; }
+
+.status-pill {
+  display: flex; align-items: center; gap: 7px;
+  padding: 5px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--text2);
+}
+
+.status-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--text3);
+  flex-shrink: 0;
+}
+
+.status-dot.ready { background: var(--green); box-shadow: 0 0 8px var(--green); }
+.status-dot.active { background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: blink 1.2s infinite; }
+
+@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+/* LAYOUT */
+.app-body {
+  display: grid;
+  grid-template-columns: 300px 1fr 300px;
+  min-height: calc(100vh - 79px);
+}
+
+.col-left {
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  max-height: calc(100vh - 79px);
+  position: sticky;
+  top: 79px;
+}
+
+.col-center {
+  overflow-y: auto;
+  max-height: calc(100vh - 79px);
+}
+
+.col-right {
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  max-height: calc(100vh - 79px);
+  position: sticky;
+  top: 79px;
+}
+
+/* PANEL */
+.sec-label {
+  padding: 5px 20px;
+  background: #080b10;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text3);
+  font-weight: 600;
+}
+
+.panel {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 18px;
+}
+
+.panel-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.panel-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.panel-icon {
+  width: 20px; height: 20px;
+  border-radius: 4px;
+  background: var(--surface3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+}
+
+/* CONTROLS */
+label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text2);
+  margin-bottom: 5px;
+}
+
+.field { margin-bottom: 12px; }
+
+input[type="number"], input[type="text"], select, textarea {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius2);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 15px;
+  padding: 9px 12px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(94,234,212,0.1);
+}
+
+select option { background: var(--surface2); }
+
+textarea { resize: vertical; min-height: 80px; font-family: var(--mono); font-size: 13px; line-height: 1.5; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: var(--radius2);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.18s;
+  white-space: nowrap;
+}
+
+.btn:active { transform: scale(0.97); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #0e9488);
+  color: #000;
+  box-shadow: 0 4px 16px rgba(94,234,212,0.2);
+}
+.btn-primary:hover:not(:disabled) { box-shadow: 0 4px 24px rgba(94,234,212,0.4); filter: brightness(1.05); }
+
+.btn-blue {
+  background: linear-gradient(135deg, var(--blue), #2563eb);
+  color: #000;
+}
+.btn-blue:hover:not(:disabled) { filter: brightness(1.1); }
+
+.btn-ghost {
+  background: var(--surface2);
+  color: var(--text2);
+  border: 1px solid var(--border2);
+}
+.btn-ghost:hover:not(:disabled) { background: var(--surface3); color: var(--text); }
+
+.btn-red {
+  background: linear-gradient(135deg, var(--red), #dc2626);
+  color: #fff;
+}
+
+.btn-full { width: 100%; }
+
+.btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn-group .btn { flex: 1; }
+
+/* TOOLTIP */
+.tip-wrap { position: relative; display: inline-flex; align-items: center; }
+
+.tip-icon {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  color: var(--text3);
+  font-size: 10px;
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  cursor: help;
+  margin-left: 5px;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+.tip-icon:hover { color: var(--accent); border-color: var(--accent); }
+
+.tip-card {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: #1a2035;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius2);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--text2);
+  width: 210px;
+  line-height: 1.5;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 1000;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+.tip-wrap:hover .tip-card { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* DROP ZONE */
+.drop-zone {
+  border: 2px dashed var(--border2);
+  border-radius: var(--radius);
+  padding: 32px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--surface2);
+  position: relative;
+}
+.drop-zone:hover, .drop-zone.dragover {
+  border-color: var(--accent);
+  background: rgba(94,234,212,0.04);
+}
+.drop-zone-icon { font-size: 32px; margin-bottom: 10px; }
+.drop-zone-text { font-size: 15px; color: var(--text2); margin-bottom: 6px; }
+.drop-zone-sub { font-size: 13px; color: var(--text3); }
+.drop-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+
+/* MODEL INFO */
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.info-row:last-child { border-bottom: none; }
+.info-key { color: var(--text3); font-size: 13px; }
+.info-val { color: var(--text); font-family: var(--mono); font-size: 13px; text-align: right; }
+.info-val.accent { color: var(--accent); }
+.info-val.green { color: var(--green); }
+
+/* ARCH PILLS */
+.arch-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 8px;
+}
+.arch-pill {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--surface3);
+  color: var(--text2);
+  border: 1px solid var(--border2);
+  font-family: var(--mono);
+}
+.arch-pill.input { border-color: rgba(96,165,250,0.4); color: var(--blue); background: rgba(96,165,250,0.08); }
+.arch-pill.hidden { border-color: rgba(94,234,212,0.3); color: var(--accent); background: rgba(94,234,212,0.06); }
+.arch-pill.output { border-color: rgba(74,222,128,0.4); color: var(--green); background: rgba(74,222,128,0.08); }
+
+/* INPUT FIELDS */
+.input-field-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  transition: border-color 0.2s;
+}
+.input-field-card:hover { border-color: var(--border2); }
+.input-field-card label { font-size: 13px; color: var(--text3); margin-bottom: 5px; }
+.input-field-card input { padding: 7px 10px; font-size: 15px; }
+
+/* OUTPUT DISPLAY */
+.output-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  padding: 14px;
+  margin-bottom: 8px;
+}
+.output-label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3); font-weight: 600; margin-bottom: 4px; }
+.output-value { font-size: 28px; font-family: var(--mono); font-weight: 500; color: var(--accent); }
+.output-bar { height: 4px; background: var(--surface3); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+.output-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--green)); border-radius: 2px; transition: width 0.4s; }
+.output-class { font-size: 13px; color: var(--text3); margin-top: 4px; }
+
+/* SVG */
+.svg-wrap {
+  position: relative;
+  background: #050710;
+  overflow: hidden;
+  min-height: 420px;
+  cursor: grab;
+}
+.svg-wrap:active { cursor: grabbing; }
+.svg-ctl {
+  position: absolute;
+  top: 12px; right: 12px;
+  display: flex; flex-direction: column; gap: 5px;
+  z-index: 10;
+}
+.svg-ctl .btn {
+  width: 32px; height: 32px; padding: 0; font-size: 15px;
+  background: rgba(15,18,24,0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border2);
+  color: var(--text2);
+}
+.svg-ctl .btn:hover { color: var(--accent); border-color: var(--accent); }
+
+#net-svg { width: 100%; display: block; min-height: 420px; }
+
+.float-tip {
+  position: absolute;
+  background: #141926;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius2);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--text2);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 20;
+  width: 190px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+.float-tip.show { opacity: 1; }
+.float-tip strong { display: block; color: var(--text); margin-bottom: 4px; font-size: 13px; }
+.ft-row { display: flex; justify-content: space-between; padding: 1px 0; }
+.ft-v { font-family: var(--mono); color: var(--accent); }
+
+/* ACTIVATION HEATMAP */
+.heat-grid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 4px 0;
+}
+.heat-layer { display: flex; flex-direction: column; gap: 4px; }
+.heat-layer-label { font-size: 10px; color: var(--text3); text-align: center; font-weight: 600; margin-bottom: 2px; }
+.heat-cell {
+  width: 32px; height: 22px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.05);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px;
+  font-family: var(--mono);
+  color: rgba(255,255,255,0.6);
+  transition: all 0.3s;
+  position: relative;
+  cursor: default;
+}
+
+/* HISTORY */
+.hist-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+.hist-time { color: var(--text3); font-size: 11px; margin-bottom: 4px; }
+.hist-in { color: var(--text2); font-family: var(--mono); font-size: 12px; }
+.hist-out { color: var(--accent); font-family: var(--mono); font-size: 12px; margin-top: 2px; }
+
+/* CONSOLE */
+.console {
+  background: #040609;
+  border-radius: var(--radius2);
+  padding: 10px;
+  height: 150px;
+  overflow-y: auto;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.log { padding: 1px 0; }
+.log.info { color: var(--text3); }
+.log.ok { color: var(--green); }
+.log.warn { color: var(--orange); }
+.log.err { color: var(--red); }
+.log.hi { color: var(--accent); }
+
+/* BATCH */
+.batch-result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 8px;
+  border-radius: 4px;
+  margin-bottom: 3px;
+  background: var(--surface2);
+  font-size: 12px;
+  font-family: var(--mono);
+  border: 1px solid var(--border);
+}
+
+/* SEP */
+.sep { height: 1px; background: var(--border); margin: 12px 0; }
+
+/* METRIC MINI */
+.mini-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.mini-m {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  padding: 10px 12px;
+}
+.mini-m-lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3); font-weight: 600; margin-bottom: 2px; }
+.mini-m-val { font-size: 18px; font-family: var(--mono); color: var(--text); }
+.mini-m-val.ac { color: var(--accent); }
+.mini-m-val.gr { color: var(--green); }
+
+/* REALTIME toggle */
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; }
+.tog-lbl { font-size: 14px; color: var(--text2); }
+.toggle { position: relative; width: 36px; height: 20px; cursor: pointer; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.tog-track { position: absolute; inset: 0; background: var(--surface3); border-radius: 10px; border: 1px solid var(--border2); transition: background 0.2s; }
+.toggle input:checked + .tog-track { background: rgba(94,234,212,0.35); border-color: var(--accent); }
+.tog-thumb { position: absolute; width: 14px; height: 14px; top: 3px; left: 3px; background: var(--text3); border-radius: 50%; transition: all 0.2s; }
+.toggle input:checked ~ .tog-thumb { left: 19px; background: var(--accent); }
+
+/* FOOTER */
+footer {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 14px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--text3);
+}
+footer a {
+  color: var(--accent);
+  text-decoration: none;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+footer a:hover { border-color: var(--accent); box-shadow: 0 0 12px rgba(94,234,212,0.2); }
+
+/* Responsive */
+@media (max-width: 1000px) {
+  .app-body { grid-template-columns: 1fr; }
+  .col-left, .col-right { max-height: none; position: static; }
+  .col-center { max-height: none; }
+  .header-status { display: none; }
+}
+
+@keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
+.fade-in { animation: fadeIn 0.25s ease forwards; }
+
+.copy-btn {
+  font-size: 11px; padding: 2px 7px;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  color: var(--text3);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all 0.2s;
+}
+.copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="brand">
+    <div class="brand-logo">H</div>
+    <div class="brand-text">
+      <h1>HSI Neural Inference</h1>
+      <div class="sub">Hyper Synaptic Intelligence Inference Environment</div>
+    </div>
+  </div>
+  <div class="header-status">
+    <div class="status-pill">
+      <div class="status-dot" id="model-dot"></div>
+      <span id="model-status-txt">No Model</span>
+    </div>
+    <div class="status-pill" id="infer-pill">
+      <div class="status-dot" id="infer-dot"></div>
+      <span id="infer-status-txt">Idle</span>
+    </div>
+    <div class="status-pill">
+      <span id="param-pill-txt">— params</span>
+    </div>
+  </div>
+</header>
+
+<div class="app-body">
+
+<!-- LEFT COL -->
+<aside class="col-left">
+
+  <!-- Model Loader -->
+  <div class="sec-label">Model Loader</div>
+  <div class="panel">
+    <div class="panel-hdr">
+      <div class="panel-title"><div class="panel-icon">⊞</div> Load .hsi File</div>
+    </div>
+    <div class="drop-zone" id="drop-zone" onclick="document.getElementById('hsi-input').click()">
+      <input type="file" id="hsi-input" accept=".hsi,.json" onchange="handleFileSelect(event)">
+      <div class="drop-zone-icon">⬇</div>
+      <div class="drop-zone-text">Drop .hsi file here</div>
+      <div class="drop-zone-sub">or click to browse</div>
+    </div>
+    <div class="sep"></div>
+    <div id="model-valid" style="font-size:13px; color:var(--text3); min-height:18px;"></div>
+  </div>
+
+  <!-- Model Information -->
+  <div class="sec-label">Model Information</div>
+  <div class="panel" id="model-info-panel">
+    <div id="model-info-placeholder" style="color:var(--text3); font-size:14px; text-align:center; padding:16px 0;">Load a .hsi model to see details</div>
+    <div id="model-info-content" style="display:none;">
+      <div id="model-info-rows"></div>
+      <div class="sep"></div>
+      <div style="font-size:13px; color:var(--text3); margin-bottom:6px; font-weight:600;">Architecture</div>
+      <div class="arch-pills" id="arch-pills"></div>
+    </div>
+  </div>
+
+  <!-- Batch Inference -->
+  <div class="sec-label">Batch Inference</div>
+  <div class="panel">
+    <div class="panel-hdr">
+      <div class="panel-title"><div class="panel-icon">⊟</div> CSV Batch Test
+        <span class="tip-wrap">
+          <span class="tip-icon">?</span>
+          <span class="tip-card">Paste CSV rows (one per line). Each row should have the same number of values as input neurons. The model will predict for each row.</span>
+        </span>
+      </div>
+    </div>
+    <div class="field">
+      <label>CSV Input (one row per line)</label>
+      <textarea id="batch-csv" placeholder="0,0&#10;0,1&#10;1,0&#10;1,1" rows="5"></textarea>
+    </div>
+    <button class="btn btn-blue btn-full" onclick="runBatch()" id="btn-batch" disabled style="font-size:15px; padding:10px; margin-bottom:10px;">
+      Run Batch Inference
+    </button>
+    <div id="batch-results"></div>
+    <div style="display:flex;gap:8px;margin-top:8px;">
+      <button class="copy-btn" onclick="exportBatch()">Export CSV</button>
+      <button class="copy-btn" onclick="document.getElementById('batch-results').innerHTML=''">Clear</button>
+    </div>
+  </div>
+
+</aside>
+
+<!-- CENTER COL -->
+<main class="col-center">
+
+  <!-- SVG Network Map -->
+  <div class="sec-label">Live Network Map</div>
+  <div class="svg-wrap" id="svg-wrap">
+    <div class="svg-ctl">
+      <button class="btn" onclick="zoomIn()">+</button>
+      <button class="btn" onclick="zoomOut()">−</button>
+      <button class="btn" onclick="resetSvg()" style="font-size:11px;">⟳</button>
+    </div>
+    <svg id="net-svg" viewBox="0 0 800 420" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="glow2">
+          <feGaussianBlur stdDeviation="5" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <radialGradient id="nGrad" cx="50%" cy="40%">
+          <stop offset="0%" stop-color="#5eead4" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#0e6b60" stop-opacity="0.9"/>
+        </radialGradient>
+      </defs>
+      <g id="svg-g">
+        <text x="400" y="210" text-anchor="middle" fill="rgba(255,255,255,0.08)" font-size="14" font-family="DM Sans,sans-serif">Load a .hsi model to visualize</text>
+      </g>
+    </svg>
+    <div class="float-tip" id="float-tip"></div>
+  </div>
+
+  <!-- Activation Inspector / Heatmap -->
+  <div class="sec-label">Activation Heatmap</div>
+  <div class="panel">
+    <div class="panel-hdr">
+      <div class="panel-title"><div class="panel-icon">◈</div> Layer Activations</div>
+      <span style="font-size:12px; color:var(--text3);">Run prediction to update</span>
+    </div>
+    <div id="heatmap-placeholder" style="color:var(--text3); font-size:13px; text-align:center; padding:12px 0;">No activations yet</div>
+    <div class="heat-grid" id="heat-grid" style="display:none;"></div>
+  </div>
+
+  <!-- Console -->
+  <div class="sec-label">Console</div>
+  <div class="panel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <div class="panel-title" style="font-size:12px;"><div class="panel-icon">▸</div> System Log</div>
+      <button class="copy-btn" onclick="clearLog()">Clear</button>
+    </div>
+    <div class="console" id="console-log"></div>
+  </div>
+
+</main>
+
+<!-- RIGHT COL -->
+<aside class="col-right">
+
+  <!-- Dynamic Inputs -->
+  <div class="sec-label">Input Panel</div>
+  <div class="panel">
+    <div class="panel-hdr">
+      <div class="panel-title"><div class="panel-icon">⊙</div> Inputs
+        <span class="tip-wrap">
+          <span class="tip-icon">?</span>
+          <span class="tip-card">Input values are fed directly into the network's first layer. Generated automatically from the loaded model's input size.</span>
+        </span>
+      </div>
+    </div>
+    <div id="input-placeholder" style="color:var(--text3); font-size:13px; text-align:center; padding:12px 0;">Load a model to generate inputs</div>
+    <div id="input-fields"></div>
+
+    <div class="toggle-row" style="margin-bottom:10px;">
+      <span class="tog-lbl">Real-time predict
+        <span class="tip-wrap">
+          <span class="tip-icon">?</span>
+          <span class="tip-card">When enabled, predictions update instantly as you type without pressing the button.</span>
+        </span>
+      </span>
+      <label class="toggle">
+        <input type="checkbox" id="realtime" onchange="toggleRealtime()">
+        <div class="tog-track"></div>
+        <div class="tog-thumb"></div>
+      </label>
+    </div>
+
+    <button class="btn btn-primary btn-full" id="btn-predict" onclick="runPrediction()" disabled style="font-size:16px; padding:12px;">
+      ▶ Run Inference
+    </button>
+
+    <div class="mini-metrics" style="margin-top:12px;">
+      <div class="mini-m">
+        <div class="mini-m-lbl">Infer Time</div>
+        <div class="mini-m-val ac" id="m-time">—</div>
+      </div>
+      <div class="mini-m">
+        <div class="mini-m-lbl">FLOPs est.</div>
+        <div class="mini-m-val" id="m-flops">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dynamic Outputs -->
+  <div class="sec-label">Output Panel</div>
+  <div class="panel">
+    <div class="panel-hdr">
+      <div class="panel-title"><div class="panel-icon">⊡</div> Outputs</div>
+    </div>
+    <div id="output-placeholder" style="color:var(--text3); font-size:13px; text-align:center; padding:12px 0;">No prediction yet</div>
+    <div id="output-fields"></div>
+    <div id="decision-display" style="display:none; margin-top:10px; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius2); padding:12px; text-align:center;">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.07em;">Decision</div>
+      <div id="decision-val" style="font-size:22px;font-family:var(--mono);color:var(--green);font-weight:600;"></div>
+    </div>
+  </div>
+
+  <!-- Prediction History -->
+  <div class="sec-label">Prediction History</div>
+  <div class="panel">
+    <div class="panel-hdr">
+      <div class="panel-title"><div class="panel-icon">⊟</div> History</div>
+      <div style="display:flex;gap:6px;">
+        <button class="copy-btn" onclick="exportHistory()">Export</button>
+        <button class="copy-btn" onclick="clearHistory()">Clear</button>
+      </div>
+    </div>
+    <div id="hist-placeholder" style="color:var(--text3); font-size:13px; text-align:center; padding:8px 0;">No predictions yet</div>
+    <div id="history-list" style="max-height:280px; overflow-y:auto;"></div>
+  </div>
+
+</aside>
+</div>
+
+<footer>
+  <span>© SpDly Studios</span>
+  <a href="https://spdly.is-a.dev" target="_blank" rel="noopener">Home ↗</a>
+</footer>
+
+<script>
+// ===================================================
+// HSI NEURAL INFERENCE ENGINE
+// ===================================================
+
+let model = null;
+let predHistory = [];
+let batchData = [];
+let realtimeEnabled = false;
+
+// SVG transform
+let svgScale = 1, svgTX = 0, svgTY = 0;
+let svgDrag = false, svgDragStart = {x:0, y:0};
+
+// ===================================================
+// ACTIVATION FUNCTIONS
+// ===================================================
+
+function sigmoid(x) {
+  return x >= 0 ? 1 / (1 + Math.exp(-x)) : Math.exp(x) / (1 + Math.exp(x));
+}
+
+function relu(x) { return Math.max(0, x); }
+function leakyRelu(x) { return x > 0 ? x : 0.01 * x; }
+function tanhFn(x) { return Math.tanh(x); }
+function softsign(x) { return x / (1 + Math.abs(x)); }
+function linear(x) { return x; }
+
+function activate(x, fn) {
+  switch (fn) {
+    case 'sigmoid': return sigmoid(x);
+    case 'relu': return relu(x);
+    case 'leaky_relu': return leakyRelu(x);
+    case 'tanh': return tanhFn(x);
+    case 'softsign': return softsign(x);
+    default: return linear(x);
+  }
+}
+
+// ===================================================
+// FORWARD PROPAGATION
+// ===================================================
+
+function forward(inputs) {
+  if (!model) return null;
+
+  let a = [...inputs];
+  const allActivations = [a];
+  const allZ = [];
+
+  for (let l = 0; l < model.weights.length; l++) {
+    const W = model.weights[l];
+    const b = model.biases[l];
+    const fn = model.activations[l + 1];
+    const z = [], aNext = [];
+
+    for (let j = 0; j < W.length; j++) {
+      let sum = b[j];
+      for (let k = 0; k < a.length; k++) sum += W[j][k] * a[k];
+      z.push(sum);
+      aNext.push(activate(sum, fn));
+    }
+
+    allZ.push(z);
+    allActivations.push(aNext);
+    a = aNext;
+  }
+
+  return { output: a, activations: allActivations };
+}
+
+// ===================================================
+// FILE LOADING
+// ===================================================
+
+const dropZone = document.getElementById('drop-zone');
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) parseHSI(file);
+});
+
+function handleFileSelect(event) {
+  const file = event.target.files[0];
+  if (file) parseHSI(file);
+}
+
+function parseHSI(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+
+      // Validate
+      if (!data.architecture || !data.weights || !data.biases) {
+        throw new Error('Missing architecture, weights, or biases');
+      }
+      if (!data.architecture.layerSizes || !data.architecture.activations) {
+        throw new Error('Invalid architecture format');
+      }
+
+      model = {
+        name: data.name || file.name,
+        timestamp: data.timestamp || 'Unknown',
+        metadata: data.metadata || {},
+        layerSizes: data.architecture.layerSizes,
+        activations: data.architecture.activations,
+        weights: data.weights,
+        biases: data.biases,
+        training: data.training_config || {},
+      };
+
+      // Validate dimensions
+      for (let l = 0; l < model.weights.length; l++) {
+        if (model.weights[l].length !== model.layerSizes[l+1]) throw new Error(`Weight dimension mismatch at layer ${l}`);
+        if (model.weights[l][0].length !== model.layerSizes[l]) throw new Error(`Weight input mismatch at layer ${l}`);
+      }
+
+      setupUI();
+      log(`Model loaded: ${model.name} | [${model.layerSizes.join('→')}]`, 'ok');
+      setValid('✓ Valid .hsi model', 'var(--green)');
+    } catch (err) {
+      log(`Failed to load: ${err.message}`, 'err');
+      setValid('✗ ' + err.message, 'var(--red)');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function setValid(msg, color) {
+  const el = document.getElementById('model-valid');
+  el.textContent = msg;
+  el.style.color = color;
+}
+
+// ===================================================
+// UI SETUP AFTER MODEL LOAD
+// ===================================================
+
+function setupUI() {
+  setupModelInfo();
+  setupInputFields();
+  setupOutputFields();
+  renderNetwork();
+  updateHeaderStatus();
+  document.getElementById('btn-predict').disabled = false;
+  document.getElementById('btn-batch').disabled = false;
+  log('UI initialized. Ready for inference.', 'hi');
+}
+
+function setupModelInfo() {
+  // Count params
+  let params = 0;
+  for (let i = 0; i < model.layerSizes.length - 1; i++) {
+    params += model.layerSizes[i] * model.layerSizes[i+1] + model.layerSizes[i+1];
+  }
+
+  const rows = [
+    ['Model', model.name.replace('.hsi','').replace('.json','')],
+    ['Timestamp', model.timestamp ? new Date(model.timestamp).toLocaleDateString() : '—'],
+    ['Parameters', params.toLocaleString()],
+    ['Layers', model.layerSizes.length],
+    ['Inputs', model.layerSizes[0]],
+    ['Outputs', model.layerSizes[model.layerSizes.length - 1]],
+    ['Train Acc', model.metadata.accuracy != null ? (model.metadata.accuracy * 100).toFixed(1) + '%' : '—'],
+    ['Loss', model.metadata.loss != null ? model.metadata.loss.toFixed(6) : '—'],
+    ['Epochs', model.metadata.epochs_trained != null ? model.metadata.epochs_trained.toLocaleString() : '—'],
+  ];
+
+  const rowsEl = document.getElementById('model-info-rows');
+  rowsEl.innerHTML = rows.map(([k,v]) => {
+    const cls = k === 'Train Acc' ? 'green' : k === 'Parameters' ? 'accent' : '';
+    return `<div class="info-row"><span class="info-key">${k}</span><span class="info-val ${cls}">${v}</span></div>`;
+  }).join('');
+
+  // Architecture pills
+  const pEl = document.getElementById('arch-pills');
+  pEl.innerHTML = model.layerSizes.map((s, i) => {
+    const cls = i === 0 ? 'input' : i === model.layerSizes.length - 1 ? 'output' : 'hidden';
+    const label = i === 0 ? 'In' : i === model.layerSizes.length - 1 ? 'Out' : `H${i}`;
+    return `<span class="arch-pill ${cls}">${label}: ${s}</span>`;
+  }).join('<span style="color:var(--text3);align-self:center;font-size:12px;">→</span>');
+
+  document.getElementById('model-info-placeholder').style.display = 'none';
+  document.getElementById('model-info-content').style.display = 'block';
+
+  document.getElementById('param-pill-txt').textContent = params.toLocaleString() + ' params';
+}
+
+function setupInputFields() {
+  const n = model.layerSizes[0];
+  const container = document.getElementById('input-fields');
+  container.innerHTML = '';
+
+  for (let i = 0; i < n; i++) {
+    const div = document.createElement('div');
+    div.className = 'input-field-card fade-in';
+    div.innerHTML = `
+      <label>Input ${i + 1} <span style="color:var(--text3);font-size:11px;font-weight:400;">(neuron ${i})</span></label>
+      <input type="number" id="in-${i}" value="0" step="0.01" oninput="onInputChange()">
+    `;
+    container.appendChild(div);
+  }
+
+  document.getElementById('input-placeholder').style.display = 'none';
+}
+
+function setupOutputFields() {
+  const n = model.layerSizes[model.layerSizes.length - 1];
+  const container = document.getElementById('output-fields');
+  container.innerHTML = '';
+
+  for (let i = 0; i < n; i++) {
+    const div = document.createElement('div');
+    div.className = 'output-card';
+    div.innerHTML = `
+      <div class="output-label">Output ${i + 1}</div>
+      <div class="output-value" id="out-val-${i}">—</div>
+      <div class="output-bar"><div class="output-fill" id="out-bar-${i}" style="width:0%"></div></div>
+      <div class="output-class" id="out-cls-${i}"></div>
+    `;
+    container.appendChild(div);
+  }
+
+  document.getElementById('output-placeholder').style.display = 'none';
+}
+
+function updateHeaderStatus() {
+  document.getElementById('model-dot').className = 'status-dot ready';
+  document.getElementById('model-status-txt').textContent = 'Model Loaded';
+  document.getElementById('infer-dot').className = 'status-dot';
+  document.getElementById('infer-status-txt').textContent = 'Ready';
+}
+
+// ===================================================
+// PREDICTION
+// ===================================================
+
+function getInputValues() {
+  const n = model.layerSizes[0];
+  const inputs = [];
+  for (let i = 0; i < n; i++) {
+    const el = document.getElementById(`in-${i}`);
+    const v = parseFloat(el?.value ?? 0);
+    inputs.push(isNaN(v) ? 0 : v);
+  }
+  return inputs;
+}
+
+function onInputChange() {
+  if (realtimeEnabled && model) runPrediction(true);
+}
+
+function toggleRealtime() {
+  realtimeEnabled = document.getElementById('realtime').checked;
+  if (realtimeEnabled && model) runPrediction(true);
+}
+
+function runPrediction(silent = false) {
+  if (!model) return;
+
+  document.getElementById('infer-dot').className = 'status-dot active';
+  document.getElementById('infer-status-txt').textContent = 'Running';
+
+  const inputs = getInputValues();
+  const t0 = performance.now();
+  const result = forward(inputs);
+  const t1 = performance.now();
+
+  if (!result) return;
+
+  const elapsed = (t1 - t0).toFixed(3);
+
+  // Estimate FLOPs
+  let flops = 0;
+  for (let l = 0; l < model.weights.length; l++) {
+    flops += model.layerSizes[l] * model.layerSizes[l+1] * 2;
+  }
+
+  // Update outputs
+  const nOut = model.layerSizes[model.layerSizes.length - 1];
+  let maxVal = -Infinity, maxIdx = 0;
+  for (let i = 0; i < nOut; i++) {
+    const v = result.output[i];
+    if (v > maxVal) { maxVal = v; maxIdx = i; }
+    const el = document.getElementById(`out-val-${i}`);
+    const bar = document.getElementById(`out-bar-${i}`);
+    const cls = document.getElementById(`out-cls-${i}`);
+    if (el) el.textContent = v.toFixed(5);
+    if (bar) bar.style.width = (Math.max(0, Math.min(1, v)) * 100) + '%';
+    if (cls) cls.textContent = v > 0.5 ? 'Class 1 ✓' : 'Class 0';
+  }
+
+  // Decision
+  if (nOut === 1) {
+    document.getElementById('decision-display').style.display = 'block';
+    const dec = result.output[0] > 0.5 ? '1' : '0';
+    document.getElementById('decision-val').textContent = dec === '1' ? '1 — Positive' : '0 — Negative';
+    document.getElementById('decision-val').style.color = dec === '1' ? 'var(--green)' : 'var(--accent)';
+  } else {
+    document.getElementById('decision-display').style.display = 'block';
+    document.getElementById('decision-val').textContent = `Class ${maxIdx} (${(maxVal * 100).toFixed(1)}%)`;
+  }
+
+  // Metrics
+  document.getElementById('m-time').textContent = elapsed + 'ms';
+  document.getElementById('m-flops').textContent = flops < 1000 ? flops : (flops / 1000).toFixed(1) + 'k';
+
+  // Heatmap
+  updateHeatmap(result.activations);
+
+  // Update SVG with activations
+  updateNetworkActivations(result.activations);
+
+  // History
+  if (!silent) {
+    addHistory(inputs, result.output);
+    log(`Inference: [${inputs.map(v=>v.toFixed(3)).join(',')}] → [${result.output.map(v=>v.toFixed(4)).join(',')}] (${elapsed}ms)`, 'hi');
+  }
+
+  document.getElementById('infer-dot').className = 'status-dot ready';
+  document.getElementById('infer-status-txt').textContent = 'Done';
+}
+
+// ===================================================
+// HEATMAP
+// ===================================================
+
+let neuronActivations = [];
+
+function updateHeatmap(activations) {
+  neuronActivations = activations;
+  const grid = document.getElementById('heat-grid');
+  const placeholder = document.getElementById('heatmap-placeholder');
+  grid.style.display = 'flex';
+  placeholder.style.display = 'none';
+  grid.innerHTML = '';
+
+  activations.forEach((layerActs, l) => {
+    const col = document.createElement('div');
+    col.className = 'heat-layer';
+
+    const label = document.createElement('div');
+    label.className = 'heat-layer-label';
+    label.textContent = l === 0 ? 'In' : l === activations.length - 1 ? 'Out' : `H${l}`;
+    col.appendChild(label);
+
+    const maxShow = Math.min(layerActs.length, 12);
+    for (let i = 0; i < maxShow; i++) {
+      const v = layerActs[i];
+      const intensity = Math.max(0, Math.min(1, Math.abs(v)));
+      const cell = document.createElement('div');
+      cell.className = 'heat-cell';
+
+      // Color based on value
+      if (v > 0.7) cell.style.background = `rgba(74,222,128,${0.15 + intensity * 0.7})`;
+      else if (v > 0.3) cell.style.background = `rgba(94,234,212,${0.15 + intensity * 0.6})`;
+      else if (v < 0) cell.style.background = `rgba(248,113,113,${0.15 + intensity * 0.6})`;
+      else cell.style.background = `rgba(148,163,184,${0.08 + intensity * 0.3})`;
+
+      cell.style.borderColor = `rgba(255,255,255,${0.05 + intensity * 0.1})`;
+      cell.textContent = v.toFixed(2);
+      cell.title = `Layer ${l}, Neuron ${i}: ${v.toFixed(6)}`;
+      col.appendChild(cell);
+    }
+
+    if (layerActs.length > maxShow) {
+      const more = document.createElement('div');
+      more.style.cssText = 'font-size:10px;color:var(--text3);text-align:center;';
+      more.textContent = `+${layerActs.length - maxShow}`;
+      col.appendChild(more);
+    }
+
+    grid.appendChild(col);
+  });
+}
+
+// ===================================================
+// SVG NETWORK VISUALIZATION
+// ===================================================
+
+function renderNetwork() {
+  if (!model) return;
+
+  const g = document.getElementById('svg-g');
+  g.innerHTML = '';
+
+  const W = 800, H = 420;
+  const sizes = model.layerSizes;
+  const L = sizes.length;
+  const margin = 70;
+  const layerGap = (W - 2 * margin) / Math.max(L - 1, 1);
+  const maxN = Math.max(...sizes);
+  const neuronR = Math.max(7, Math.min(20, (H - 100) / maxN / 2.5));
+
+  const positions = [];
+  for (let l = 0; l < L; l++) {
+    const lPos = [];
+    const cnt = sizes[l];
+    const total = (cnt - 1) * (neuronR * 2 + 10);
+    const startY = H / 2 - total / 2;
+    const x = margin + l * layerGap;
+    for (let n = 0; n < cnt; n++) {
+      lPos.push({ x, y: startY + n * (neuronR * 2 + 10) });
+    }
+    positions.push(lPos);
+  }
+
+  // Connections
+  const MAX_CONN = 500;
+  let connCount = 0;
+  const connG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+  for (let l = 0; l < L - 1; l++) {
+    const W_mat = model.weights[l];
+    for (let j = 0; j < sizes[l+1]; j++) {
+      for (let k = 0; k < sizes[l]; k++) {
+        if (connCount >= MAX_CONN) continue;
+        connCount++;
+        const w = W_mat[j][k];
+        const norm = Math.min(1, Math.abs(w) / 2);
+        const color = w >= 0
+          ? `rgba(94,234,212,${0.08 + norm * 0.5})`
+          : `rgba(248,113,113,${0.08 + norm * 0.5})`;
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', positions[l][k].x);
+        line.setAttribute('y1', positions[l][k].y);
+        line.setAttribute('x2', positions[l+1][j].x);
+        line.setAttribute('y2', positions[l+1][j].y);
+        line.setAttribute('stroke', color);
+        line.setAttribute('stroke-width', 0.5 + norm * 1.8);
+        line.setAttribute('class', 'conn');
+        line.setAttribute('data-w', w.toFixed(5));
+        line.setAttribute('data-l', l);
+        line.setAttribute('data-j', j);
+        line.setAttribute('data-k', k);
+        line.addEventListener('mouseenter', ev => showConnTip(ev, l, j, k, w));
+        line.addEventListener('mouseleave', hideTip);
+        connG.appendChild(line);
+      }
+    }
+  }
+
+  g.appendChild(connG);
+
+  // Neurons
+  const nG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+  for (let l = 0; l < L; l++) {
+    // Layer label
+    const ll = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    ll.setAttribute('x', positions[l][0].x);
+    ll.setAttribute('y', H - 18);
+    ll.setAttribute('text-anchor', 'middle');
+    ll.setAttribute('font-size', '11');
+    ll.setAttribute('fill', 'rgba(141,149,168,0.6)');
+    ll.setAttribute('font-family', 'DM Sans,sans-serif');
+    ll.textContent = l === 0 ? 'Input' : l === L-1 ? 'Output' : `H${l}`;
+    nG.appendChild(ll);
+
+    const al = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    al.setAttribute('x', positions[l][0].x);
+    al.setAttribute('y', H - 6);
+    al.setAttribute('text-anchor', 'middle');
+    al.setAttribute('font-size', '9');
+    al.setAttribute('fill', 'rgba(94,234,212,0.5)');
+    al.setAttribute('font-family', 'DM Mono,monospace');
+    al.textContent = model.activations[l] || '';
+    nG.appendChild(al);
+
+    for (let n = 0; n < sizes[l]; n++) {
+      const pos = positions[l][n];
+      const actVal = neuronActivations[l]?.[n] ?? 0;
+      const bias = l > 0 ? (model.biases[l-1]?.[n] ?? 0) : 0;
+      const brightness = Math.min(1, Math.abs(actVal));
+      const col = actVal > 0.5
+        ? `rgba(74,222,128,${0.35 + brightness*0.65})`
+        : `rgba(94,234,212,${0.25 + brightness*0.55})`;
+
+      // Glow
+      const glw = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      glw.setAttribute('cx', pos.x); glw.setAttribute('cy', pos.y);
+      glw.setAttribute('r', neuronR + 5);
+      glw.setAttribute('fill', col.replace(/,[^,]+\)$/, ', 0.1)'));
+      glw.setAttribute('style', 'filter:url(#glow)');
+      nG.appendChild(glw);
+
+      const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      c.setAttribute('cx', pos.x); c.setAttribute('cy', pos.y);
+      c.setAttribute('r', neuronR);
+      c.setAttribute('fill', col);
+      c.setAttribute('stroke', 'rgba(255,255,255,0.15)');
+      c.setAttribute('stroke-width', '1');
+      c.setAttribute('style', 'cursor:pointer');
+      c.setAttribute('id', `n-${l}-${n}`);
+      c.addEventListener('mouseenter', ev => showNeuronTip(ev, l, n, actVal, bias, sizes));
+      c.addEventListener('mouseleave', hideTip);
+      nG.appendChild(c);
+
+      if (neuronR >= 11) {
+        const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        t.setAttribute('x', pos.x); t.setAttribute('y', pos.y + 4);
+        t.setAttribute('text-anchor', 'middle');
+        t.setAttribute('font-size', Math.max(8, neuronR * 0.6));
+        t.setAttribute('fill', 'rgba(255,255,255,0.85)');
+        t.setAttribute('font-family', 'DM Mono,monospace');
+        t.setAttribute('pointer-events', 'none');
+        t.textContent = n;
+        nG.appendChild(t);
+      }
+    }
+  }
+
+  g.appendChild(nG);
+  applyTransform();
+}
+
+function updateNetworkActivations(activations) {
+  if (!model) return;
+  const sizes = model.layerSizes;
+
+  for (let l = 0; l < sizes.length; l++) {
+    for (let n = 0; n < sizes[l]; n++) {
+      const el = document.getElementById(`n-${l}-${n}`);
+      if (!el) continue;
+      const v = activations[l]?.[n] ?? 0;
+      const brightness = Math.min(1, Math.abs(v));
+      const col = v > 0.5
+        ? `rgba(74,222,128,${0.35 + brightness*0.65})`
+        : `rgba(94,234,212,${0.25 + brightness*0.55})`;
+      el.setAttribute('fill', col);
+
+      el.addEventListener('mouseenter', ev => {
+        const bias = l > 0 ? (model.biases[l-1]?.[n] ?? 0) : 0;
+        showNeuronTip(ev, l, n, v, bias, sizes);
+      });
+    }
+  }
+}
+
+function showNeuronTip(e, l, n, actVal, bias, sizes) {
+  const tip = document.getElementById('float-tip');
+  const rect = document.getElementById('svg-wrap').getBoundingClientRect();
+  const inC = l > 0 ? sizes[l-1] : 0;
+  const outC = l < sizes.length-1 ? sizes[l+1] : 0;
+
+  tip.innerHTML = `
+    <strong>Layer ${l}, Neuron ${n}</strong>
+    <div class="ft-row"><span>Activation</span><span class="ft-v">${actVal.toFixed(5)}</span></div>
+    <div class="ft-row"><span>Bias</span><span class="ft-v">${bias.toFixed(5)}</span></div>
+    <div class="ft-row"><span>Fn</span><span class="ft-v">${model.activations[l] || 'linear'}</span></div>
+    <div class="ft-row"><span>Incoming</span><span class="ft-v">${inC}</span></div>
+    <div class="ft-row"><span>Outgoing</span><span class="ft-v">${outC}</span></div>
+  `;
+
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  tip.style.left = Math.min(mx + 12, rect.width - 205) + 'px';
+  tip.style.top = Math.max(0, my - 70) + 'px';
+  tip.classList.add('show');
+}
+
+function showConnTip(e, l, j, k, w) {
+  const tip = document.getElementById('float-tip');
+  const rect = document.getElementById('svg-wrap').getBoundingClientRect();
+
+  tip.innerHTML = `
+    <strong>Connection Weight</strong>
+    <div class="ft-row"><span>Value</span><span class="ft-v">${w.toFixed(6)}</span></div>
+    <div class="ft-row"><span>From</span><span class="ft-v">L${l}·N${k}</span></div>
+    <div class="ft-row"><span>To</span><span class="ft-v">L${l+1}·N${j}</span></div>
+    <div class="ft-row"><span>Sign</span><span class="ft-v" style="color:${w>=0?'var(--green)':'var(--red)'};">${w>=0?'+pos':'-neg'}</span></div>
+  `;
+
+  tip.style.left = Math.min(e.clientX - rect.left + 12, rect.width - 205) + 'px';
+  tip.style.top = Math.max(0, e.clientY - rect.top - 70) + 'px';
+  tip.classList.add('show');
+}
+
+function hideTip() { document.getElementById('float-tip').classList.remove('show'); }
+
+// SVG Pan/Zoom
+function applyTransform() {
+  document.getElementById('svg-g').setAttribute('transform', `translate(${svgTX},${svgTY}) scale(${svgScale})`);
+}
+function zoomIn() { svgScale = Math.min(svgScale * 1.2, 5); applyTransform(); }
+function zoomOut() { svgScale = Math.max(svgScale / 1.2, 0.25); applyTransform(); }
+function resetSvg() { svgScale = 1; svgTX = 0; svgTY = 0; applyTransform(); }
+
+const svgWrap = document.getElementById('svg-wrap');
+svgWrap.addEventListener('wheel', e => {
+  e.preventDefault();
+  svgScale = Math.max(0.25, Math.min(5, svgScale * (e.deltaY > 0 ? 0.9 : 1.1)));
+  applyTransform();
+}, { passive: false });
+
+svgWrap.addEventListener('mousedown', e => {
+  if (e.target.closest('.svg-ctl')) return;
+  svgDrag = true;
+  svgDragStart = { x: e.clientX - svgTX, y: e.clientY - svgTY };
+});
+window.addEventListener('mousemove', e => {
+  if (!svgDrag) return;
+  svgTX = e.clientX - svgDragStart.x;
+  svgTY = e.clientY - svgDragStart.y;
+  applyTransform();
+});
+window.addEventListener('mouseup', () => { svgDrag = false; });
+
+// ===================================================
+// BATCH INFERENCE
+// ===================================================
+
+let batchResults = [];
+
+function runBatch() {
+  if (!model) return;
+
+  const csv = document.getElementById('batch-csv').value.trim();
+  if (!csv) { log('No CSV data entered.', 'warn'); return; }
+
+  const lines = csv.split('\n').filter(l => l.trim());
+  const container = document.getElementById('batch-results');
+  container.innerHTML = '';
+  batchResults = [];
+
+  let ok = 0, errors = 0;
+
+  lines.forEach((line, i) => {
+    const vals = line.split(',').map(Number);
+    if (vals.some(isNaN) || vals.length !== model.layerSizes[0]) {
+      errors++;
+      const row = document.createElement('div');
+      row.className = 'batch-result-row';
+      row.innerHTML = `<span style="color:var(--text3)">${i+1}: ${line}</span><span style="color:var(--red)">✗ Invalid</span>`;
+      container.appendChild(row);
+      return;
+    }
+
+    const result = forward(vals);
+    const output = result.output;
+    batchResults.push({ input: vals, output });
+    ok++;
+
+    const row = document.createElement('div');
+    row.className = 'batch-result-row';
+    const outTxt = output.map(v => v.toFixed(4)).join(', ');
+    const decision = output.length === 1 ? (output[0] > 0.5 ? '→ 1' : '→ 0') : `→ C${output.indexOf(Math.max(...output))}`;
+    row.innerHTML = `
+      <span style="color:var(--text2)">[${vals.map(v=>v).join(',')}]</span>
+      <span style="color:var(--accent)">${outTxt}</span>
+      <span style="color:var(--green)">${decision}</span>
+    `;
+    container.appendChild(row);
+  });
+
+  log(`Batch complete: ${ok} ok, ${errors} errors.`, ok > 0 ? 'ok' : 'warn');
+}
+
+function exportBatch() {
+  if (!batchResults.length) { log('No batch results to export.', 'warn'); return; }
+  const lines = ['input,output,decision'];
+  batchResults.forEach(r => {
+    const dec = r.output.length === 1 ? (r.output[0] > 0.5 ? 1 : 0) : r.output.indexOf(Math.max(...r.output));
+    lines.push(`"${r.input.join(',')}","${r.output.map(v=>v.toFixed(6)).join(',')}",${dec}`);
+  });
+  download('batch_results.csv', lines.join('\n'), 'text/csv');
+  log('Batch results exported.', 'ok');
+}
+
+// ===================================================
+// HISTORY
+// ===================================================
+
+function addHistory(inputs, outputs) {
+  const entry = {
+    time: new Date().toLocaleTimeString(),
+    inputs: [...inputs],
+    outputs: [...outputs],
+  };
+  predHistory.unshift(entry);
+  if (predHistory.length > 50) predHistory.pop();
+  renderHistory();
+}
+
+function renderHistory() {
+  const list = document.getElementById('history-list');
+  const ph = document.getElementById('hist-placeholder');
+
+  if (predHistory.length === 0) {
+    ph.style.display = 'block';
+    list.innerHTML = '';
+    return;
+  }
+
+  ph.style.display = 'none';
+  list.innerHTML = predHistory.slice(0, 20).map(e => `
+    <div class="hist-item fade-in">
+      <div class="hist-time">${e.time}</div>
+      <div class="hist-in">in: [${e.inputs.map(v=>v.toFixed(3)).join(', ')}]</div>
+      <div class="hist-out">out: [${e.outputs.map(v=>v.toFixed(4)).join(', ')}]</div>
+    </div>
+  `).join('');
+}
+
+function clearHistory() {
+  predHistory = [];
+  renderHistory();
+  log('History cleared.', 'info');
+}
+
+function exportHistory() {
+  if (!predHistory.length) { log('No history to export.', 'warn'); return; }
+  const lines = ['time,inputs,outputs'];
+  predHistory.forEach(e => {
+    lines.push(`${e.time},"${e.inputs.join(',')}","${e.outputs.map(v=>v.toFixed(6)).join(',')}"`);
+  });
+  download('prediction_history.csv', lines.join('\n'), 'text/csv');
+  log('History exported.', 'ok');
+}
+
+// ===================================================
+// CONSOLE
+// ===================================================
+
+function log(msg, type = 'info') {
+  const el = document.getElementById('console-log');
+  const div = document.createElement('div');
+  div.className = `log ${type}`;
+  const ts = new Date().toLocaleTimeString('en-US', { hour12: false });
+  div.textContent = `[${ts}] ${msg}`;
+  el.appendChild(div);
+  el.scrollTop = el.scrollHeight;
+}
+
+function clearLog() { document.getElementById('console-log').innerHTML = ''; }
+
+// ===================================================
+// UTILS
+// ===================================================
+
+function download(name, data, type) {
+  const blob = new Blob([data], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ===================================================
+// INIT
+// ===================================================
+
+window.addEventListener('load', () => {
+  log('HSI Neural Inference ready. Load a .hsi model to begin.', 'hi');
+  log('Supports drag-and-drop or file browser.', 'info');
+});
+</script>
+</body>
+</html>

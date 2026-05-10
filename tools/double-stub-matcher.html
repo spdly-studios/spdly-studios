@@ -1,0 +1,1892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+
+<!-- ═══ PRIMARY META ═══ -->
+<title>Double Stub Matcher — SpDly Studios</title>
+<meta name="description" content="Double stub impedance matching calculator for advanced transmission line design. Calculate matching parameters for two-stub networks with visualization.">
+<meta name="keywords" content="double stub matcher, impedance matching, transmission line, RF circuit, stub tuning, network analysis">
+<meta name="author" content="Shivaprasad V">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="theme-color" content="#22d3ee">
+<meta name="color-scheme" content="dark">
+<link rel="canonical" href="https://spdly.is-a.dev/tools/double-stub-matcher.html">
+
+<!-- ═══ OPEN GRAPH ═══ -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SpDly Studios">
+<meta property="og:title" content="Double Stub Matcher — SpDly Studios">
+<meta property="og:description" content="Double stub impedance matching calculator for advanced transmission line design and RF circuit optimization.">
+<meta property="og:url" content="https://spdly.is-a.dev/tools/double-stub-matcher.html">
+<meta property="og:image" content="https://spdly.is-a.dev/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_IN">
+
+<!-- ═══ TWITTER / X CARD ═══ -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:creator" content="@SpDly14">
+<meta name="twitter:site" content="@SpDly14">
+<meta name="twitter:title" content="Double Stub Matcher — SpDly Studios">
+<meta name="twitter:description" content="Double stub impedance matching calculator for RF design">
+<meta name="twitter:image" content="https://spdly.is-a.dev/assets/og-image.png">
+
+<!-- ═══ FAVICONS ═══ -->
+<link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../assets/logo.svg">
+<link rel="manifest" href="/manifest.json">
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0f14;
+  --bg2: #13161e;
+  --surface: #181c26;
+  --surface2: #1e2333;
+  --surface3: #252b3d;
+  --border: #2a3050;
+  --border2: #323a56;
+  --text: #e8eaf2;
+  --text-muted: #7880a0;
+  --text-dim: #4a5070;
+
+  --c1: #4ade80;   /* green — sol 1 */
+  --c1s: #2d6b45;
+  --c1bg: #0d2218;
+  --c2: #60a5fa;   /* blue — sol 2 */
+  --c2s: #1e4a7a;
+  --c2bg: #0a1826;
+  --c-load: #f87171; /* red — load */
+  --c-accent: #a78bfa; /* purple — accent / primary */
+  --c-accent-bg: #1e1630;
+  --c-orange: #fb923c;
+  --c-warn: #fbbf24;
+  --c-warn-bg: #1f1800;
+
+  --shadow: 0 2px 20px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 48px rgba(0,0,0,0.6);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'Space Grotesk', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+[data-theme="light"] {
+  --bg: #f0f2f8;
+  --bg2: #e8eaf4;
+  --surface: #ffffff;
+  --surface2: #f4f6fc;
+  --surface3: #eceef8;
+  --border: #d4d8ee;
+  --border2: #c0c6e0;
+  --text: #1a1d2e;
+  --text-muted: #5a6080;
+  --text-dim: #8890b0;
+  --c1bg: #edfff5;
+  --c2bg: #eff6ff;
+  --c-accent-bg: #f0eeff;
+  --c-warn-bg: #fffbeb;
+  --shadow: 0 2px 20px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 48px rgba(0,0,0,0.12);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+/* ── HEADER ── */
+header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.logo {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--c-accent), #7c3aed);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 15px; color: #fff; font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 2px 12px rgba(167,139,250,0.4);
+}
+.header-titles h1 {
+  font-family: var(--font-display);
+  font-size: 16px; font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.3px;
+}
+.header-titles p { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  transition: var(--transition);
+}
+.badge::before { content:''; width:6px; height:6px; border-radius:50%; }
+.badge-idle { background: var(--surface2); color: var(--text-muted); }
+.badge-idle::before { background: var(--text-dim); }
+.badge-ok { background: var(--c1bg); color: var(--c1); border: 1px solid var(--c1s); }
+.badge-ok::before { background: var(--c1); box-shadow: 0 0 6px var(--c1); }
+.badge-warn { background: var(--c-warn-bg); color: var(--c-warn); }
+.badge-warn::before { background: var(--c-warn); }
+.badge-err { background: #2d1010; color: var(--c-load); border: 1px solid #5a2020; }
+.badge-err::before { background: var(--c-load); }
+
+.icon-btn {
+  width: 34px; height: 34px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface2);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  transition: var(--transition);
+}
+.icon-btn:hover { background: var(--surface3); color: var(--text); border-color: var(--border2); }
+
+/* ── LAYOUT ── */
+.layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: calc(100vh - 58px);
+  position: sticky;
+  top: 58px;
+  height: calc(100vh - 58px);
+}
+.sidebar-inner { padding: 16px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.card-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+}
+.card-body { padding: 14px 16px; }
+.pill {
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; flex-shrink: 0;
+}
+.pill-green { background: var(--c1bg); color: var(--c1); }
+.pill-blue { background: var(--c2bg); color: var(--c2); }
+.pill-purple { background: var(--c-accent-bg); color: var(--c-accent); }
+.pill-orange { background: #1f1208; color: var(--c-orange); }
+
+/* ── FORM ELEMENTS ── */
+.field { margin-bottom: 12px; }
+.field:last-child { margin-bottom: 0; }
+.field-label {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.input-wrap { position: relative; }
+.input-suffix {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  pointer-events: none;
+}
+input[type="number"], select, input[type="text"] {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 13px;
+  outline: none;
+  transition: var(--transition);
+  -webkit-appearance: none;
+  appearance: none;
+}
+input[type="number"]:focus,
+select:focus,
+input[type="text"]:focus {
+  border-color: var(--c-accent);
+  box-shadow: 0 0 0 3px rgba(167,139,250,0.15);
+  background: var(--surface);
+}
+input.has-suffix { padding-right: 36px; }
+.hint {
+  font-size: 10.5px;
+  color: var(--text-dim);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+.hint.warn { color: var(--c-warn); }
+
+/* ── TOGGLE ── */
+.toggle-row { display: flex; border: 1.5px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+.toggle-row input[type="radio"] { display: none; }
+.toggle-row label {
+  flex: 1;
+  text-align: center;
+  padding: 7px 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--bg);
+  transition: var(--transition);
+  user-select: none;
+}
+.toggle-row label:not(:last-child) { border-right: 1px solid var(--border); }
+.toggle-row input:checked + label { background: var(--c-accent); color: #fff; }
+
+/* ── BUTTONS ── */
+.btn {
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--c-accent), #7c3aed);
+  color: #fff;
+  box-shadow: 0 2px 16px rgba(167,139,250,0.25);
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 24px rgba(167,139,250,0.4);
+}
+.btn-primary:active { transform: translateY(0); }
+.btn-secondary {
+  background: var(--surface3);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { background: var(--border); color: var(--text); }
+.btn-export {
+  background: var(--surface3);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  padding: 7px 12px;
+  width: auto;
+  border-radius: 7px;
+}
+.btn-export:hover { color: var(--c1); border-color: var(--c1); }
+.btn-row { display: flex; gap: 8px; margin-top: 4px; }
+.btn-row .btn { flex: 1; }
+
+/* ── CHART AREA ── */
+.chart-wrap {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.chart-toolbar {
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.tbtn {
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.tbtn:hover { background: var(--surface3); color: var(--text); }
+.tbtn.active { background: var(--c-accent); color: #fff; border-color: var(--c-accent); }
+.tbtn-sep { width: 1px; height: 20px; background: var(--border); flex-shrink: 0; }
+.zoom-hint { font-size: 10.5px; color: var(--text-dim); margin-left: auto; font-style: italic; }
+
+.chart-body {
+  position: relative;
+  cursor: grab;
+  background: var(--bg2);
+  height: 560px;
+  overflow: hidden;
+}
+.chart-body.panning { cursor: grabbing; }
+#smithSvg { width: 100%; height: 100%; display: block; }
+
+.legend-bar {
+  padding: 8px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--surface2);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+}
+.leg {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.ldot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.ldash { width: 18px; height: 0; border-top: 2px dashed; flex-shrink: 0; }
+
+/* ── RESULTS ── */
+.results-area {
+  flex: 1;
+  padding: 20px;
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+}
+.results-area.visible { display: flex; }
+
+.results-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.results-header h2 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+.results-header p { font-size: 12px; color: var(--text-muted); }
+
+.forbidden-banner {
+  background: #1a0a0a;
+  border: 1px solid #5a1c1c;
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  font-size: 13px;
+  color: #f87171;
+  line-height: 1.7;
+}
+.forbidden-banner strong { color: #fca5a5; }
+[data-theme="light"] .forbidden-banner { background: #fff5f5; border-color: #fecaca; color: #dc2626; }
+[data-theme="light"] .forbidden-banner strong { color: #991b1b; }
+
+/* Solution banners */
+.sol-banners { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media(max-width:800px){ .sol-banners { grid-template-columns: 1fr; } }
+
+.sol-banner {
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  border: 1px solid;
+  position: relative;
+  overflow: hidden;
+}
+.sol-banner::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.sol1-banner { background: var(--c1bg); border-color: var(--c1s); }
+.sol1-banner::before { background: linear-gradient(90deg, var(--c1), #34d399); }
+.sol2-banner { background: var(--c2bg); border-color: var(--c2s); }
+.sol2-banner::before { background: linear-gradient(90deg, var(--c2), #93c5fd); }
+
+.sol-banner-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.sol-tag {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+.sol1-banner .sol-tag { background: rgba(74,222,128,0.15); color: var(--c1); }
+.sol2-banner .sol-tag { background: rgba(96,165,250,0.15); color: var(--c2); }
+
+.sol-kv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+@media(max-width:600px){ .sol-kv-grid { grid-template-columns: repeat(2,1fr); } }
+.sol-kv {}
+.sol-kv .sk-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+.sol-kv .sk-val {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+.sol1-banner .sk-val { color: var(--c1); }
+.sol2-banner .sk-val { color: var(--c2); }
+.sol-kv .sk-sub { font-size: 10px; color: var(--text-dim); margin-top: 1px; }
+
+/* Results grid */
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+/* Tables */
+.rtable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+.rtable thead th {
+  background: var(--surface3);
+  padding: 7px 12px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--border);
+}
+.rtable tbody td {
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.rtable tbody tr:last-child td { border-bottom: none; }
+.rtable tbody tr:hover { background: var(--surface3); }
+.rtable .td-param { color: var(--text-muted); font-size: 11.5px; font-weight: 500; }
+.rtable .td-val {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--c2);
+  font-weight: 500;
+  text-align: right;
+}
+.rtable .td-hi .td-param { color: var(--c-accent); font-weight: 700; }
+.rtable .td-hi .td-val { color: var(--c-accent); font-weight: 700; }
+.rtable .td-ok .td-val { color: var(--c1); }
+.rtable .td-warn .td-val { color: var(--c-warn); }
+.rtable .td-err .td-val { color: var(--c-load); }
+
+/* ── TOOLTIP ── */
+.tooltip-wrap { position: relative; display: inline-flex; align-items: center; }
+.tooltip-icon {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  color: var(--text-dim);
+  font-size: 9px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: help;
+  margin-left: 5px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.tooltip-box {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%);
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  width: 220px;
+  z-index: 200;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  box-shadow: var(--shadow-lg);
+  line-height: 1.5;
+}
+.tooltip-wrap:hover .tooltip-box { opacity: 1; }
+
+/* ── DIVIDER ── */
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  margin: 4px 0 0;
+}
+.section-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* ── COPY TOAST ── */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: 13px;
+  color: var(--c1);
+  font-weight: 600;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 999;
+  box-shadow: var(--shadow-lg);
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── GUIDE ── */
+.guide-step {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  padding: 4px 0;
+}
+.guide-num {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--c-accent);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.guide-kv { font-size: 11.5px; line-height: 1.7; }
+.guide-kv dt {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--c-accent);
+  font-weight: 600;
+  display: inline;
+}
+.guide-kv dd { display: inline; color: var(--text-muted); margin-left: 4px; }
+.guide-kv dd::after { content: '\A'; white-space: pre; }
+
+/* ── FREQ INDICATOR ── */
+.freq-derived {
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.fv { display: flex; flex-direction: column; gap: 1px; }
+.fv span:first-child { font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-dim); font-weight: 600; }
+.fv span:last-child { font-family: var(--font-mono); font-size: 12px; color: var(--text); font-weight: 500; }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 12px 28px;
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+footer a { color: var(--c2); text-decoration: none; font-weight: 600; }
+footer a:hover { text-decoration: underline; }
+.sep { color: var(--border2); }
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { position: static; height: auto; max-height: none; border-right: none; border-bottom: 1px solid var(--border); }
+  .chart-body { height: 400px; }
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeSlide {
+  from { opacity:0; transform: translateY(10px); }
+  to { opacity:1; transform: translateY(0); }
+}
+.results-area.visible { animation: fadeSlide 0.25s ease; }
+.sol-banner { animation: fadeSlide 0.2s ease; }
+
+/* ── MATCH QUALITY BADGE ── */
+.mq-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10.5px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+.mq-perfect { background: var(--c1bg); color: var(--c1); border: 1px solid var(--c1s); }
+.mq-near { background: #1f2010; color: #a3e635; border: 1px solid #3a5020; }
+.mq-warn { background: var(--c-warn-bg); color: var(--c-warn); border: 1px solid #5a4000; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">D</div>
+  <div class="header-titles">
+    <h1>Double Stub Matcher</h1>
+    <p>Smith Chart · Transmission Line Design Tool · v2.0</p>
+  </div>
+  <div class="header-right">
+    <span class="badge badge-idle" id="badge">Idle</span>
+    <button class="icon-btn" id="themeBtn" title="Toggle light/dark mode" onclick="toggleTheme()">🌙</button>
+    <button class="icon-btn" title="Copy results as JSON" onclick="copyResults()">📋</button>
+    <button class="icon-btn" title="Export SVG chart" onclick="exportSVG()">⬇</button>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <!-- Load & Line -->
+      <div class="card">
+        <div class="card-header"><div class="pill pill-green">Ω</div>Load &amp; Line Parameters</div>
+        <div class="card-body">
+
+          <div class="field">
+            <label class="field-label">
+              Load Impedance Z<sub>L</sub>
+              <span class="tooltip-wrap">
+                <span class="tooltip-icon">?</span>
+                <span class="tooltip-box">Enter the complex load impedance. Real part = resistance (R), imaginary part = reactance (X). Purely resistive loads have X = 0.</span>
+              </span>
+            </label>
+            <div class="field-row">
+              <div class="input-wrap">
+                <input type="number" id="zlR" placeholder="75" value="75" step="any">
+                <span class="input-suffix">Ω</span>
+              </div>
+              <div class="input-wrap">
+                <input type="number" id="zlI" placeholder="30" value="30" step="any">
+                <span class="input-suffix">jΩ</span>
+              </div>
+            </div>
+            <p class="hint">Z<sub>L</sub> = R + jX · supports negative X (capacitive)</p>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Characteristic Impedance Z₀</label>
+            <div class="input-wrap">
+              <input type="number" id="z0" placeholder="50" value="50" min="0.001" step="any">
+              <span class="input-suffix">Ω</span>
+            </div>
+            <p class="hint">Typically 50 Ω (coax) or 75 Ω (cable TV)</p>
+          </div>
+
+          <div class="section-divider">Optional</div>
+
+          <div class="field" style="margin-top:10px;">
+            <label class="field-label">
+              Frequency
+              <span class="tooltip-wrap">
+                <span class="tooltip-icon">?</span>
+                <span class="tooltip-box">Optional. Used to compute physical stub lengths in mm. Leave 0 to skip physical length calculations.</span>
+              </span>
+            </label>
+            <div class="field-row">
+              <div class="input-wrap">
+                <input type="number" id="freq" placeholder="2400" value="" min="0" step="any">
+                <span class="input-suffix">MHz</span>
+              </div>
+              <div class="input-wrap">
+                <input type="number" id="er" placeholder="1.0" value="1.0" min="0.1" step="0.1">
+                <span class="input-suffix">εᵣ</span>
+              </div>
+            </div>
+            <div id="freqDerived" class="freq-derived" style="display:none;margin-top:8px;"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Stub Config -->
+      <div class="card">
+        <div class="card-header"><div class="pill pill-purple">⊏⊏</div>Double Stub Configuration</div>
+        <div class="card-body">
+
+          <div class="field">
+            <label class="field-label">
+              Stub Separation d
+              <span class="tooltip-wrap">
+                <span class="tooltip-icon">?</span>
+                <span class="tooltip-box">Distance between Stub 1 and Stub 2 in wavelengths. λ/4 is most common. λ/8 works for high-g₁ loads. Avoid values near 0 or λ/2 (degenerate).</span>
+              </span>
+            </label>
+            <select id="stubSep">
+              <option value="0.125">λ/8 &nbsp;= 0.125λ</option>
+              <option value="0.25" selected>λ/4 &nbsp;= 0.250λ (default)</option>
+              <option value="0.375">3λ/8 = 0.375λ</option>
+              <option value="custom">Custom…</option>
+            </select>
+          </div>
+
+          <div class="field" id="customSepGroup" style="display:none;">
+            <label class="field-label">Custom Separation</label>
+            <div class="input-wrap">
+              <input type="number" id="customSep" placeholder="0.200" value="0.200" min="0.001" max="0.499" step="0.001">
+              <span class="input-suffix">λ</span>
+            </div>
+            <p class="hint warn">⚠ Must be in (0, 0.5λ) exclusive</p>
+          </div>
+
+          <div class="field">
+            <label class="field-label">
+              Stub 1 Offset from Load d₀
+              <span class="tooltip-wrap">
+                <span class="tooltip-icon">?</span>
+                <span class="tooltip-box">Distance from the load to Stub 1. Rotating the load point on the Smith Chart can move it out of the forbidden zone.</span>
+              </span>
+            </label>
+            <div class="input-wrap">
+              <input type="number" id="stub1pos" placeholder="0.000" value="0.000" min="0" max="0.499" step="0.001">
+              <span class="input-suffix">λ</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Stub Termination</label>
+            <div class="toggle-row">
+              <input type="radio" name="stubEnd" id="scEnd" value="sc" checked>
+              <label for="scEnd">⊥ Short Circuit</label>
+              <input type="radio" name="stubEnd" id="ocEnd" value="oc">
+              <label for="ocEnd">○ Open Circuit</label>
+            </div>
+            <p class="hint">Applies to both stubs · SC: b = −cot(2πℓ) · OC: b = +tan(2πℓ)</p>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Display Solutions</label>
+            <select id="solSelect">
+              <option value="both" selected>Both solutions</option>
+              <option value="1">Solution 1 only</option>
+              <option value="2">Solution 2 only</option>
+            </select>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="card">
+        <div class="card-body" style="display:flex;flex-direction:column;gap:8px;">
+          <button class="btn btn-primary" onclick="solve()">▶ &nbsp;Design Double Stub</button>
+          <div class="btn-row">
+            <button class="btn btn-secondary" onclick="resetAll()" style="font-size:12px;">↺ Reset</button>
+            <button class="btn btn-export" onclick="loadPreset('example1')">Load Ex. 1</button>
+            <button class="btn btn-export" onclick="loadPreset('example2')">Load Ex. 2</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Guide -->
+      <div class="card">
+        <div class="card-header"><div class="pill pill-orange">?</div>Quick Guide</div>
+        <div class="card-body">
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div class="guide-step"><div class="guide-num">1</div><div>Enter Z<sub>L</sub> and Z₀ · complex loads supported</div></div>
+            <div class="guide-step"><div class="guide-num">2</div><div>Set stub separation · λ/4 is most versatile</div></div>
+            <div class="guide-step"><div class="guide-num">3</div><div>Optionally offset Stub 1 from load to escape forbidden zone</div></div>
+            <div class="guide-step"><div class="guide-num">4</div><div>Choose SC or OC termination</div></div>
+            <div class="guide-step"><div class="guide-num">5</div><div>Click <em>Design Double Stub</em></div></div>
+          </div>
+          <div style="margin-top:12px;">
+            <dl class="guide-kv">
+              <dt>d₀</dt><dd>= load → Stub 1 distance (λ)</dd>
+              <dt>d</dt><dd>= Stub 1 → Stub 2 distance (λ)</dd>
+              <dt>ℓ₁, ℓ₂</dt><dd>= stub lengths to find (λ)</dd>
+              <dt>g₁</dt><dd>= normalised conductance at Stub 1</dd>
+            </dl>
+          </div>
+          <div class="hint warn" style="margin-top:10px;font-size:11px;">
+            ⚠ Forbidden zone: loads with g₁ &gt; 1/sin²(2πd) cannot be matched with the chosen spacing. Adjust d₀ or d to resolve.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- Smith Chart -->
+    <div class="chart-wrap">
+      <div class="chart-toolbar">
+        <button class="tbtn active" id="btnPan" onclick="setTool('pan')">✋ Pan</button>
+        <div class="tbtn-sep"></div>
+        <button class="tbtn" onclick="zoomBy(1.25)">+ Zoom In</button>
+        <button class="tbtn" onclick="zoomBy(0.8)">− Zoom Out</button>
+        <button class="tbtn" onclick="resetView()">⊙ Fit</button>
+        <div class="tbtn-sep"></div>
+        <button class="tbtn" onclick="toggleGrid()">⊞ Grid</button>
+        <span class="zoom-hint">Scroll to zoom · Drag to pan</span>
+      </div>
+
+      <div class="chart-body" id="chartBody">
+        <svg id="smithSvg" viewBox="0 0 740 740" preserveAspectRatio="xMidYMid meet">
+          <g id="cg" transform="translate(370,370)"></g>
+        </svg>
+      </div>
+
+      <div class="legend-bar">
+        <div class="leg"><div class="ldot" style="background:var(--c-load)"></div> Load Z<sub>L</sub></div>
+        <div class="leg"><div class="ldash" style="border-color:var(--c-load)"></div> |Γ_L| circle</div>
+        <div class="leg"><div class="ldot" style="background:var(--c1)"></div> Sol 1 path</div>
+        <div class="leg"><div class="ldot" style="background:var(--c2)"></div> Sol 2 path</div>
+        <div class="leg"><div class="ldot" style="background:var(--c-accent)"></div> Match point</div>
+        <div class="leg"><div class="ldot" style="background:#3b82f6;opacity:.5"></div> g=1 circles</div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="results-area" id="resultsArea">
+
+      <div class="results-header">
+        <h2>Matching Solutions</h2>
+        <p>Both solutions yield Z<sub>in</sub> = Z₀ after stub insertion</p>
+      </div>
+
+      <div id="forbiddenMsg" class="forbidden-banner" style="display:none;"></div>
+
+      <div class="sol-banners" id="solBanners">
+        <div class="sol-banner sol1-banner" id="bannerSol1">
+          <div class="sol-banner-header">
+            <span class="sol-tag">Solution 1</span>
+            <span id="s1mq" class="mq-badge"></span>
+          </div>
+          <div class="sol-kv-grid">
+            <div class="sol-kv"><div class="sk-label">Stub 1 Length ℓ₁</div><div class="sk-val" id="s1l1">—</div><div class="sk-sub" id="s1l1mm">—</div></div>
+            <div class="sol-kv"><div class="sk-label">Stub 2 Length ℓ₂</div><div class="sk-val" id="s1l2">—</div><div class="sk-sub" id="s1l2mm">—</div></div>
+            <div class="sol-kv"><div class="sk-label">Z<sub>in</sub> after match</div><div class="sk-val" id="s1zin">—</div></div>
+            <div class="sol-kv"><div class="sk-label">b₁ susceptance</div><div class="sk-val" id="s1b1">—</div></div>
+            <div class="sol-kv"><div class="sk-label">b₂ susceptance</div><div class="sk-val" id="s1b2">—</div></div>
+            <div class="sol-kv"><div class="sk-label">|Γ_in|</div><div class="sk-val" id="s1gin">—</div></div>
+          </div>
+        </div>
+        <div class="sol-banner sol2-banner" id="bannerSol2">
+          <div class="sol-banner-header">
+            <span class="sol-tag">Solution 2</span>
+            <span id="s2mq" class="mq-badge"></span>
+          </div>
+          <div class="sol-kv-grid">
+            <div class="sol-kv"><div class="sk-label">Stub 1 Length ℓ₁</div><div class="sk-val" id="s2l1">—</div><div class="sk-sub" id="s2l1mm">—</div></div>
+            <div class="sol-kv"><div class="sk-label">Stub 2 Length ℓ₂</div><div class="sk-val" id="s2l2">—</div><div class="sk-sub" id="s2l2mm">—</div></div>
+            <div class="sol-kv"><div class="sk-label">Z<sub>in</sub> after match</div><div class="sk-val" id="s2zin">—</div></div>
+            <div class="sol-kv"><div class="sk-label">b₁ susceptance</div><div class="sk-val" id="s2b1">—</div></div>
+            <div class="sol-kv"><div class="sk-label">b₂ susceptance</div><div class="sk-val" id="s2b2">—</div></div>
+            <div class="sol-kv"><div class="sk-label">|Γ_in|</div><div class="sk-val" id="s2gin">—</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="results-grid">
+
+        <div class="card">
+          <div class="card-header"><div class="pill pill-green">Γ</div>Reflection &amp; VSWR (Before Matching)</div>
+          <table class="rtable">
+            <thead><tr><th>Parameter</th><th style="text-align:right">Value</th></tr></thead>
+            <tbody id="tRefl"></tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="pill pill-blue">N</div>Normalised Values &amp; Conventions</div>
+          <table class="rtable">
+            <thead><tr><th>Parameter</th><th style="text-align:right">Value</th></tr></thead>
+            <tbody id="tNorm"></tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="pill pill-green">1</div>Solution 1 — Full Detail</div>
+          <table class="rtable">
+            <thead><tr><th>Parameter</th><th style="text-align:right">Value</th></tr></thead>
+            <tbody id="tSol1"></tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="pill pill-blue">2</div>Solution 2 — Full Detail</div>
+          <table class="rtable">
+            <thead><tr><th>Parameter</th><th style="text-align:right">Value</th></tr></thead>
+            <tbody id="tSol2"></tbody>
+          </table>
+        </div>
+
+        <div class="card" style="border-color:var(--c1s)">
+          <div class="card-header"><div class="pill pill-green">✓</div>Verification — Solution 1</div>
+          <table class="rtable">
+            <thead><tr><th>Parameter</th><th style="text-align:right">Value</th></tr></thead>
+            <tbody id="tVerify1"></tbody>
+          </table>
+        </div>
+
+        <div class="card" style="border-color:var(--c2s)">
+          <div class="card-header"><div class="pill pill-blue">✓</div>Verification — Solution 2</div>
+          <table class="rtable">
+            <thead><tr><th>Parameter</th><th style="text-align:right">Value</th></tr></thead>
+            <tbody id="tVerify2"></tbody>
+          </table>
+        </div>
+
+      </div>
+    </div><!-- /results-area -->
+
+  </main>
+</div>
+
+<footer>
+  <span>© SpDly Studios</span>
+  <span class="sep">|</span>
+  <a href="https://spdly.is-a.dev" target="_blank" rel="noopener">spdly.is-a.dev</a>
+  <span class="sep">|</span>
+  <span>Double Stub Matcher v2.0</span>
+</footer>
+
+<div id="toast">Copied!</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  THEME
+// ═══════════════════════════════════════════════════════
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', next === 'dark' ? '' : 'light');
+  document.getElementById('themeBtn').textContent = next === 'dark' ? '🌙' : '☀️';
+  drawBase();
+}
+
+// ═══════════════════════════════════════════════════════
+//  COMPLEX MATH
+// ═══════════════════════════════════════════════════════
+const C = {
+  add: (a,b) => ({r: a.r+b.r, i: a.i+b.i}),
+  sub: (a,b) => ({r: a.r-b.r, i: a.i-b.i}),
+  mul: (a,b) => ({r: a.r*b.r - a.i*b.i, i: a.r*b.i + a.i*b.r}),
+  div: (a,b) => {
+    const d = b.r*b.r + b.i*b.i;
+    if(d < 1e-30) return {r: Infinity, i: Infinity};
+    return {r: (a.r*b.r + a.i*b.i)/d, i: (a.i*b.r - a.r*b.i)/d};
+  },
+  abs: a => Math.sqrt(a.r*a.r + a.i*a.i),
+  arg: a => Math.atan2(a.i, a.r),
+  fromPolar: (r,t) => ({r: r*Math.cos(t), i: r*Math.sin(t)}),
+  conj: a => ({r: a.r, i: -a.i}),
+};
+
+// ═══════════════════════════════════════════════════════
+//  FORMATTING
+// ═══════════════════════════════════════════════════════
+function fmt(v, d=4){
+  if(!isFinite(v)) return '∞';
+  if(Math.abs(v) < 1e-10) return '0';
+  return parseFloat(v.toPrecision(d)).toString();
+}
+function fmt5(v){ return fmt(v,5); }
+function fmtC(c, u=''){
+  if(!isFinite(c.r) || !isFinite(c.i)) return '∞';
+  const sign = c.i >= 0 ? '+' : '−';
+  return `${fmt(c.r)} ${sign} j${fmt(Math.abs(c.i))}${u ? ' '+u : ''}`;
+}
+function r2d(r){ return r*180/Math.PI; }
+function d2r(d){ return d*Math.PI/180; }
+function mod(x,m){ return ((x%m)+m)%m; }
+function normDeg(rad){ let d=r2d(rad); d=((d%360)+360)%360; return d; }
+
+// ═══════════════════════════════════════════════════════
+//  PRESETS
+// ═══════════════════════════════════════════════════════
+const PRESETS = {
+  example1: { zlR:75, zlI:30, z0:50, sep:'0.25', d0:0, end:'sc', freq:'', er:1 },
+  example2: { zlR:25, zlI:-50, z0:50, sep:'0.125', d0:0.1, end:'oc', freq:'2400', er:2.2 },
+};
+function loadPreset(key){
+  const p = PRESETS[key];
+  if(!p) return;
+  document.getElementById('zlR').value = p.zlR;
+  document.getElementById('zlI').value = p.zlI;
+  document.getElementById('z0').value = p.z0;
+  const sel = document.getElementById('stubSep');
+  sel.value = p.sep;
+  document.getElementById('customSepGroup').style.display = p.sep==='custom' ? 'block' : 'none';
+  document.getElementById('stub1pos').value = p.d0;
+  document.querySelector(`input[name="stubEnd"][value="${p.end}"]`).checked = true;
+  document.getElementById('freq').value = p.freq;
+  document.getElementById('er').value = p.er;
+  updateFreqDerived();
+  solve();
+}
+
+// ═══════════════════════════════════════════════════════
+//  FREQUENCY DERIVED VALUES
+// ═══════════════════════════════════════════════════════
+function updateFreqDerived(){
+  const f = parseFloat(document.getElementById('freq').value);
+  const er = parseFloat(document.getElementById('er').value) || 1;
+  const div = document.getElementById('freqDerived');
+  if(!f || f<=0){ div.style.display='none'; return; }
+  const c0 = 3e8;
+  const vp = c0/Math.sqrt(er);
+  const lambda_m = vp/(f*1e6);
+  div.style.display = 'flex';
+  div.innerHTML = `
+    <div class="fv"><span>Wavelength λ</span><span>${(lambda_m*1000).toFixed(2)} mm</span></div>
+    <div class="fv"><span>Phase vel. vₚ</span><span>${(vp/1e6).toFixed(1)} Mm/s</span></div>
+    <div class="fv"><span>εᵣ</span><span>${er.toFixed(2)}</span></div>
+  `;
+}
+document.getElementById('freq').addEventListener('input', updateFreqDerived);
+document.getElementById('er').addEventListener('input', updateFreqDerived);
+
+function physLen(ellLambda){
+  const f = parseFloat(document.getElementById('freq').value);
+  const er = parseFloat(document.getElementById('er').value) || 1;
+  if(!f || f<=0) return null;
+  const c0 = 3e8;
+  const lambda_m = c0/(Math.sqrt(er)*f*1e6);
+  return (ellLambda*lambda_m*1000).toFixed(2)+' mm';
+}
+
+// ═══════════════════════════════════════════════════════
+//  PAN / ZOOM
+// ═══════════════════════════════════════════════════════
+const CX=370, CY=370;
+let vx=0, vy=0, vs=1, isPan=false, sx0, sy0;
+const body = document.getElementById('chartBody');
+const cg = document.getElementById('cg');
+
+function applyT(){
+  cg.setAttribute('transform', `translate(${CX+vx},${CY+vy}) scale(${vs})`);
+}
+body.addEventListener('mousedown', e=>{
+  if(e.button !== 0) return;
+  isPan = true;
+  sx0 = e.clientX - vx;
+  sy0 = e.clientY - vy;
+  body.classList.add('panning');
+});
+window.addEventListener('mousemove', e=>{
+  if(!isPan) return;
+  vx = e.clientX - sx0;
+  vy = e.clientY - sy0;
+  applyT();
+});
+window.addEventListener('mouseup', ()=>{ isPan=false; body.classList.remove('panning'); });
+body.addEventListener('wheel', e=>{
+  e.preventDefault();
+  const f = e.deltaY < 0 ? 1.12 : 0.893;
+  vs = Math.max(0.2, Math.min(15, vs*f));
+  applyT();
+}, {passive:false});
+function zoomBy(f){ vs = Math.max(0.2, Math.min(15, vs*f)); applyT(); }
+function resetView(){ vx=0; vy=0; vs=1; applyT(); }
+function setTool(t){ document.getElementById('btnPan').classList.toggle('active', t==='pan'); }
+
+// ═══════════════════════════════════════════════════════
+//  CUSTOM SEP TOGGLE
+// ═══════════════════════════════════════════════════════
+document.getElementById('stubSep').addEventListener('change', function(){
+  document.getElementById('customSepGroup').style.display = this.value==='custom' ? 'block' : 'none';
+});
+
+// ═══════════════════════════════════════════════════════
+//  SVG HELPERS
+// ═══════════════════════════════════════════════════════
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, txt){
+  const e = document.createElementNS(NS, tag);
+  for(const [k,v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if(txt !== undefined) e.textContent = txt;
+  return e;
+}
+const R = 290;
+
+function znToGamma(zn){
+  return C.div(C.sub(zn,{r:1,i:0}), C.add(zn,{r:1,i:0}));
+}
+function ynToGamma(yn){
+  // Γ_Y = -Γ_Z (admittance smith chart)
+  const zn = C.div({r:1,i:0}, yn);
+  return znToGamma(zn);
+}
+function gammaToSVG(g){
+  return {x: g.r*R, y: -g.i*R};
+}
+
+function arcPath(gammaAbs, a1, a2){
+  // BUG FIX: correctly handle arc direction (always clockwise toward generator)
+  const rr = gammaAbs * R;
+  const a1n = a1, a2n = a2;
+  // clockwise in standard math = decreasing angle
+  // In SVG, Y is flipped, so we need sweep-flag=0 for clockwise in our coords
+  const x1 = rr*Math.cos(a1n), y1 = -rr*Math.sin(a1n);
+  const x2 = rr*Math.cos(a2n), y2 = -rr*Math.sin(a2n);
+  // Arc spans angle from a1 → a2 going clockwise (decreasing angle in math)
+  let da = mod(a1 - a2, 2*Math.PI); // how much we travel clockwise
+  const large = da > Math.PI ? 1 : 0;
+  // sweep-flag=1 means counter-clockwise in SVG (because y is flipped, this is clockwise in math coords)
+  return `M${x1.toFixed(3)},${y1.toFixed(3)} A${rr.toFixed(3)},${rr.toFixed(3)},0,${large},1,${x2.toFixed(3)},${y2.toFixed(3)}`;
+}
+
+let showGrid = true;
+function toggleGrid(){
+  showGrid = !showGrid;
+  drawBase();
+  if(lastRes) plotResults(lastRes);
+}
+
+// ═══════════════════════════════════════════════════════
+//  SMITH CHART BASE
+// ═══════════════════════════════════════════════════════
+function getColor(varName){
+  return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+}
+
+function drawBase(){
+  while(cg.firstChild) cg.removeChild(cg.firstChild);
+
+  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+  const chartBg = isDark ? '#0d1018' : '#f8f9ff';
+  const gridColor = isDark ? '#1e2536' : '#e4e8f4';
+  const axisColor = isDark ? '#2d3554' : '#b0bcd8';
+  const circleColor = isDark ? '#252e48' : '#c8d0e8';
+  const rUnitColor = isDark ? '#3a4565' : '#a0aac8';
+  const labelColor = isDark ? '#7880a0' : '#6070a0';
+  const outerColor = isDark ? '#3a4565' : '#8090b8';
+
+  const defs = el('defs',{});
+  const cp = el('clipPath',{id:'sc'});
+  cp.appendChild(el('circle',{cx:0,cy:0,r:R}));
+  defs.appendChild(cp);
+  cg.appendChild(defs);
+
+  // Background
+  cg.appendChild(el('circle',{cx:0,cy:0,r:R,fill:chartBg,stroke:outerColor,'stroke-width':2}));
+
+  if(showGrid){
+    // Resistance circles r = 0, 0.2, 0.5, 1, 2, 5, ∞
+    [0, 0.2, 0.5, 1, 2, 5].forEach(rv=>{
+      const cx = R*rv/(1+rv), r2 = R/(1+rv);
+      const isUnit = rv===1;
+      cg.appendChild(el('circle',{
+        cx, cy:0, r:r2,
+        fill:'none',
+        stroke: isUnit ? rUnitColor : circleColor,
+        'stroke-width': isUnit ? 1.8 : 1.0
+      }));
+    });
+
+    // Reactance arcs x = ±0.2, ±0.5, ±1, ±2, ±5
+    [0.2, 0.5, 1, 2, 5].forEach(xv=>{
+      [-xv, xv].forEach(x=>{
+        const cy2 = R/x;
+        const rArc = Math.abs(cy2);
+        const pts = [];
+        for(let a = -Math.PI; a <= Math.PI; a += 0.015){
+          const px = R + rArc*Math.cos(a);
+          const py = cy2 + rArc*Math.sin(a);
+          if(px*px + py*py <= R*R + 2) pts.push([px, py]);
+        }
+        if(pts.length > 1){
+          let d = `M${pts[0][0].toFixed(2)},${pts[0][1].toFixed(2)}`;
+          pts.slice(1).forEach(p => d += ` L${p[0].toFixed(2)},${p[1].toFixed(2)}`);
+          cg.appendChild(el('path',{d, fill:'none', stroke:circleColor, 'stroke-width':'0.9', 'clip-path':'url(#sc)'}));
+        }
+      });
+    });
+  }
+
+  // g=1 admittance circle (center at -R/2 in impedance chart space, or center=0.5, r=0.5 in normalised)
+  // On impedance chart: this maps to the circle centered at (-R/2, 0) with radius R/2
+  cg.appendChild(el('circle',{
+    cx:-R/2, cy:0, r:R/2,
+    fill:'none', stroke:'#3b82f6',
+    'stroke-width':1.5, 'stroke-dasharray':'5,4', opacity:'0.7',
+    'clip-path':'url(#sc)'
+  }));
+  cg.appendChild(el('text',{x:-R*0.96,y:-6,fill:'#3b82f6','font-size':'8.5','font-family':'Space Grotesk,sans-serif','font-weight':'700','opacity':'0.85'},'g=1'));
+
+  // Axis
+  cg.appendChild(el('line',{x1:-R,y1:0,x2:R,y2:0,stroke:axisColor,'stroke-width':1.4}));
+
+  // Degree ticks
+  for(let deg=0; deg<360; deg+=5){
+    const rad = d2r(deg);
+    const inner = deg%30===0 ? R-14 : deg%10===0 ? R-9 : R-5;
+    const sw = deg%30===0 ? 1.2 : deg%10===0 ? 0.8 : 0.5;
+    cg.appendChild(el('line',{
+      x1: R*Math.cos(rad), y1: R*Math.sin(rad),
+      x2: inner*Math.cos(rad), y2: inner*Math.sin(rad),
+      stroke: axisColor, 'stroke-width': sw
+    }));
+  }
+
+  // WTG label
+  {
+    const arrowR = R+20;
+    const a1 = d2r(98), a2 = d2r(82);
+    const ax1 = arrowR*Math.cos(a1), ay1 = -arrowR*Math.sin(a1);
+    const ax2 = arrowR*Math.cos(a2), ay2 = -arrowR*Math.sin(a2);
+    cg.appendChild(el('path',{d:`M${ax1},${ay1} A${arrowR},${arrowR},0,0,0,${ax2},${ay2}`,fill:'none',stroke:labelColor,'stroke-width':'1.2'}));
+    cg.appendChild(el('text',{x:ax2+4,y:ay2+3,fill:labelColor,'font-size':'7.5','font-family':'Space Grotesk,sans-serif'},'WTG →'));
+  }
+
+  // r=0,0.5,1,2,5 labels
+  [[0,'0'],[0.5,'0.5'],[1,'1'],[2,'2'],[5,'5']].forEach(([rv,lbl])=>{
+    const cx = R*rv/(1+rv), r2 = R/(1+rv);
+    cg.appendChild(el('text',{x:cx+r2+2, y:9, fill:labelColor,'font-size':'8.5','font-family':'Space Grotesk,sans-serif'}, lbl));
+  });
+
+  // Center Z₀ dot
+  cg.appendChild(el('circle',{cx:0,cy:0,r:5,fill:isDark?'#6070a0':'#8090c0'}));
+  cg.appendChild(el('text',{x:8,y:-7,fill:labelColor,'font-size':'9.5','font-family':'Space Grotesk,sans-serif','font-weight':'600'},'Z₀'));
+
+  // Outer ring
+  cg.appendChild(el('circle',{cx:0,cy:0,r:R,fill:'none',stroke:outerColor,'stroke-width':2}));
+}
+
+function addLabel(x,y,txt,fill,size='10.5'){
+  cg.appendChild(el('text',{
+    x, y, fill,
+    'font-size':size,
+    'font-family':'Space Grotesk,sans-serif',
+    'font-weight':'700',
+    'paint-order':'stroke',
+    'stroke':'rgba(0,0,0,0.5)',
+    'stroke-width':'3',
+    'stroke-linejoin':'round'
+  }, txt));
+}
+
+// ═══════════════════════════════════════════════════════
+//  DOUBLE STUB MATCHING MATH
+// ═══════════════════════════════════════════════════════
+function admittanceFromGamma(gamma){
+  return C.div(C.sub({r:1,i:0}, gamma), C.add({r:1,i:0}, gamma));
+}
+function gammaFromAdmittance(y){
+  return C.div(C.sub({r:1,i:0}, y), C.add({r:1,i:0}, y));
+}
+function gammaFromImpedance(z){
+  return C.div(C.sub(z,{r:1,i:0}), C.add(z,{r:1,i:0}));
+}
+function rotateGamma(gamma, dLambda){
+  // Toward generator: multiply by e^{-j4πd}
+  const angle = -4*Math.PI*dLambda;
+  return C.mul(gamma, C.fromPolar(1, angle));
+}
+
+// BUG FIX: stubLength now correctly handles all quadrants
+function stubLength(B, isOC){
+  let ell;
+  if(isOC){
+    // OC stub: Y_stub = jB → b = tan(2πℓ) → ℓ = atan(b)/(2π)
+    ell = Math.atan(B) / (2*Math.PI);
+  } else {
+    // SC stub: Y_stub = jB → b = -cot(2πℓ) → 2πℓ = atan(-1/B)
+    if(Math.abs(B) < 1e-10){
+      ell = 0.25; // quarter wave for b→∞
+    } else {
+      ell = Math.atan(-1/B) / (2*Math.PI);
+    }
+  }
+  // Ensure ell in (0, 0.5)
+  if(ell <= 0) ell += 0.5;
+  if(ell >= 0.5) ell -= 0.5;
+  return ell;
+}
+
+// BUG FIX: verify stub formula inversion
+function stubSusceptance(ell, isOC){
+  const theta = 2*Math.PI*ell;
+  return isOC ? Math.tan(theta) : -1/Math.tan(theta);
+}
+
+function computeDoubleStubMatch(ZLr, ZLi, Z0v, d0, d, stubEnd){
+  const ZL = {r: ZLr, i: ZLi};
+  // Normalise
+  const zn = C.div(ZL, {r:Z0v, i:0});
+  const yn = C.div({r:1,i:0}, zn);
+
+  // Γ_L from impedance chart convention
+  const gammaL = gammaFromImpedance(zn);
+  const gammaAbs = C.abs(gammaL);
+  const gammaAngleL = C.arg(gammaL);
+
+  // ── Step 1: Rotate load to Stub 1 position ──
+  const gamma1line = rotateGamma(gammaL, d0);
+  const y1line = admittanceFromGamma(gamma1line);
+  const g1 = y1line.r;
+  const b1line = y1line.i;
+
+  // ── Forbidden zone check ──
+  // g1 must be ≤ 1/sin²(2πd) for solutions to exist
+  const sinBd = Math.sin(2*Math.PI*d);
+  if(Math.abs(sinBd) < 1e-9){
+    return { forbidden: true, forbiddenLimit: Infinity, g1, d0, d, reason:'Degenerate spacing (d = n×λ/2). Choose a different stub separation.' };
+  }
+  const forbiddenLimit = 1/(sinBd*sinBd);
+  if(g1 > forbiddenLimit + 1e-9){
+    return { forbidden: true, forbiddenLimit, g1, d0, d };
+  }
+
+  // ── Step 2: Solve for B1_total (two solutions) using quadratic ──
+  // Condition: Re(y_2) = 1 after rotating y_1' = g1+jB1 by d
+  // Γ_1' = (1-g1-jB1)/(1+g1+jB1)
+  // Γ_2 = Γ_1' * e^{-j4πd}
+  // Re(y_2) = 1 leads to quadratic in B1:
+  //   A2·B1² + A1·B1 + A0 = 0
+  const phi = -4*Math.PI*d;
+  const cosPhi = Math.cos(phi);
+  const sinPhi = Math.sin(phi);
+  const alpha = 1 - g1;
+  const beta_v = 1 + g1;
+
+  const A2 = 1 - cosPhi;
+  const A1 = 2*sinPhi;
+  const A0 = alpha*(alpha + beta_v*cosPhi);
+
+  let B1_arr;
+  if(Math.abs(A2) < 1e-9){
+    if(Math.abs(A1) < 1e-9){
+      return { forbidden:true, forbiddenLimit, g1, d0, d, reason:'Degenerate case (d = nλ/2). Choose different stub separation.' };
+    }
+    B1_arr = [-A0/A1]; // linear
+  } else {
+    const disc = A1*A1 - 4*A2*A0;
+    if(disc < -1e-9){
+      return { forbidden:true, forbiddenLimit, g1, d0, d };
+    }
+    const sqrtDisc = Math.sqrt(Math.max(0, disc));
+    B1_arr = [(-A1+sqrtDisc)/(2*A2), (-A1-sqrtDisc)/(2*A2)];
+  }
+
+  const isOC = stubEnd === 'oc';
+  const solutions = [];
+
+  B1_arr.forEach(B1_total => {
+    const b1_stub = B1_total - b1line;
+    const ell1 = stubLength(b1_stub, isOC);
+
+    // Verify stub susceptance
+    const b1_check = stubSusceptance(ell1, isOC);
+
+    const y1p = {r: g1, i: B1_total};
+    const gamma1p = gammaFromAdmittance(y1p);
+    const mag1p = C.abs(gamma1p);
+
+    const gamma2 = rotateGamma(gamma1p, d);
+    const y2 = admittanceFromGamma(gamma2);
+
+    const b2_stub = -y2.i; // cancel imaginary part to reach g=1, b=0
+    const ell2 = stubLength(b2_stub, isOC);
+
+    const b2_check = stubSusceptance(ell2, isOC);
+
+    // After stub 2
+    const y2p = {r: y2.r, i: y2.i + b2_stub};
+    const zin_norm = C.div({r:1,i:0}, y2p);
+    const Zin = {r: zin_norm.r*Z0v, i: zin_norm.i*Z0v};
+    const gammaIn = gammaFromAdmittance(y2p);
+    const gammaMag = C.abs(gammaIn);
+    const vswr_in = gammaMag < 1e-9 ? 1 : (1+gammaMag)/(1-gammaMag);
+    const rl_in = gammaMag < 1e-12 ? Infinity : -20*Math.log10(gammaMag);
+    const ml_in = gammaMag < 1e-12 ? 0 : -10*Math.log10(1-gammaMag*gammaMag);
+
+    solutions.push({
+      b1_stub, b2_stub,
+      ell1, ell2,
+      B1_total,
+      y1line, y1p, gamma1p, mag1p,
+      gamma2, y2, y2p,
+      zin_norm, Zin,
+      gammaIn, gammaMag, vswr_in, rl_in, ml_in,
+      gammaAngle1p: C.arg(gamma1p),
+      gammaAngle2: C.arg(gamma2),
+      b1_check, b2_check,
+    });
+  });
+
+  return {
+    forbidden: false,
+    ZL, Z0v, zn, yn,
+    gammaL, gammaAbs, gammaAngleL,
+    gamma1line, y1line, g1, b1line,
+    gammaAngle1line: C.arg(gamma1line),
+    d0, d, isOC,
+    solutions,
+    forbiddenLimit,
+  };
+}
+
+// ═══════════════════════════════════════════════════════
+//  PLOT RESULTS
+// ═══════════════════════════════════════════════════════
+let lastRes = null;
+
+function plotResults(res){
+  const sel = document.getElementById('solSelect').value;
+
+  // Load point
+  const lp = gammaToSVG(res.gammaL);
+
+  // |Γ_L| circle
+  cg.appendChild(el('circle',{cx:0,cy:0,r:res.gammaAbs*R,fill:'none',stroke:'#f87171','stroke-width':1.3,'stroke-dasharray':'6,4',opacity:'0.7'}));
+
+  // d₀ arc (if nonzero)
+  if(res.d0 > 0.0001){
+    const d0path = arcPath(res.gammaAbs, res.gammaAngleL, res.gammaAngle1line);
+    cg.appendChild(el('path',{d:d0path,fill:'none',stroke:'#9ca3af','stroke-width':1.8,'stroke-dasharray':'4,3',opacity:'0.8'}));
+    // Arrow at end
+    const g1l = res.gamma1line;
+    const angle1l = res.gammaAngle1line;
+    // tangent direction (clockwise means angle decreasing)
+    const tx = Math.sin(angle1l)*R*res.gammaAbs;
+    const ty = Math.cos(angle1l)*R*res.gammaAbs;
+    const len = Math.sqrt(tx*tx+ty*ty)+0.001;
+    const nx = tx/len, ny = ty/len;
+    const ax = g1l.r*R, ay = -g1l.i*R;
+    cg.appendChild(el('polygon',{
+      points:`${ax},${ay} ${ax-nx*8+ny*4},${ay-ny*8-nx*4} ${ax-nx*8-ny*4},${ay-ny*8+nx*4}`,
+      fill:'#9ca3af', opacity:'0.8'
+    }));
+    addLabel(ax+8, ay-8, `d₀`, '#9ca3af', '9');
+  }
+
+  // Load point dot
+  cg.appendChild(el('circle',{cx:lp.x,cy:lp.y,r:9,fill:'#f87171',opacity:'0.18'}));
+  cg.appendChild(el('circle',{cx:lp.x,cy:lp.y,r:5.5,fill:'#f87171'}));
+  addLabel(lp.x+9, lp.y-9, 'Z_L', '#f87171', '10');
+
+  // Stub 1 pre-stub junction
+  const s1l = gammaToSVG(res.gamma1line);
+  cg.appendChild(el('circle',{cx:s1l.x,cy:s1l.y,r:4.5,fill:'#9ca3af',opacity:'0.7'}));
+  addLabel(s1l.x+7, s1l.y-7, 'S₁', '#9ca3af', '9');
+
+  const colors = [
+    {stub1:'#4ade80', stub2:'#a78bfa'},
+    {stub1:'#60a5fa', stub2:'#fb923c'},
+  ];
+
+  res.solutions.forEach((sol,idx)=>{
+    const show = sel==='both' || sel===(idx+1).toString();
+    if(!show) return;
+    const c = colors[idx];
+
+    // Stub 1 susceptance shift (dashed line from S₁ to S₁')
+    const s1p = gammaToSVG(sol.gamma1p);
+    cg.appendChild(el('line',{
+      x1:s1l.x, y1:s1l.y, x2:s1p.x, y2:s1p.y,
+      stroke:c.stub1, 'stroke-width':2, 'stroke-dasharray':'3,2', opacity:'0.9'
+    }));
+    cg.appendChild(el('circle',{cx:s1p.x,cy:s1p.y,r:7,fill:c.stub1,opacity:'0.15'}));
+    cg.appendChild(el('circle',{cx:s1p.x,cy:s1p.y,r:4.5,fill:c.stub1}));
+    addLabel(s1p.x+8, s1p.y-8, `S₁'${idx+1}`, c.stub1, '9.5');
+
+    // Arc from S₁' to S₂ (rotation toward generator by d)
+    const arcD = arcPath(sol.mag1p, sol.gammaAngle1p, sol.gammaAngle2);
+    cg.appendChild(el('path',{d:arcD,fill:'none',stroke:c.stub1,'stroke-width':2.5,opacity:'0.8'}));
+
+    // Arrow at S₂
+    const s2 = gammaToSVG(sol.gamma2);
+    cg.appendChild(el('circle',{cx:s2.x,cy:s2.y,r:6,fill:c.stub2,opacity:'0.4'}));
+    cg.appendChild(el('circle',{cx:s2.x,cy:s2.y,r:4,fill:c.stub2}));
+    addLabel(s2.x+8, s2.y+12, `S₂${idx+1}`, c.stub2, '9.5');
+
+    // Stub 2 shift to center (dashed line)
+    cg.appendChild(el('line',{
+      x1:s2.x, y1:s2.y, x2:0, y2:0,
+      stroke:c.stub2, 'stroke-width':2, 'stroke-dasharray':'3,2', opacity:'0.8'
+    }));
+  });
+
+  // Match point at center
+  cg.appendChild(el('circle',{cx:0,cy:0,r:8,fill:'#a78bfa',opacity:'0.25'}));
+  cg.appendChild(el('circle',{cx:0,cy:0,r:4,fill:'#a78bfa'}));
+  addLabel(9, -10, 'Match', '#a78bfa', '9.5');
+}
+
+// ═══════════════════════════════════════════════════════
+//  TABLE HELPERS
+// ═══════════════════════════════════════════════════════
+function row(tbody, param, val, cls=''){
+  const tr = document.createElement('tr');
+  if(cls) tr.className = cls;
+  const td1 = document.createElement('td'); td1.className = 'td-param'; td1.innerHTML = param;
+  const td2 = document.createElement('td'); td2.className = 'td-val'; td2.textContent = val;
+  tr.appendChild(td1); tr.appendChild(td2); tbody.appendChild(tr);
+}
+function rowHi(tbody, param, val){ row(tbody, param, val, 'td-hi'); }
+function rowOk(tbody, param, val){ row(tbody, param, val, 'td-ok'); }
+function rowWarn(tbody, param, val){ row(tbody, param, val, 'td-warn'); }
+function rowErr(tbody, param, val){ row(tbody, param, val, 'td-err'); }
+
+function bLabel(b){ return b>0 ? ' (ind.)' : b<0 ? ' (cap.)' : ''; }
+
+function mqBadge(gammaMag){
+  if(gammaMag < 1e-6) return ['mq-badge mq-perfect', '✓ Perfect'];
+  if(gammaMag < 0.01) return ['mq-badge mq-near', '✓ Near-perfect'];
+  return ['mq-badge mq-warn', '⚠ Check inputs'];
+}
+
+// ═══════════════════════════════════════════════════════
+//  SOLVE
+// ═══════════════════════════════════════════════════════
+function solve(){
+  const ZLr = parseFloat(document.getElementById('zlR').value) || 0;
+  const ZLi = parseFloat(document.getElementById('zlI').value) || 0;
+  const Z0v = parseFloat(document.getElementById('z0').value) || 50;
+  const isOC = document.querySelector('input[name="stubEnd"]:checked').value === 'oc';
+  const stubEndVal = isOC ? 'oc' : 'sc';
+
+  let dSep;
+  const sepSelect = document.getElementById('stubSep').value;
+  if(sepSelect === 'custom'){
+    dSep = parseFloat(document.getElementById('customSep').value) || 0.25;
+  } else {
+    dSep = parseFloat(sepSelect);
+  }
+  const d0 = parseFloat(document.getElementById('stub1pos').value) || 0;
+
+  // Validation
+  if(Z0v <= 0){ showToast('⚠ Z₀ must be positive'); return; }
+  if(dSep <= 0 || dSep >= 0.5){ showToast('⚠ Stub separation must be in (0, 0.5λ)'); return; }
+  if(ZLr < 0){ showToast('⚠ R (real part of ZL) must be ≥ 0'); return; }
+
+  const res = computeDoubleStubMatch(ZLr, ZLi, Z0v, d0, dSep, stubEndVal);
+  lastRes = res;
+
+  drawBase();
+
+  const fmtMsgDiv = document.getElementById('forbiddenMsg');
+  fmtMsgDiv.style.display = 'none';
+
+  if(res.forbidden){
+    // Plot load point even in forbidden zone
+    const lp = gammaToSVG(res.gammaL);
+    cg.appendChild(el('circle',{cx:lp.x,cy:lp.y,r:9,fill:'#f87171',opacity:'0.2'}));
+    cg.appendChild(el('circle',{cx:lp.x,cy:lp.y,r:5.5,fill:'#f87171'}));
+    addLabel(lp.x+9, lp.y-9, 'Z_L', '#f87171', '10');
+    // Also draw |Γ| circle
+    if(res.gammaAbs !== undefined){
+      cg.appendChild(el('circle',{cx:0,cy:0,r:res.gammaAbs*R,fill:'none',stroke:'#f87171','stroke-width':1.2,'stroke-dasharray':'6,4',opacity:'0.5'}));
+    }
+    resetView();
+
+    const reason = res.reason || `g₁ = ${fmt(res.g1,5)} > forbidden limit ${fmt(res.forbiddenLimit,5)}`;
+    fmtMsgDiv.innerHTML = `<strong>⚠ Forbidden Zone:</strong> This load cannot be matched with d = ${dSep}λ stub separation.<br><br>${reason}<br><br><strong>Remedy:</strong> Try a different stub spacing (λ/8 or 3λ/8 are often better), or increase d₀ to rotate the load out of the forbidden zone.`;
+    fmtMsgDiv.style.display = 'block';
+
+    document.getElementById('resultsArea').classList.add('visible');
+    document.getElementById('bannerSol1').style.display = 'none';
+    document.getElementById('bannerSol2').style.display = 'none';
+    document.getElementById('badge').className = 'badge badge-err';
+    document.getElementById('badge').textContent = 'Forbidden';
+    return;
+  }
+
+  plotResults(res);
+  resetView();
+
+  const [s1, s2] = res.solutions;
+
+  // Match quality badges
+  const [mq1cls, mq1txt] = mqBadge(s1.gammaMag);
+  const [mq2cls, mq2txt] = mqBadge(s2.gammaMag);
+  document.getElementById('s1mq').className = mq1cls;
+  document.getElementById('s1mq').textContent = mq1txt;
+  document.getElementById('s2mq').className = mq2cls;
+  document.getElementById('s2mq').textContent = mq2txt;
+
+  // Solution banners
+  const pl1 = physLen(s1.ell1), pl2 = physLen(s1.ell2);
+  const pl3 = physLen(s2.ell1), pl4 = physLen(s2.ell2);
+
+  document.getElementById('s1l1').textContent = `${fmt5(s1.ell1)} λ`;
+  document.getElementById('s1l1mm').textContent = pl1 ? `= ${pl1}` : '';
+  document.getElementById('s1l2').textContent = `${fmt5(s1.ell2)} λ`;
+  document.getElementById('s1l2mm').textContent = pl2 ? `= ${pl2}` : '';
+  document.getElementById('s1b1').textContent = `${fmt(s1.b1_stub,5)}${bLabel(s1.b1_stub)}`;
+  document.getElementById('s1b2').textContent = `${fmt(s1.b2_stub,5)}${bLabel(s1.b2_stub)}`;
+  document.getElementById('s1zin').textContent = fmtC(s1.Zin,'Ω');
+  document.getElementById('s1gin').textContent = s1.gammaMag.toExponential(3);
+
+  document.getElementById('s2l1').textContent = `${fmt5(s2.ell1)} λ`;
+  document.getElementById('s2l1mm').textContent = pl3 ? `= ${pl3}` : '';
+  document.getElementById('s2l2').textContent = `${fmt5(s2.ell2)} λ`;
+  document.getElementById('s2l2mm').textContent = pl4 ? `= ${pl4}` : '';
+  document.getElementById('s2b1').textContent = `${fmt(s2.b1_stub,5)}${bLabel(s2.b1_stub)}`;
+  document.getElementById('s2b2').textContent = `${fmt(s2.b2_stub,5)}${bLabel(s2.b2_stub)}`;
+  document.getElementById('s2zin').textContent = fmtC(s2.Zin,'Ω');
+  document.getElementById('s2gin').textContent = s2.gammaMag.toExponential(3);
+
+  document.getElementById('bannerSol1').style.display = '';
+  document.getElementById('bannerSol2').style.display = '';
+
+  // VSWR, RL, ML before matching
+  const vswr = (1+res.gammaAbs)/(1-res.gammaAbs);
+  const rl = -20*Math.log10(res.gammaAbs);
+  const ml = -10*Math.log10(1-res.gammaAbs**2);
+
+  // Reflection table
+  const tR = document.getElementById('tRefl'); tR.innerHTML='';
+  row(tR, 'Z<sub>L</sub>', fmtC(res.ZL,'Ω'));
+  row(tR, 'Z₀', `${Z0v} Ω`);
+  row(tR, 'z<sub>n</sub> (normalised)', fmtC(res.zn));
+  row(tR, 'y<sub>n</sub> (normalised)', fmtC(res.yn));
+  row(tR, 'Γ_L', fmtC(res.gammaL));
+  rowHi(tR, '|Γ_L|', res.gammaAbs.toFixed(6));
+  row(tR, '∠Γ_L', normDeg(res.gammaAngleL).toFixed(3)+'°');
+  rowHi(tR, 'VSWR (before match)', isFinite(vswr) ? vswr.toFixed(4) : '∞');
+  row(tR, 'Return Loss', isFinite(rl) ? rl.toFixed(3)+' dB' : '∞ dB');
+  row(tR, 'Mismatch Loss', ml.toFixed(3)+' dB');
+
+  // Normalised / conventions table
+  const tN = document.getElementById('tNorm'); tN.innerHTML='';
+  row(tN, 'Chart type', 'Admittance-Y (shunt stubs)');
+  row(tN, 'Rotation direction', 'CW = toward generator');
+  row(tN, 'Stub 1 offset d₀', `${fmt5(d0)} λ`);
+  row(tN, 'Stub separation d', `${fmt5(dSep)} λ`);
+  row(tN, 'g₁ (at Stub 1)', `${fmt(res.g1,6)} ${res.g1 <= res.forbiddenLimit ? '✓' : '⚠'}`);
+  row(tN, 'Forbidden zone limit', `g₁ ≤ ${fmt(res.forbiddenLimit,5)}`);
+  row(tN, 'b₁_line (at Stub 1)', fmt(res.b1line,6));
+  row(tN, 'Stub type', res.isOC ? 'Open Circuit (OC)' : 'Short Circuit (SC)');
+  row(tN, 'SC: b = −cot(2πℓ)', '');
+  row(tN, 'OC: b = +tan(2πℓ)', '');
+
+  // Solution detail helper
+  function fillSolTable(tbodyId, sol, idx){
+    const t = document.getElementById(tbodyId); t.innerHTML='';
+    const lbl = ['a','b'][idx];
+    rowHi(t, `Stub 1 length ℓ₁${lbl}`, `${fmt5(sol.ell1)} λ`);
+    rowHi(t, `Stub 2 length ℓ₂${lbl}`, `${fmt5(sol.ell2)} λ`);
+    row(t, 'ℓ₁ in degrees', `${fmt(sol.ell1*360,6)}°`);
+    row(t, 'ℓ₂ in degrees', `${fmt(sol.ell2*360,6)}°`);
+    const pl1t = physLen(sol.ell1), pl2t = physLen(sol.ell2);
+    if(pl1t) row(t, 'ℓ₁ (physical)', pl1t);
+    if(pl2t) row(t, 'ℓ₂ (physical)', pl2t);
+    row(t, 'b₁_stub (normalised)', fmt(sol.b1_stub,6)+bLabel(sol.b1_stub));
+    row(t, 'B₁_stub (actual)', fmt(sol.b1_stub/Z0v,6)+' S');
+    row(t, 'b₁ verification ✓', fmt(sol.b1_check,6));
+    row(t, 'y after Stub 1 (y₁\')', fmtC(sol.y1p));
+    row(t, 'y at Stub 2 (before)', fmtC(sol.y2));
+    row(t, 'b₂_stub (normalised)', fmt(sol.b2_stub,6)+bLabel(sol.b2_stub));
+    row(t, 'B₂_stub (actual)', fmt(sol.b2_stub/Z0v,6)+' S');
+    row(t, 'b₂ verification ✓', fmt(sol.b2_check,6));
+    rowHi(t, 'Z_in after matching', fmtC(sol.Zin,'Ω'));
+    row(t, 'z_in (normalised)', fmtC(sol.zin_norm));
+  }
+  fillSolTable('tSol1', s1, 0);
+  fillSolTable('tSol2', s2, 1);
+
+  // Verification tables
+  function fillVerify(tbodyId, sol){
+    const t = document.getElementById(tbodyId); t.innerHTML='';
+    row(t, 'y_in = y₂ + jb₂', fmtC(sol.y2p));
+    row(t, 'z_in (normalised)', fmtC(sol.zin_norm));
+    rowHi(t, 'Z_in (actual)', fmtC(sol.Zin,'Ω'));
+    row(t, 'Γ_in (rect.)', fmtC(sol.gammaIn));
+    const gmRow = sol.gammaMag < 1e-6 ? rowOk : sol.gammaMag < 0.01 ? rowOk : rowWarn;
+    gmRow(t, '|Γ_in| (should be ≈ 0)', sol.gammaMag.toExponential(4));
+    row(t, 'VSWR after matching', isFinite(sol.vswr_in) ? sol.vswr_in.toFixed(5) : '∞');
+    row(t, 'Return Loss', isFinite(sol.rl_in) ? sol.rl_in.toFixed(3)+' dB' : '∞ dB');
+    row(t, 'Mismatch Loss', sol.ml_in.toFixed(3)+' dB');
+    const [mqcls, mqtxt] = mqBadge(sol.gammaMag);
+    row(t, 'Match quality', mqtxt);
+  }
+  fillVerify('tVerify1', s1);
+  fillVerify('tVerify2', s2);
+
+  document.getElementById('resultsArea').classList.add('visible');
+  document.getElementById('badge').className = 'badge badge-ok';
+  document.getElementById('badge').textContent = 'Matched';
+}
+
+// ═══════════════════════════════════════════════════════
+//  RESET
+// ═══════════════════════════════════════════════════════
+function resetAll(){
+  lastRes = null;
+  document.getElementById('resultsArea').classList.remove('visible');
+  document.getElementById('badge').className = 'badge badge-idle';
+  document.getElementById('badge').textContent = 'Idle';
+  drawBase();
+  resetView();
+}
+
+// ═══════════════════════════════════════════════════════
+//  EXPORT / COPY
+// ═══════════════════════════════════════════════════════
+function exportSVG(){
+  const svg = document.getElementById('smithSvg');
+  const clone = svg.cloneNode(true);
+  clone.setAttribute('xmlns','http://www.w3.org/2000/svg');
+  const xml = '<?xml version="1.0"?>\n' + clone.outerHTML;
+  const blob = new Blob([xml], {type:'image/svg+xml'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'smith-chart.svg';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('SVG exported!');
+}
+
+function copyResults(){
+  if(!lastRes || lastRes.forbidden){ showToast('No results to copy'); return; }
+  const out = {
+    load: {R: lastRes.ZL.r, X: lastRes.ZL.i},
+    Z0: lastRes.Z0v,
+    d0: lastRes.d0,
+    d: lastRes.d,
+    stubType: lastRes.isOC ? 'OC' : 'SC',
+    gammaAbs: lastRes.gammaAbs,
+    VSWR_before: (1+lastRes.gammaAbs)/(1-lastRes.gammaAbs),
+    solutions: lastRes.solutions.map((s,i)=>({
+      sol: i+1,
+      ell1_lambda: s.ell1,
+      ell2_lambda: s.ell2,
+      b1_stub: s.b1_stub,
+      b2_stub: s.b2_stub,
+      Zin: {R: s.Zin.r, X: s.Zin.i},
+      gammaMag: s.gammaMag,
+    }))
+  };
+  navigator.clipboard.writeText(JSON.stringify(out, null,2)).then(()=>showToast('Results copied as JSON!'));
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+drawBase();
+// Keyboard shortcut: Enter to solve
+document.addEventListener('keydown', e=>{
+  if(e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey){
+    const tag = document.activeElement.tagName;
+    if(tag === 'INPUT' || tag === 'SELECT') solve();
+  }
+});
+</script>
+</body>
+</html>

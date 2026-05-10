@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="referrer" content="strict-origin-when-cross-origin">
+
+<!-- ═══ PRIMARY META ═══ -->
+<title>IEEE 754 · SpDly Studios</title>
+<meta name="description" content="IEEE 754 floating-point calculator and analyzer. Convert, visualize, and understand single/double precision floating point representations and bit patterns.">
+<meta name="keywords" content="IEEE 754, floating point, single precision, double precision, binary converter, bit representation, FP calculator">
+<meta name="author" content="Shivaprasad V">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="theme-color" content="#b85c25">
+<meta name="color-scheme" content="light">
+<link rel="canonical" href="https://spdly.is-a.dev/tools/ieee754.html">
+
+<!-- ═══ OPEN GRAPH ═══ -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SpDly Studios">
+<meta property="og:title" content="IEEE 754 · SpDly Studios">
+<meta property="og:description" content="IEEE 754 floating-point calculator for visualizing and understanding FP bit representations.">
+<meta property="og:url" content="https://spdly.is-a.dev/tools/ieee754.html">
+<meta property="og:image" content="https://spdly.is-a.dev/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_IN">
+
+<!-- ═══ TWITTER / X CARD ═══ -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:creator" content="@SpDly14">
+<meta name="twitter:site" content="@SpDly14">
+<meta name="twitter:title" content="IEEE 754 · SpDly Studios">
+<meta name="twitter:description" content="IEEE 754 floating-point calculator and bit pattern analyzer">
+<meta name="twitter:image" content="https://spdly.is-a.dev/assets/og-image.png">
+
+<!-- ═══ FAVICONS ═══ -->
+<link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../assets/logo.svg">
+<link rel="manifest" href="/manifest.json">
+
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Nunito:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root[data-theme="light"]{
+  --bg:#f6f4f0;--surface:#ffffff;--border:#e0dbd3;
+  --text:#1a1714;--muted:#8a8480;--accent:#b85c25;
+  --s-bg:#dbeafe;--s-text:#1d4ed8;
+  --e-bg:#ede9fe;--e-text:#6d28d9;
+  --m-bg:#fef3c7;--m-text:#92400e;
+  --input-bg:#faf9f7;
+}
+:root[data-theme="dark"]{
+  --bg:#111009;--surface:#1c1916;--border:#2b2722;
+  --text:#ede9e3;--muted:#6b6762;--accent:#d9743a;
+  --s-bg:#1e3a5f;--s-text:#93c5fd;
+  --e-bg:#2e1d5e;--e-text:#c4b5fd;
+  --m-bg:#3b2a0a;--m-text:#fcd34d;
+  --input-bg:#14120f;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;transition:background .2s,color .2s}
+header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.75rem;border-bottom:1px solid var(--border);background:var(--surface)}
+.brand{font-family:'Lora',serif;font-weight:600;font-size:1.1rem;color:var(--accent);text-decoration:none}
+nav{display:flex;gap:1rem;align-items:center}
+nav a{font-size:.88rem;font-weight:500;color:var(--muted);text-decoration:none;transition:color .15s}
+nav a:hover,nav a.active{color:var(--accent)}
+.theme-btn{background:none;border:1px solid var(--border);border-radius:20px;padding:.28rem .7rem;font-size:.82rem;font-family:'Nunito',sans-serif;color:var(--muted);cursor:pointer}
+main{flex:1;max-width:660px;margin:0 auto;width:100%;padding:2rem 1.25rem}
+h1{font-family:'Lora',serif;font-size:1.6rem;font-weight:600;margin-bottom:.3rem}
+.sub{font-size:.9rem;color:var(--muted);margin-bottom:2rem}
+
+/* precision toggle */
+.toggle-row{display:flex;gap:.5rem;margin-bottom:1.5rem}
+.tog{background:none;border:1.5px solid var(--border);border-radius:8px;padding:.38rem 1rem;font-size:.88rem;font-family:'Nunito',sans-serif;color:var(--muted);cursor:pointer;font-weight:500;transition:all .15s}
+.tog.on{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+
+/* input */
+.field-label{font-size:.78rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:.45rem}
+input[type=text]{width:100%;padding:.75rem 1rem;font-size:1.05rem;font-family:'Nunito',sans-serif;background:var(--input-bg);border:1.5px solid var(--border);border-radius:9px;color:var(--text);outline:none;transition:border-color .2s;margin-bottom:.35rem}
+input:focus{border-color:var(--accent)}
+.err{font-size:.82rem;color:#dc2626;min-height:1.2em;margin-bottom:.5rem}
+
+/* ── bit display ── */
+.bits-wrap{margin:1.5rem 0 1rem}
+.bits-scroll{display:flex;flex-wrap:wrap;gap:4px;row-gap:4px}
+.bit{display:inline-flex;align-items:center;justify-content:center;width:30px;height:38px;font-size:.92rem;font-weight:600;border-radius:6px;flex-shrink:0}
+.bit.s{background:var(--s-bg);color:var(--s-text)}
+.bit.e{background:var(--e-bg);color:var(--e-text)}
+.bit.m{background:var(--m-bg);color:var(--m-text)}
+
+/* legend */
+.legend{display:flex;gap:1.25rem;flex-wrap:wrap;margin-bottom:1.25rem}
+.leg{display:flex;align-items:center;gap:.45rem;font-size:.83rem;color:var(--muted)}
+.dot{width:11px;height:11px;border-radius:3px}
+.dot.s{background:var(--s-text)}
+.dot.e{background:var(--e-text)}
+.dot.m{background:var(--m-text)}
+
+/* info rows */
+.info-section{margin-top:1.25rem}
+.info-row{display:flex;justify-content:space-between;align-items:baseline;padding:.65rem 0;border-bottom:1px solid var(--border);font-size:.92rem}
+.info-row:last-child{border-bottom:none}
+.info-key{color:var(--muted);flex:0 0 auto;margin-right:.75rem}
+.info-val{font-weight:500;text-align:right;word-break:break-all;max-width:70%}
+.info-val.s{color:var(--s-text)}
+.info-val.e{color:var(--e-text)}
+.info-val.m{color:var(--m-text)}
+
+/* special banner */
+.special{background:color-mix(in srgb,var(--accent) 12%,transparent);border-left:3px solid var(--accent);border-radius:0 7px 7px 0;padding:.6rem 1rem;font-size:.88rem;color:var(--accent);margin-top:1rem;display:none}
+
+/* formula */
+.formula{margin-top:1.5rem;padding:1rem;background:var(--input-bg);border-radius:9px;font-size:.88rem;color:var(--muted);line-height:1.8}
+.formula strong{color:var(--text)}
+
+/* section divider */
+.divider{height:1px;background:var(--border);margin:1.75rem 0}
+
+footer{text-align:center;padding:1.25rem;font-size:.8rem;color:var(--muted);border-top:1px solid var(--border)}
+footer a{color:var(--accent);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="https://spdly.is-a.dev">SpDly</a>
+  <nav>
+    <a href="converter.html">Number Base</a>
+    <a href="ieee754.html" class="active">IEEE 754</a>
+    <button class="theme-btn" onclick="toggleTheme()">☀ / ☾</button>
+  </nav>
+</header>
+
+<main>
+  <h1>IEEE 754 Float Converter</h1>
+  <p class="sub">See how a decimal number is stored as binary floating point.</p>
+
+  <div class="field-label">Precision</div>
+  <div class="toggle-row">
+    <button class="tog on" id="t32" onclick="setPrecision(32)">32-bit Single</button>
+    <button class="tog" id="t64" onclick="setPrecision(64)">64-bit Double</button>
+  </div>
+
+  <div class="field-label">Enter a number</div>
+  <input type="text" id="numIn" placeholder="e.g. -3.14, 0.1, Infinity, NaN" oninput="run()"/>
+  <div class="err" id="err"></div>
+
+  <div id="out" style="display:none">
+
+    <div class="legend">
+      <div class="leg"><div class="dot s"></div> Sign (1 bit)</div>
+      <div class="leg"><div class="dot e"></div> <span id="eleg">Exponent (8 bits)</span></div>
+      <div class="leg"><div class="dot m"></div> <span id="mleg">Mantissa (23 bits)</span></div>
+    </div>
+
+    <div class="bits-wrap">
+      <div class="bits-scroll" id="bits"></div>
+    </div>
+
+    <div class="special" id="special"></div>
+
+    <div class="divider"></div>
+
+    <div class="info-section" id="info"></div>
+
+    <div class="formula" id="fml"></div>
+  </div>
+</main>
+
+<footer>© SpDly Studios &nbsp;·&nbsp; <a href="https://spdly.is-a.dev">spdly.is-a.dev</a></footer>
+
+<script>
+let prec=32;
+
+function setPrecision(p){
+  prec=p;
+  document.getElementById('t32').className='tog'+(p===32?' on':'');
+  document.getElementById('t64').className='tog'+(p===64?' on':'');
+  document.getElementById('eleg').textContent=p===32?'Exponent (8 bits)':'Exponent (11 bits)';
+  document.getElementById('mleg').textContent=p===32?'Mantissa (23 bits)':'Mantissa (52 bits)';
+  run();
+}
+
+function getBits(val,bits){
+  const buf=new ArrayBuffer(bits/8);
+  if(bits===32)new Float32Array(buf)[0]=val;
+  else new Float64Array(buf)[0]=val;
+  const b=new Uint8Array(buf);
+  let s='';
+  for(let i=b.length-1;i>=0;i--)s+=b[i].toString(2).padStart(8,'0');
+  return s;
+}
+
+function run(){
+  const raw=document.getElementById('numIn').value.trim();
+  const err=document.getElementById('err');
+  const out=document.getElementById('out');
+  if(!raw){out.style.display='none';err.textContent='';return;}
+
+  let val;
+  const lo=raw.toLowerCase();
+  if(lo==='infinity'||lo==='+infinity')val=Infinity;
+  else if(lo==='-infinity')val=-Infinity;
+  else if(lo==='nan')val=NaN;
+  else{val=parseFloat(raw);if(isNaN(val)){err.textContent='Not a valid number. Try 3.14, -0.5, Infinity, or NaN.';out.style.display='none';return;}}
+  err.textContent='';
+
+  const eB=prec===32?8:11, mB=prec===32?23:52, bias=(1<<(eB-1))-1;
+  const all=getBits(val,prec);
+  const sb=all[0], eb=all.slice(1,1+eB), mb=all.slice(1+eB);
+  const eVal=parseInt(eb,2), actExp=eVal-bias;
+
+  // bits
+  const bRow=document.getElementById('bits');
+  bRow.innerHTML='';
+  const mk=(ch,cls)=>{const d=document.createElement('div');d.className='bit '+cls;d.textContent=ch;return d;};
+  bRow.appendChild(mk(sb,'s'));
+  eb.split('').forEach(c=>bRow.appendChild(mk(c,'e')));
+  mb.split('').forEach(c=>bRow.appendChild(mk(c,'m')));
+
+  // special
+  const sp=document.getElementById('special');
+  sp.style.display='none';
+  const allOne=(1<<eB)-1;
+  if(eVal===allOne){
+    sp.textContent=parseInt(mb,2)===0
+      ?`This is ${sb==='1'?'negative':'positive'} Infinity — exponent all 1s, mantissa all 0s.`
+      :`This is NaN (Not a Number) — exponent all 1s, mantissa is not zero.`;
+    sp.style.display='block';
+  }else if(eVal===0&&parseInt(mb,2)===0){
+    sp.textContent=`This is ${sb==='1'?'negative':'positive'} zero.`;
+    sp.style.display='block';
+  }else if(eVal===0){
+    sp.textContent=`Subnormal number — no implicit leading 1. Actual exponent = ${1-bias}.`;
+    sp.style.display='block';
+  }
+
+  // info
+  const hexStr=BigInt('0b'+all).toString(16).toUpperCase().padStart(prec/4,'0');
+  const rows=[
+    ['Sign bit',sb,  `<span class="info-val s">${sb==='0'?'0 → positive':'1 → negative'}</span>`],
+    ['Exponent bits',null,`<span class="info-val e">${eb}</span>`],
+    ['Exponent value',null,`<span class="info-val e">${eVal} − ${bias} = ${actExp}</span>`],
+    ['Mantissa bits',null,`<span class="info-val m">${mb}</span>`],
+    ['Hex',null,`<span class="info-val">0x${hexStr}</span>`],
+    ['Stored value',null,`<span class="info-val">${prec===32?new Float32Array([val])[0]:val}</span>`],
+  ];
+  const info=document.getElementById('info');
+  info.innerHTML=rows.map(([k,,v])=>`<div class="info-row"><span class="info-key">${k}</span>${v}</div>`).join('');
+
+  // formula
+  document.getElementById('fml').innerHTML=
+    `<strong>How the value is decoded:</strong><br>
+     (−1)<sup>${sb}</sup> × 2<sup>(${eVal} − ${bias})</sup> × 1.${mb.slice(0,8)}…<br>
+     = ${sb==='1'?'−':'+'}1 × 2<sup>${actExp}</sup> × 1.mantissa`;
+
+  out.style.display='block';
+}
+
+function toggleTheme(){
+  const r=document.documentElement;
+  r.dataset.theme=r.dataset.theme==='dark'?'light':'dark';
+  localStorage.setItem('theme',r.dataset.theme);
+}
+(()=>{
+  const s=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+  document.documentElement.dataset.theme=s;
+})();
+</script>
+</body>
+</html>

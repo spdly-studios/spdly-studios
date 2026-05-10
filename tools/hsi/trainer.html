@@ -1,0 +1,2834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+
+<!-- ═══ PRIMARY META ═══ -->
+<title>HSI Neural Trainer — SpDly Studios</title>
+<meta name="description" content="Hyperspectral image (HSI) neural network trainer. Train deep learning models for spectral analysis and classification with interactive visualization.">
+<meta name="keywords" content="hyperspectral image, HSI, neural network trainer, deep learning, spectral analysis, image classification, machine learning">
+<meta name="author" content="Shivaprasad V">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="theme-color" content="#6366f1">
+<meta name="color-scheme" content="dark">
+<link rel="canonical" href="https://spdly.is-a.dev/tools/hsi/trainer.html">
+
+<!-- ═══ OPEN GRAPH ═══ -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SpDly Studios">
+<meta property="og:title" content="HSI Neural Trainer — SpDly Studios">
+<meta property="og:description" content="Hyperspectral image neural network trainer for spectral analysis and classification.">
+<meta property="og:url" content="https://spdly.is-a.dev/tools/hsi/trainer.html">
+<meta property="og:image" content="https://spdly.is-a.dev/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_IN">
+
+<!-- ═══ TWITTER / X CARD ═══ -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:creator" content="@SpDly14">
+<meta name="twitter:site" content="@SpDly14">
+<meta name="twitter:title" content="HSI Neural Trainer — SpDly Studios">
+<meta name="twitter:description" content="Hyperspectral image neural network trainer for deep learning">
+<meta name="twitter:image" content="https://spdly.is-a.dev/assets/og-image.png">
+
+<!-- ═══ FAVICONS ═══ -->
+<link rel="icon" type="image/svg+xml" href="../../assets/logo.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../../assets/logo.svg">
+<link rel="manifest" href="/manifest.json">
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=DM+Mono:wght@300;400;500&family=Playfair+Display:wght@700&display=swap');
+
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --surface2: #181b22;
+    --surface3: #1e2230;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #e8eaf0;
+    --text2: #9298a8;
+    --text3: #5a6070;
+    --accent: #4fc3f7;
+    --accent2: #00e5ff;
+    --green: #69f0ae;
+    --red: #ff5252;
+    --orange: #ffab40;
+    --purple: #b388ff;
+    --cyan: #18ffff;
+    --glow: rgba(79,195,247,0.15);
+    --glow2: rgba(79,195,247,0.08);
+    --radius: 12px;
+    --radius2: 8px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    --shadow2: 0 2px 12px rgba(0,0,0,0.3);
+    --font: 'DM Sans', sans-serif;
+    --mono: 'DM Mono', monospace;
+    --display: 'Playfair Display', serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--surface); }
+  ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+  /* ===== HEADER ===== */
+  .header {
+    background: linear-gradient(135deg, #0d1117 0%, #111827 50%, #0f172a 100%);
+    border-bottom: 1px solid var(--border2);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(20px);
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(79,195,247,0.03) 0%, transparent 50%, rgba(105,240,174,0.02) 100%);
+    pointer-events: none;
+  }
+
+  .header-brand { display: flex; align-items: center; gap: 16px; }
+
+  .header-logo {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--accent), var(--green));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700; color: #000;
+    font-family: var(--display);
+    flex-shrink: 0;
+    box-shadow: 0 0 20px rgba(79,195,247,0.3);
+  }
+
+  .header-titles h1 {
+    font-family: var(--display);
+    font-size: 24px;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--accent), var(--green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+  }
+
+  .header-titles .subtitle {
+    font-size: 13px;
+    color: var(--text3);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .stat-pill {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text2);
+  }
+
+  .stat-pill .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--text3);
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+
+  .stat-pill.active .dot { background: var(--green); box-shadow: 0 0 8px var(--green); }
+  .stat-pill.training .dot { background: var(--orange); box-shadow: 0 0 8px var(--orange); animation: pulse 1s infinite; }
+
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+  /* ===== MAIN LAYOUT ===== */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr 320px;
+    grid-template-rows: auto;
+    gap: 0;
+    min-height: calc(100vh - 85px);
+  }
+
+  .sidebar-left {
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    overflow-y: auto;
+    max-height: calc(100vh - 85px);
+    position: sticky;
+    top: 85px;
+  }
+
+  .center-col {
+    overflow-y: auto;
+    max-height: calc(100vh - 85px);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .sidebar-right {
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    overflow-y: auto;
+    max-height: calc(100vh - 85px);
+    position: sticky;
+    top: 85px;
+  }
+
+  /* ===== PANEL ===== */
+  .panel {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 20px;
+  }
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    gap: 8px;
+  }
+
+  .panel-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .panel-title-icon {
+    width: 20px; height: 20px;
+    border-radius: 4px;
+    background: var(--surface3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+  }
+
+  /* ===== FORM CONTROLS ===== */
+  label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text2);
+    margin-bottom: 6px;
+  }
+
+  .field {
+    margin-bottom: 14px;
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  input[type="number"], input[type="text"], select, textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius2);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 15px;
+    padding: 9px 12px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+  }
+
+  input[type="number"]:focus, input[type="text"]:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79,195,247,0.1);
+  }
+
+  select {
+    cursor: pointer;
+  }
+
+  select option {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: var(--surface3);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+    margin-top: 4px;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(79,195,247,0.4);
+  }
+
+  .range-value {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+    text-align: right;
+    margin-top: 4px;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* ===== BUTTONS ===== */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 10px 18px;
+    border-radius: var(--radius2);
+    border: none;
+    cursor: pointer;
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.18s;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+
+  .btn:active { transform: scale(0.97); }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), #0091d4);
+    color: #000;
+    box-shadow: 0 4px 16px rgba(79,195,247,0.25);
+  }
+
+  .btn-primary:hover { box-shadow: 0 4px 24px rgba(79,195,247,0.45); filter: brightness(1.05); }
+
+  .btn-green {
+    background: linear-gradient(135deg, var(--green), #00c853);
+    color: #000;
+    box-shadow: 0 4px 16px rgba(105,240,174,0.25);
+  }
+
+  .btn-green:hover { box-shadow: 0 4px 24px rgba(105,240,174,0.45); filter: brightness(1.05); }
+
+  .btn-red {
+    background: linear-gradient(135deg, var(--red), #c62828);
+    color: #fff;
+  }
+
+  .btn-red:hover { filter: brightness(1.1); }
+
+  .btn-ghost {
+    background: var(--surface2);
+    color: var(--text2);
+    border: 1px solid var(--border2);
+  }
+
+  .btn-ghost:hover { background: var(--surface3); color: var(--text); border-color: var(--border2); }
+
+  .btn-icon {
+    padding: 8px;
+    width: 34px; height: 34px;
+    font-size: 16px;
+  }
+
+  .btn-full { width: 100%; }
+
+  .btn-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .btn-group .btn { flex: 1; min-width: 0; }
+
+  .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  /* ===== TOOLTIP ===== */
+  .tooltip-wrap { position: relative; display: inline-flex; align-items: center; }
+
+  .tooltip-icon {
+    width: 17px; height: 17px;
+    border-radius: 50%;
+    background: var(--surface3);
+    border: 1px solid var(--border2);
+    color: var(--text3);
+    font-size: 11px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: help;
+    margin-left: 5px;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    font-weight: 700;
+  }
+
+  .tooltip-icon:hover { background: var(--surface3); color: var(--accent); border-color: var(--accent); }
+
+  .tooltip-card {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1f2e;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius2);
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--text2);
+    width: 220px;
+    line-height: 1.5;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    transform: translateX(-50%) translateY(4px);
+    z-index: 1000;
+    box-shadow: var(--shadow);
+  }
+
+  .tooltip-card::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--border2);
+  }
+
+  .tooltip-wrap:hover .tooltip-card {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ===== LAYER CARD ===== */
+  .layer-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius2);
+    padding: 12px;
+    margin-bottom: 8px;
+    transition: border-color 0.2s;
+    position: relative;
+  }
+
+  .layer-card:hover { border-color: var(--border2); }
+
+  .layer-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .layer-badge {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    background: rgba(79,195,247,0.1);
+    padding: 2px 8px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .layer-card-body { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .layer-card-body label { font-size: 12px; margin-bottom: 3px; }
+  .layer-card-body input, .layer-card-body select { font-size: 13px; padding: 6px 9px; }
+
+  /* ===== DATASET ===== */
+  .preset-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+
+  .preset-btn {
+    padding: 5px 12px;
+    font-size: 13px;
+    background: var(--surface3);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.18s;
+    font-family: var(--font);
+    font-weight: 500;
+  }
+
+  .preset-btn:hover { background: var(--surface2); color: var(--text); border-color: var(--accent); }
+  .preset-btn.active { background: rgba(79,195,247,0.15); color: var(--accent); border-color: var(--accent); }
+
+  /* ===== METRICS ===== */
+  .metric-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .metric-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius2);
+    padding: 12px 14px;
+  }
+
+  .metric-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text3);
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+
+  .metric-value {
+    font-size: 22px;
+    font-family: var(--mono);
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.1;
+  }
+
+  .metric-value.green { color: var(--green); }
+  .metric-value.orange { color: var(--orange); }
+  .metric-value.accent { color: var(--accent); }
+  .metric-value.red { color: var(--red); }
+
+  /* ===== SVG NETWORK VIZ ===== */
+  .svg-container {
+    position: relative;
+    background: #080a0f;
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+    min-height: 380px;
+    cursor: grab;
+  }
+
+  .svg-container:active { cursor: grabbing; }
+
+  .svg-controls {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 10;
+  }
+
+  .svg-controls .btn {
+    width: 34px; height: 34px;
+    padding: 0;
+    font-size: 16px;
+    background: rgba(17,19,24,0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border2);
+    color: var(--text2);
+  }
+
+  .svg-controls .btn:hover { color: var(--accent); border-color: var(--accent); }
+
+  #network-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    min-height: 380px;
+  }
+
+  .neuron-tooltip {
+    position: absolute;
+    background: #1a1f2e;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius2);
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--text2);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 20;
+    width: 180px;
+    box-shadow: var(--shadow);
+  }
+
+  .neuron-tooltip.visible { opacity: 1; }
+  .neuron-tooltip strong { color: var(--text); display: block; margin-bottom: 4px; }
+  .neuron-tooltip .tt-row { display: flex; justify-content: space-between; padding: 1px 0; }
+  .neuron-tooltip .tt-val { font-family: var(--mono); color: var(--accent); }
+
+  /* ===== GRAPH ===== */
+  .graph-wrap {
+    position: relative;
+    background: #080a0f;
+    border-radius: var(--radius2);
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+
+  .graph-label {
+    position: absolute;
+    top: 8px;
+    left: 12px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text3);
+    font-weight: 600;
+  }
+
+  .graph-svg { width: 100%; height: 120px; display: block; }
+
+  /* ===== WEIGHT INSPECTOR ===== */
+  .weight-section {
+    margin-bottom: 10px;
+  }
+
+  .weight-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    background: var(--surface3);
+    border-radius: var(--radius2);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+    margin-bottom: 6px;
+  }
+
+  .weight-section-header:hover { background: rgba(255,255,255,0.05); }
+
+  .weight-section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text2);
+  }
+
+  .weight-matrix {
+    background: var(--surface2);
+    border-radius: var(--radius2);
+    padding: 8px;
+    overflow-x: auto;
+  }
+
+  .weight-row {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 3px;
+    flex-wrap: nowrap;
+  }
+
+  .weight-cell {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 3px 6px;
+    border-radius: 3px;
+    min-width: 60px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .weight-cell.pos { background: rgba(105,240,174,0.12); color: var(--green); }
+  .weight-cell.neg { background: rgba(255,82,82,0.12); color: var(--red); }
+
+  /* ===== PREDICTION ===== */
+  .pred-result {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius2);
+    padding: 14px;
+    margin-top: 12px;
+    text-align: center;
+  }
+
+  .pred-value {
+    font-size: 36px;
+    font-family: var(--mono);
+    font-weight: 500;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .pred-label { font-size: 13px; color: var(--text3); }
+
+  .confidence-bar {
+    height: 6px;
+    background: var(--surface3);
+    border-radius: 3px;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+
+  .confidence-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--green));
+    border-radius: 3px;
+    transition: width 0.4s;
+    width: 0%;
+  }
+
+  /* ===== CONSOLE ===== */
+  .console-log {
+    background: #050709;
+    border-radius: var(--radius2);
+    padding: 10px;
+    height: 160px;
+    overflow-y: auto;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.7;
+  }
+
+  .log-entry { padding: 1px 0; }
+  .log-entry.info { color: var(--text3); }
+  .log-entry.success { color: var(--green); }
+  .log-entry.warning { color: var(--orange); }
+  .log-entry.error { color: var(--red); }
+  .log-entry.accent { color: var(--accent); }
+
+  /* ===== SEPARATOR ===== */
+  .sep {
+    height: 1px;
+    background: var(--border);
+    margin: 14px 0;
+  }
+
+  /* ===== BADGE ===== */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .badge-blue { background: rgba(79,195,247,0.15); color: var(--accent); }
+  .badge-green { background: rgba(105,240,174,0.15); color: var(--green); }
+  .badge-orange { background: rgba(255,171,64,0.15); color: var(--orange); }
+
+  /* ===== TOGGLE ===== */
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0;
+  }
+
+  .toggle-label { font-size: 14px; color: var(--text2); }
+
+  .toggle {
+    position: relative;
+    width: 38px; height: 21px;
+    cursor: pointer;
+  }
+
+  .toggle input { opacity: 0; width: 0; height: 0; }
+
+  .toggle-track {
+    position: absolute;
+    inset: 0;
+    background: var(--surface3);
+    border-radius: 11px;
+    transition: background 0.2s;
+    border: 1px solid var(--border2);
+  }
+
+  .toggle input:checked + .toggle-track { background: rgba(79,195,247,0.4); border-color: var(--accent); }
+
+  .toggle-thumb {
+    position: absolute;
+    width: 15px; height: 15px;
+    top: 3px; left: 3px;
+    background: var(--text3);
+    border-radius: 50%;
+    transition: all 0.2s;
+  }
+
+  .toggle input:checked ~ .toggle-thumb { left: 20px; background: var(--accent); }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    color: var(--text3);
+  }
+
+  .footer a {
+    color: var(--accent);
+    text-decoration: none;
+    transition: all 0.2s;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+  }
+
+  .footer a:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 12px rgba(79,195,247,0.2);
+    color: var(--accent2);
+  }
+
+  /* ===== CHIP ===== */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    background: var(--surface3);
+    color: var(--text2);
+    border: 1px solid var(--border);
+  }
+
+  /* ===== TRAINING CONTROL PANEL ===== */
+  .train-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .train-buttons .btn-green { grid-column: 1 / -1; font-size: 16px; padding: 12px; }
+
+  /* ===== PROGRESS BAR ===== */
+  .progress-bar {
+    height: 4px;
+    background: var(--surface3);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 6px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--green));
+    border-radius: 2px;
+    transition: width 0.3s;
+    width: 0%;
+  }
+
+  /* ===== SECTION DIVIDER ===== */
+  .section-divider {
+    padding: 6px 20px;
+    background: #0d0f14;
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text3);
+    font-weight: 600;
+  }
+
+  /* ===== ANIM ===== */
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  .fade-in { animation: fadeIn 0.3s ease forwards; }
+
+  @keyframes signal-flow {
+    0% { stroke-dashoffset: 100; opacity: 0.3; }
+    50% { opacity: 1; }
+    100% { stroke-dashoffset: 0; opacity: 0.3; }
+  }
+
+  .signal-line { animation: signal-flow 2s linear infinite; }
+
+  /* Responsive */
+  @media (max-width: 1100px) {
+    .main-grid { grid-template-columns: 280px 1fr 280px; }
+  }
+
+  @media (max-width: 900px) {
+    .main-grid { grid-template-columns: 1fr; }
+    .sidebar-left, .sidebar-right { max-height: none; position: static; }
+    .center-col { max-height: none; }
+    .header-stats { display: none; }
+  }
+
+  .lf-row { display: flex; align-items: center; justify-content: space-between; }
+  .lf-row label { margin-bottom: 0; }
+
+  #train-time { font-variant-numeric: tabular-nums; }
+
+  .copy-btn {
+    font-size: 11px;
+    padding: 2px 7px;
+    background: var(--surface3);
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    color: var(--text3);
+    cursor: pointer;
+    font-family: var(--font);
+    transition: all 0.2s;
+  }
+  .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+  .weight-collapsed { display: none; }
+
+  .chevron { transition: transform 0.2s; display: inline-block; }
+  .chevron.open { transform: rotate(90deg); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-brand">
+    <div class="header-logo">H</div>
+    <div class="header-titles">
+      <h1>HSI Neural Trainer</h1>
+      <div class="subtitle">Hyper Synaptic Intelligence Training Environment</div>
+    </div>
+  </div>
+  <div class="header-stats">
+    <div class="stat-pill" id="model-status-pill">
+      <div class="dot"></div>
+      <span id="model-status-text">No Model</span>
+    </div>
+    <div class="stat-pill" id="train-status-pill">
+      <div class="dot"></div>
+      <span id="train-status-text">Idle</span>
+    </div>
+    <div class="stat-pill">
+      <span id="param-count-header">0 params</span>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN -->
+<div class="main-grid">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar-left">
+
+    <!-- Architecture Builder -->
+    <div class="section-divider">Architecture Builder</div>
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <div class="panel-title-icon">⬡</div>
+          Network Layers
+        </div>
+        <button class="btn btn-ghost btn-icon" onclick="addHiddenLayer()" title="Add hidden layer">+</button>
+      </div>
+
+      <div class="field">
+        <div class="lf-row">
+          <label>Input Neurons
+            <span class="tooltip-wrap">
+              <span class="tooltip-icon">?</span>
+              <span class="tooltip-card">The number of input features your dataset provides. For XOR this is 2 (two binary inputs).</span>
+            </span>
+          </label>
+        </div>
+        <input type="number" id="input-neurons" value="2" min="1" max="64" onchange="updateArchitecture()">
+      </div>
+
+      <div id="hidden-layers-container">
+        <!-- hidden layers rendered here -->
+      </div>
+
+      <button class="btn btn-ghost btn-full" onclick="addHiddenLayer()" style="margin-bottom:12px; font-size:13px; padding:8px;">
+        + Add Hidden Layer
+      </button>
+
+      <div class="field">
+        <div class="lf-row">
+          <label>Output Neurons
+            <span class="tooltip-wrap">
+              <span class="tooltip-icon">?</span>
+              <span class="tooltip-card">The number of outputs. For binary classification like XOR, this is 1.</span>
+            </span>
+          </label>
+        </div>
+        <input type="number" id="output-neurons" value="1" min="1" max="64" onchange="updateArchitecture()">
+      </div>
+
+      <div class="field">
+        <div class="lf-row">
+          <label>Output Activation
+            <span class="tooltip-wrap">
+              <span class="tooltip-icon">?</span>
+              <span class="tooltip-card">The final layer activation. Sigmoid (0-1) is ideal for binary classification. Linear is used for regression.</span>
+            </span>
+          </label>
+        </div>
+        <select id="output-activation" onchange="updateArchitecture()">
+          <option value="sigmoid">Sigmoid</option>
+          <option value="tanh">Tanh</option>
+          <option value="linear">Linear</option>
+          <option value="relu">ReLU</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <div class="lf-row">
+          <label>Weight Init
+            <span class="tooltip-wrap">
+              <span class="tooltip-icon">?</span>
+              <span class="tooltip-card">Xavier works well with Sigmoid/Tanh. He initialization is better for ReLU networks.</span>
+            </span>
+          </label>
+        </div>
+        <select id="weight-init">
+          <option value="xavier">Xavier / Glorot</option>
+          <option value="he">He (for ReLU)</option>
+          <option value="random">Small Random</option>
+        </select>
+      </div>
+
+      <div class="sep"></div>
+
+      <div style="font-size:13px; color:var(--text3); margin-bottom:8px;">Architecture Summary</div>
+      <div id="arch-summary" style="font-size:13px; color:var(--text2); font-family:var(--mono);"></div>
+
+      <div class="sep"></div>
+
+      <button class="btn btn-primary btn-full" onclick="buildNetwork()" style="font-size:15px; padding:11px;">
+        Build Network
+      </button>
+    </div>
+
+    <!-- Dataset -->
+    <div class="section-divider">Dataset</div>
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <div class="panel-title-icon">⊞</div>
+          Training Data
+        </div>
+      </div>
+
+      <div class="preset-row">
+        <button class="preset-btn active" onclick="loadPreset('xor')">XOR</button>
+        <button class="preset-btn" onclick="loadPreset('and')">AND</button>
+        <button class="preset-btn" onclick="loadPreset('or')">OR</button>
+        <button class="preset-btn" onclick="loadPreset('nand')">NAND</button>
+        <button class="preset-btn" onclick="generateRandom()">Random</button>
+      </div>
+
+      <div class="field">
+        <label>Dataset
+          <span class="tooltip-wrap">
+            <span class="tooltip-icon">?</span>
+            <span class="tooltip-card">Enter one sample per line. Format: input1,input2,...,inputN -> output1,output2,...<br>Example: 0,1 -> 1</span>
+          </span>
+        </label>
+        <textarea id="dataset-input" rows="7" placeholder="0,0 -> 0&#10;0,1 -> 1&#10;1,0 -> 1&#10;1,1 -> 0" oninput="parseDataset()"></textarea>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <button class="btn btn-ghost" style="flex:1;font-size:13px;padding:7px;" onclick="document.getElementById('file-input').click()">Load File</button>
+        <input type="file" id="file-input" accept=".txt,.csv,.hsi" style="display:none" onchange="loadFile(event)">
+        <button class="btn btn-ghost" style="flex:1;font-size:13px;padding:7px;" onclick="shuffleDataset()">Shuffle</button>
+      </div>
+
+      <div id="dataset-info" style="font-size:13px; color:var(--text3);"></div>
+
+      <div class="toggle-row" style="margin-top:8px;">
+        <span class="toggle-label">Normalize inputs</span>
+        <label class="toggle">
+          <input type="checkbox" id="normalize" checked>
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- CENTER -->
+  <main class="center-col">
+
+    <!-- SVG Network Map -->
+    <div class="section-divider">Live Network Visualization</div>
+    <div class="svg-container" id="svg-container">
+      <div class="svg-controls">
+        <button class="btn" onclick="zoomIn()" title="Zoom in">+</button>
+        <button class="btn" onclick="zoomOut()" title="Zoom out">−</button>
+        <button class="btn" onclick="resetView()" title="Reset view" style="font-size:12px;">⟳</button>
+      </div>
+      <svg id="network-svg" viewBox="0 0 800 380" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <radialGradient id="neuronGrad" cx="50%" cy="40%">
+            <stop offset="0%" stop-color="#4fc3f7" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="#0d47a1" stop-opacity="0.9"/>
+          </radialGradient>
+          <radialGradient id="neuronGradActive" cx="50%" cy="40%">
+            <stop offset="0%" stop-color="#69f0ae" stop-opacity="0.9"/>
+            <stop offset="100%" stop-color="#00695c" stop-opacity="0.9"/>
+          </radialGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="glowStrong">
+            <feGaussianBlur stdDeviation="5" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <marker id="arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="rgba(79,195,247,0.4)"/>
+          </marker>
+        </defs>
+        <g id="svg-transform-group">
+          <text x="400" y="200" text-anchor="middle" fill="rgba(255,255,255,0.1)" font-size="14" font-family="DM Sans, sans-serif">Build a network to visualize</text>
+        </g>
+      </svg>
+      <div class="neuron-tooltip" id="neuron-tooltip"></div>
+    </div>
+
+    <!-- Training Controls -->
+    <div class="section-divider">Training Controls</div>
+    <div class="panel">
+      <div class="train-buttons">
+        <button class="btn btn-green" id="btn-train" onclick="startTraining()" disabled>▶ Start Training</button>
+        <button class="btn btn-ghost" id="btn-pause" onclick="pauseTraining()" disabled>⏸ Pause</button>
+        <button class="btn btn-ghost" id="btn-stop" onclick="stopTraining()" disabled>⏹ Stop</button>
+        <button class="btn btn-ghost" id="btn-reset" onclick="resetNetwork()" disabled>↺ Reset Weights</button>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <span style="font-size:13px;color:var(--text3);">Training Progress</span>
+          <span style="font-size:13px;font-family:var(--mono);color:var(--text2);" id="progress-label">—</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      </div>
+
+      <div class="field-row">
+        <div class="field" style="margin-bottom:0">
+          <div class="lf-row"><label>Loss Function
+            <span class="tooltip-wrap">
+              <span class="tooltip-icon">?</span>
+              <span class="tooltip-card">MSE works for general regression. Binary Cross Entropy is better for 0/1 classification problems like XOR.</span>
+            </span>
+          </label></div>
+          <select id="loss-fn">
+            <option value="bce">Binary Cross Entropy</option>
+            <option value="mse">Mean Squared Error</option>
+          </select>
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <div class="lf-row"><label>Optimizer
+            <span class="tooltip-wrap">
+              <span class="tooltip-icon">?</span>
+              <span class="tooltip-card">Adam adapts learning rates per parameter and converges faster. SGD with momentum is simpler and often more stable.</span>
+            </span>
+          </label></div>
+          <select id="optimizer">
+            <option value="adam">Adam</option>
+            <option value="sgd">SGD + Momentum</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="field">
+        <div class="lf-row">
+          <label>Learning Rate
+            <span class="tooltip-wrap">
+              <span class="tooltip-icon">?</span>
+              <span class="tooltip-card">Controls how fast the network updates weights. Too high → unstable. Too low → slow convergence. Try 0.01–0.1 for XOR.</span>
+            </span>
+          </label>
+          <span class="range-value" id="lr-display">0.01</span>
+        </div>
+        <input type="range" id="lr-range" min="-4" max="0" step="0.1" value="-2"
+          oninput="document.getElementById('lr-display').textContent=Math.pow(10,this.value).toExponential(2)">
+      </div>
+
+      <div class="field-row">
+        <div class="field" style="margin-bottom:0">
+          <div class="lf-row"><label>Epochs
+            <span class="tooltip-wrap">
+              <span class="tooltip-icon">?</span>
+              <span class="tooltip-card">Full passes through the dataset. More epochs = more training time.</span>
+            </span>
+          </label></div>
+          <input type="number" id="epochs" value="5000" min="1" max="100000">
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <div class="lf-row"><label>Batch Size
+            <span class="tooltip-wrap">
+              <span class="tooltip-icon">?</span>
+              <span class="tooltip-card">Samples per weight update. 1 = stochastic, full dataset = batch. For XOR (4 samples) use full batch.</span>
+            </span>
+          </label></div>
+          <input type="number" id="batch-size" value="4" min="1" max="256">
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="field-row">
+        <div class="field" style="margin-bottom:0">
+          <div class="lf-row"><label>Momentum
+            <span class="tooltip-wrap">
+              <span class="tooltip-icon">?</span>
+              <span class="tooltip-card">Accumulates gradient direction to speed convergence and reduce oscillations. Typical value: 0.9.</span>
+            </span>
+          </label></div>
+          <input type="number" id="momentum" value="0.9" min="0" max="0.999" step="0.01">
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <div class="lf-row"><label>LR Decay
+            <span class="tooltip-wrap">
+              <span class="tooltip-icon">?</span>
+              <span class="tooltip-card">Reduces learning rate over time for finer convergence. 1.0 = no decay.</span>
+            </span>
+          </label></div>
+          <input type="number" id="lr-decay" value="0.9999" min="0.9" max="1" step="0.0001">
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="toggle-row">
+        <span class="toggle-label">Early Stopping
+          <span class="tooltip-wrap">
+            <span class="tooltip-icon">?</span>
+            <span class="tooltip-card">Stop training automatically when loss stops improving, preventing wasted computation.</span>
+          </span>
+        </span>
+        <label class="toggle">
+          <input type="checkbox" id="early-stopping" checked>
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <span class="toggle-label">Gradient Clipping
+          <span class="tooltip-wrap">
+            <span class="tooltip-icon">?</span>
+            <span class="tooltip-card">Caps large gradients to prevent exploding gradient instability.</span>
+          </span>
+        </span>
+        <label class="toggle">
+          <input type="checkbox" id="grad-clip" checked>
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <span class="toggle-label">Live Viz Update</span>
+        <label class="toggle">
+          <input type="checkbox" id="live-viz" checked>
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Live Metrics -->
+    <div class="section-divider">Live Metrics</div>
+    <div class="panel">
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="metric-label">Epoch</div>
+          <div class="metric-value accent" id="m-epoch">—</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Loss</div>
+          <div class="metric-value orange" id="m-loss">—</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Accuracy</div>
+          <div class="metric-value green" id="m-acc">—</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Learning Rate</div>
+          <div class="metric-value" id="m-lr">—</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Elapsed Time</div>
+          <div class="metric-value" id="m-time" style="font-size:18px;">—</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Speed</div>
+          <div class="metric-value" id="m-speed" style="font-size:18px;">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Training Graphs -->
+    <div class="section-divider">Training Graphs</div>
+    <div class="panel">
+      <div class="graph-wrap">
+        <div class="graph-label">Loss</div>
+        <svg class="graph-svg" id="loss-graph" viewBox="0 0 600 120">
+          <path id="loss-path" fill="none" stroke="var(--orange)" stroke-width="2" d=""/>
+          <line id="loss-zero" x1="0" y1="110" x2="600" y2="110" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+        </svg>
+      </div>
+      <div class="graph-wrap">
+        <div class="graph-label">Accuracy</div>
+        <svg class="graph-svg" id="acc-graph" viewBox="0 0 600 120">
+          <path id="acc-path" fill="none" stroke="var(--green)" stroke-width="2" d=""/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Console -->
+    <div class="section-divider">Console</div>
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div class="panel-title" style="font-size:12px;"><div class="panel-title-icon">▸</div> System Log</div>
+        <button class="copy-btn" onclick="clearConsole()">Clear</button>
+      </div>
+      <div class="console-log" id="console-log"></div>
+    </div>
+
+  </main>
+
+  <!-- RIGHT SIDEBAR -->
+  <aside class="sidebar-right">
+
+    <!-- Model Management -->
+    <div class="section-divider">Model</div>
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title"><div class="panel-title-icon">◈</div> Management</div>
+      </div>
+
+      <div class="btn-group" style="margin-bottom:10px;">
+        <button class="btn btn-ghost" onclick="saveModel()" id="btn-save" disabled style="font-size:13px;padding:8px;">
+          ↓ Save .hsi
+        </button>
+        <button class="btn btn-ghost" onclick="document.getElementById('load-model-input').click()" style="font-size:13px;padding:8px;">
+          ↑ Load .hsi
+        </button>
+        <input type="file" id="load-model-input" accept=".hsi" style="display:none" onchange="loadModel(event)">
+      </div>
+
+      <div class="btn-group" style="margin-bottom:10px;">
+        <button class="btn btn-ghost" onclick="cloneModel()" id="btn-clone" disabled style="font-size:13px;padding:8px;">
+          ⊕ Clone
+        </button>
+        <button class="btn btn-red" onclick="confirmReset()" style="font-size:13px;padding:8px;">
+          ✕ Wipe
+        </button>
+      </div>
+
+      <div id="model-info" style="font-size:13px; color:var(--text3); line-height:1.7;"></div>
+    </div>
+
+    <!-- Prediction Test -->
+    <div class="section-divider">Prediction Test</div>
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title"><div class="panel-title-icon">⊙</div> Test Inputs</div>
+      </div>
+
+      <div id="pred-inputs"></div>
+
+      <div class="field" style="margin-top:4px;">
+        <label>Expected (optional)</label>
+        <input type="number" id="pred-expected" placeholder="e.g. 1" step="0.01">
+      </div>
+
+      <button class="btn btn-primary btn-full" onclick="runPrediction()" id="btn-predict" disabled style="font-size:15px; padding:11px;">
+        Run Prediction
+      </button>
+
+      <div class="pred-result" id="pred-result" style="display:none;">
+        <div style="font-size:12px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em;">Output</div>
+        <div class="pred-value" id="pred-value">0.000</div>
+        <div class="pred-label" id="pred-class"></div>
+        <div class="confidence-bar"><div class="confidence-fill" id="confidence-fill"></div></div>
+        <div style="font-size:12px;color:var(--text3);margin-top:6px;" id="pred-compare"></div>
+      </div>
+
+      <div id="all-predictions" style="margin-top:12px;"></div>
+    </div>
+
+    <!-- Weight Inspector -->
+    <div class="section-divider">Weight Inspector</div>
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title"><div class="panel-title-icon">⊟</div> Weights & Biases</div>
+        <button class="copy-btn" onclick="exportWeights()">Export</button>
+      </div>
+      <div id="weight-inspector"></div>
+    </div>
+
+  </aside>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <span>© SpDly Studios</span>
+  <a href="https://spdly.is-a.dev" target="_blank" rel="noopener">Home ↗</a>
+</footer>
+
+<script>
+// ===================================================
+// HSI NEURAL TRAINER - Core Engine
+// ===================================================
+
+// ---- STATE ----
+let network = null;
+let dataset = [];
+let trainingState = 'idle'; // idle, training, paused, stopped
+let trainingHandle = null;
+let startTime = null;
+let currentEpoch = 0;
+let lossHistory = [];
+let accHistory = [];
+let adamState = {};
+
+// SVG pan/zoom
+let svgScale = 1;
+let svgTransX = 0;
+let svgTransY = 0;
+let svgDragging = false;
+let svgDragStart = {x:0, y:0};
+
+// ---- HIDDEN LAYERS ----
+let hiddenLayers = [
+  { neurons: 4, activation: 'sigmoid' }
+];
+
+// ===================================================
+// MATH UTILITIES
+// ===================================================
+
+function sigmoid(x) {
+  // Numerically stable sigmoid
+  if (x >= 0) {
+    const e = Math.exp(-x);
+    return 1 / (1 + e);
+  } else {
+    const e = Math.exp(x);
+    return e / (1 + e);
+  }
+}
+
+function sigmoidD(x) { const s = sigmoid(x); return s * (1 - s); }
+
+function relu(x) { return Math.max(0, x); }
+function reluD(x) { return x > 0 ? 1 : 0; }
+
+function leakyRelu(x) { return x > 0 ? x : 0.01 * x; }
+function leakyReluD(x) { return x > 0 ? 1 : 0.01; }
+
+function tanhFn(x) { return Math.tanh(x); }
+function tanhD(x) { const t = Math.tanh(x); return 1 - t * t; }
+
+function softsign(x) { return x / (1 + Math.abs(x)); }
+function softsignD(x) { const d = 1 + Math.abs(x); return 1 / (d * d); }
+
+function linear(x) { return x; }
+function linearD(x) { return 1; }
+
+function activate(x, fn) {
+  switch(fn) {
+    case 'sigmoid': return sigmoid(x);
+    case 'relu': return relu(x);
+    case 'leaky_relu': return leakyRelu(x);
+    case 'tanh': return tanhFn(x);
+    case 'softsign': return softsign(x);
+    default: return linear(x);
+  }
+}
+
+function activateD(x, fn) {
+  switch(fn) {
+    case 'sigmoid': return sigmoidD(x);
+    case 'relu': return reluD(x);
+    case 'leaky_relu': return leakyReluD(x);
+    case 'tanh': return tanhD(x);
+    case 'softsign': return softsignD(x);
+    default: return linearD(x);
+  }
+}
+
+function randNorm() {
+  // Box-Muller
+  let u = 0, v = 0;
+  while(u === 0) u = Math.random();
+  while(v === 0) v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
+// ===================================================
+// NETWORK CLASS
+// ===================================================
+
+function createNetwork() {
+  const inputN = parseInt(document.getElementById('input-neurons').value);
+  const outputN = parseInt(document.getElementById('output-neurons').value);
+  const outputAct = document.getElementById('output-activation').value;
+  const initMethod = document.getElementById('weight-init').value;
+
+  // Build layer sizes
+  const layerSizes = [inputN];
+  hiddenLayers.forEach(l => layerSizes.push(l.neurons));
+  layerSizes.push(outputN);
+
+  const activations = ['linear'];
+  hiddenLayers.forEach(l => activations.push(l.activation));
+  activations.push(outputAct);
+
+  // Initialize weights and biases
+  const weights = [];
+  const biases = [];
+
+  for (let i = 0; i < layerSizes.length - 1; i++) {
+    const fanIn = layerSizes[i];
+    const fanOut = layerSizes[i+1];
+    let scale;
+    if (initMethod === 'xavier') {
+      scale = Math.sqrt(2.0 / (fanIn + fanOut));
+    } else if (initMethod === 'he') {
+      scale = Math.sqrt(2.0 / fanIn);
+    } else {
+      scale = 0.1;
+    }
+
+    const W = [];
+    for (let j = 0; j < fanOut; j++) {
+      const row = [];
+      for (let k = 0; k < fanIn; k++) {
+        row.push(randNorm() * scale);
+      }
+      W.push(row);
+    }
+    weights.push(W);
+
+    const b = new Array(fanOut).fill(0);
+    biases.push(b);
+  }
+
+  return {
+    layerSizes,
+    activations,
+    weights,
+    biases,
+    // store pre-activations and activations for backprop
+    zs: [],
+    as: [],
+  };
+}
+
+// ===================================================
+// FORWARD PROPAGATION
+// ===================================================
+
+function forward(net, input) {
+  let a = [...input];
+  net.as = [a];
+  net.zs = [];
+
+  for (let l = 0; l < net.weights.length; l++) {
+    const W = net.weights[l];
+    const b = net.biases[l];
+    const act = net.activations[l + 1];
+    const z = [];
+    const aNext = [];
+
+    for (let j = 0; j < W.length; j++) {
+      let sum = b[j];
+      for (let k = 0; k < a.length; k++) {
+        sum += W[j][k] * a[k];
+      }
+      z.push(sum);
+      aNext.push(activate(sum, act));
+    }
+    net.zs.push(z);
+    net.as.push(aNext);
+    a = aNext;
+  }
+
+  return a;
+}
+
+// ===================================================
+// LOSS FUNCTIONS
+// ===================================================
+
+function computeLoss(predicted, target, fn) {
+  if (fn === 'mse') {
+    let loss = 0;
+    for (let i = 0; i < predicted.length; i++) {
+      loss += (predicted[i] - target[i]) ** 2;
+    }
+    return loss / predicted.length;
+  } else { // bce
+    let loss = 0;
+    const eps = 1e-7;
+    for (let i = 0; i < predicted.length; i++) {
+      const p = Math.max(eps, Math.min(1 - eps, predicted[i]));
+      loss += -(target[i] * Math.log(p) + (1 - target[i]) * Math.log(1 - p));
+    }
+    return loss / predicted.length;
+  }
+}
+
+function lossDerivative(predicted, target, fn) {
+  if (fn === 'mse') {
+    return predicted.map((p, i) => 2 * (p - target[i]) / predicted.length);
+  } else { // bce
+    const eps = 1e-7;
+    return predicted.map((p, i) => {
+      const pc = Math.max(eps, Math.min(1 - eps, p));
+      return (pc - target[i]) / (pc * (1 - pc) * predicted.length);
+    });
+  }
+}
+
+// ===================================================
+// BACKPROPAGATION
+// ===================================================
+
+function backward(net, target, lossFn) {
+  const L = net.weights.length;
+  const dW = net.weights.map(W => W.map(row => row.map(() => 0)));
+  const dB = net.biases.map(b => b.map(() => 0));
+
+  const output = net.as[net.as.length - 1];
+  let delta = lossDerivative(output, target, lossFn);
+
+  // Output layer delta (chain rule with output activation derivative)
+  const outAct = net.activations[L];
+  delta = delta.map((d, j) => d * activateD(net.zs[L-1][j], outAct));
+
+  for (let l = L - 1; l >= 0; l--) {
+    const aIn = net.as[l];
+
+    // Accumulate dW and dB
+    for (let j = 0; j < delta.length; j++) {
+      dB[l][j] += delta[j];
+      for (let k = 0; k < aIn.length; k++) {
+        dW[l][j][k] += delta[j] * aIn[k];
+      }
+    }
+
+    if (l === 0) break;
+
+    // Propagate delta to previous layer
+    const W = net.weights[l];
+    const act = net.activations[l];
+    const newDelta = new Array(aIn.length).fill(0);
+
+    for (let k = 0; k < aIn.length; k++) {
+      for (let j = 0; j < W.length; j++) {
+        newDelta[k] += delta[j] * W[j][k];
+      }
+      newDelta[k] *= activateD(net.zs[l-1][k], act);
+    }
+    delta = newDelta;
+  }
+
+  return { dW, dB };
+}
+
+// ===================================================
+// GRADIENT CLIPPING
+// ===================================================
+
+function clipGradients(dW, dB, maxNorm) {
+  let totalNorm = 0;
+  dW.forEach(W => W.forEach(row => row.forEach(v => totalNorm += v * v)));
+  dB.forEach(b => b.forEach(v => totalNorm += v * v));
+  totalNorm = Math.sqrt(totalNorm);
+
+  if (totalNorm > maxNorm) {
+    const scale = maxNorm / totalNorm;
+    dW.forEach(W => W.forEach(row => { for(let i=0;i<row.length;i++) row[i] *= scale; }));
+    dB.forEach(b => { for(let i=0;i<b.length;i++) b[i] *= scale; });
+  }
+  return { dW, dB };
+}
+
+// ===================================================
+// OPTIMIZER STEP
+// ===================================================
+
+let t_step = 0; // Adam time step
+
+function optimizerStep(net, dW, dB, lr, optimizerType, momentum) {
+  const L = net.weights.length;
+
+  if (optimizerType === 'adam') {
+    t_step++;
+    const beta1 = 0.9, beta2 = 0.999, eps = 1e-8;
+
+    if (!adamState.mW) {
+      adamState.mW = dW.map(W => W.map(row => row.map(() => 0)));
+      adamState.vW = dW.map(W => W.map(row => row.map(() => 0)));
+      adamState.mB = dB.map(b => b.map(() => 0));
+      adamState.vB = dB.map(b => b.map(() => 0));
+    }
+
+    for (let l = 0; l < L; l++) {
+      for (let j = 0; j < net.weights[l].length; j++) {
+        for (let k = 0; k < net.weights[l][j].length; k++) {
+          adamState.mW[l][j][k] = beta1 * adamState.mW[l][j][k] + (1 - beta1) * dW[l][j][k];
+          adamState.vW[l][j][k] = beta2 * adamState.vW[l][j][k] + (1 - beta2) * dW[l][j][k] ** 2;
+          const mHat = adamState.mW[l][j][k] / (1 - beta1 ** t_step);
+          const vHat = adamState.vW[l][j][k] / (1 - beta2 ** t_step);
+          net.weights[l][j][k] -= lr * mHat / (Math.sqrt(vHat) + eps);
+        }
+        adamState.mB[l][j] = beta1 * adamState.mB[l][j] + (1 - beta1) * dB[l][j];
+        adamState.vB[l][j] = beta2 * adamState.vB[l][j] + (1 - beta2) * dB[l][j] ** 2;
+        const mHatB = adamState.mB[l][j] / (1 - beta1 ** t_step);
+        const vHatB = adamState.vB[l][j] / (1 - beta2 ** t_step);
+        net.biases[l][j] -= lr * mHatB / (Math.sqrt(vHatB) + eps);
+      }
+    }
+  } else {
+    // SGD with momentum
+    if (!adamState.vW) {
+      adamState.vW = net.weights.map(W => W.map(row => row.map(() => 0)));
+      adamState.vB = net.biases.map(b => b.map(() => 0));
+    }
+
+    for (let l = 0; l < L; l++) {
+      for (let j = 0; j < net.weights[l].length; j++) {
+        for (let k = 0; k < net.weights[l][j].length; k++) {
+          adamState.vW[l][j][k] = momentum * adamState.vW[l][j][k] + lr * dW[l][j][k];
+          net.weights[l][j][k] -= adamState.vW[l][j][k];
+        }
+        adamState.vB[l][j] = momentum * adamState.vB[l][j] + lr * dB[l][j];
+        net.biases[l][j] -= adamState.vB[l][j];
+      }
+    }
+  }
+}
+
+// ===================================================
+// TRAINING LOOP
+// ===================================================
+
+let epochsPerFrame = 10;
+let lastLoss = Infinity;
+let stagnantCount = 0;
+let trainLR = 0.01;
+
+function startTraining() {
+  if (!network || dataset.length === 0) {
+    log('Build network and load dataset first.', 'error'); return;
+  }
+  if (trainingState === 'training') return;
+
+  trainingState = 'training';
+  currentEpoch = 0;
+  lossHistory = [];
+  accHistory = [];
+  startTime = Date.now();
+  lastLoss = Infinity;
+  stagnantCount = 0;
+  t_step = 0;
+  adamState = {};
+
+  const lrVal = Math.pow(10, parseFloat(document.getElementById('lr-range').value));
+  trainLR = lrVal;
+
+  updateStatusPills('training');
+  document.getElementById('btn-pause').disabled = false;
+  document.getElementById('btn-stop').disabled = false;
+  document.getElementById('btn-train').disabled = true;
+
+  log(`Training started | Optimizer: ${document.getElementById('optimizer').value} | LR: ${lrVal.toExponential(2)} | Epochs: ${document.getElementById('epochs').value}`, 'accent');
+
+  requestAnimationFrame(trainingLoop);
+}
+
+function trainingLoop() {
+  if (trainingState !== 'training') return;
+
+  const maxEpochs = parseInt(document.getElementById('epochs').value);
+  const batchSize = parseInt(document.getElementById('batch-size').value);
+  const lossFn = document.getElementById('loss-fn').value;
+  const opt = document.getElementById('optimizer').value;
+  const mom = parseFloat(document.getElementById('momentum').value);
+  const lrDecay = parseFloat(document.getElementById('lr-decay').value);
+  const gradClip = document.getElementById('grad-clip').checked;
+  const earlyStopping = document.getElementById('early-stopping').checked;
+
+  const framesPerChunk = Math.min(epochsPerFrame, maxEpochs - currentEpoch);
+
+  for (let f = 0; f < framesPerChunk; f++) {
+    if (currentEpoch >= maxEpochs) { finishTraining('max epochs'); break; }
+
+    // Shuffle dataset for mini-batch
+    const shuffled = [...dataset].sort(() => Math.random() - 0.5);
+    let epochLoss = 0;
+
+    // Mini-batch gradient descent
+    for (let b = 0; b < shuffled.length; b += batchSize) {
+      const batch = shuffled.slice(b, b + batchSize);
+
+      const dWAccum = network.weights.map(W => W.map(row => row.map(() => 0)));
+      const dBAccum = network.biases.map(bi => bi.map(() => 0));
+
+      for (const sample of batch) {
+        const pred = forward(network, sample.inputs);
+        epochLoss += computeLoss(pred, sample.outputs, lossFn);
+
+        let { dW, dB } = backward(network, sample.outputs, lossFn);
+
+        if (gradClip) { ({ dW, dB } = clipGradients(dW, dB, 5.0)); }
+
+        // Accumulate
+        for (let l = 0; l < dW.length; l++) {
+          for (let j = 0; j < dW[l].length; j++) {
+            for (let k = 0; k < dW[l][j].length; k++) {
+              dWAccum[l][j][k] += dW[l][j][k] / batch.length;
+            }
+            dBAccum[l][j] += dB[l][j] / batch.length;
+          }
+        }
+      }
+
+      optimizerStep(network, dWAccum, dBAccum, trainLR, opt, mom);
+    }
+
+    epochLoss /= dataset.length;
+
+    // Safety check for NaN
+    if (isNaN(epochLoss)) {
+      log('⚠ NaN detected — reducing learning rate and continuing.', 'warning');
+      trainLR *= 0.1;
+      adamState = {};
+      t_step = 0;
+      epochLoss = lastLoss;
+    }
+
+    // Learning rate decay
+    trainLR *= lrDecay;
+
+    // Accuracy
+    let correct = 0;
+    for (const s of dataset) {
+      const pred = forward(network, s.inputs);
+      const predicted = pred[0] > 0.5 ? 1 : 0;
+      const expected = s.outputs[0] > 0.5 ? 1 : 0;
+      if (predicted === expected) correct++;
+    }
+    const acc = correct / dataset.length;
+
+    lossHistory.push(epochLoss);
+    accHistory.push(acc);
+    currentEpoch++;
+
+    // Early stopping
+    if (earlyStopping) {
+      if (epochLoss < lastLoss - 1e-6) {
+        stagnantCount = 0;
+        lastLoss = epochLoss;
+      } else {
+        stagnantCount++;
+        if (stagnantCount > 300) {
+          finishTraining('early stop');
+          break;
+        }
+      }
+    }
+
+    if (acc >= 1.0 && epochLoss < 0.001) {
+      finishTraining('converged');
+      break;
+    }
+  }
+
+  // Update UI
+  const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+  const speed = (currentEpoch / ((Date.now() - startTime) / 1000)).toFixed(0);
+  const maxEp = parseInt(document.getElementById('epochs').value);
+  const prog = Math.min(100, (currentEpoch / maxEp) * 100).toFixed(1);
+
+  document.getElementById('m-epoch').textContent = currentEpoch.toLocaleString();
+  document.getElementById('m-loss').textContent = lossHistory[lossHistory.length-1]?.toFixed(6) ?? '—';
+  document.getElementById('m-acc').textContent = ((accHistory[accHistory.length-1] ?? 0) * 100).toFixed(1) + '%';
+  document.getElementById('m-lr').textContent = trainLR.toExponential(3);
+  document.getElementById('m-time').textContent = elapsed + 's';
+  document.getElementById('m-speed').textContent = speed + ' ep/s';
+  document.getElementById('progress-label').textContent = `${currentEpoch} / ${maxEp}`;
+  document.getElementById('progress-fill').style.width = prog + '%';
+
+  updateGraphs();
+
+  if (document.getElementById('live-viz').checked) {
+    renderNetwork();
+  }
+
+  updateWeightInspector();
+
+  if (trainingState === 'training') {
+    // Adjust epochs per frame dynamically
+    const dt = Date.now() - startTime;
+    const fps = currentEpoch / (dt / 1000);
+    epochsPerFrame = Math.max(1, Math.min(100, Math.floor(fps / 60)));
+
+    trainingHandle = requestAnimationFrame(trainingLoop);
+  }
+}
+
+function pauseTraining() {
+  if (trainingState !== 'training') return;
+  trainingState = 'paused';
+  cancelAnimationFrame(trainingHandle);
+  document.getElementById('btn-pause').textContent = '▶ Resume';
+  document.getElementById('btn-pause').onclick = resumeTraining;
+  updateStatusPills('paused');
+  log('Training paused.', 'warning');
+}
+
+function resumeTraining() {
+  if (trainingState !== 'paused') return;
+  trainingState = 'training';
+  document.getElementById('btn-pause').textContent = '⏸ Pause';
+  document.getElementById('btn-pause').onclick = pauseTraining;
+  updateStatusPills('training');
+  log('Training resumed.', 'accent');
+  requestAnimationFrame(trainingLoop);
+}
+
+function stopTraining() {
+  if (trainingState === 'idle') return;
+  trainingState = 'stopped';
+  cancelAnimationFrame(trainingHandle);
+  finishTraining('user stopped');
+}
+
+function finishTraining(reason) {
+  trainingState = 'idle';
+  cancelAnimationFrame(trainingHandle);
+  document.getElementById('btn-train').disabled = false;
+  document.getElementById('btn-pause').disabled = true;
+  document.getElementById('btn-stop').disabled = true;
+  document.getElementById('btn-pause').textContent = '⏸ Pause';
+  document.getElementById('btn-pause').onclick = pauseTraining;
+  updateStatusPills('trained');
+  renderNetwork();
+  updateWeightInspector();
+  updateModelInfo();
+
+  const finalLoss = lossHistory[lossHistory.length-1]?.toFixed(6) ?? '?';
+  const finalAcc = ((accHistory[accHistory.length-1] ?? 0) * 100).toFixed(1);
+  log(`Training finished [${reason}] | Epoch: ${currentEpoch} | Loss: ${finalLoss} | Acc: ${finalAcc}%`, 'success');
+
+  document.getElementById('btn-save').disabled = false;
+  document.getElementById('btn-clone').disabled = false;
+  document.getElementById('btn-predict').disabled = false;
+}
+
+// ===================================================
+// ARCHITECTURE MANAGEMENT
+// ===================================================
+
+function renderHiddenLayers() {
+  const container = document.getElementById('hidden-layers-container');
+  container.innerHTML = '';
+
+  hiddenLayers.forEach((layer, idx) => {
+    const div = document.createElement('div');
+    div.className = 'layer-card fade-in';
+    div.innerHTML = `
+      <div class="layer-card-header">
+        <span class="layer-badge">Hidden ${idx + 1}</span>
+        <div style="display:flex;gap:4px;">
+          ${idx > 0 ? `<button class="btn btn-ghost btn-icon" style="width:26px;height:26px;font-size:12px;" onclick="moveLayer(${idx}, -1)" title="Move up">↑</button>` : ''}
+          ${idx < hiddenLayers.length - 1 ? `<button class="btn btn-ghost btn-icon" style="width:26px;height:26px;font-size:12px;" onclick="moveLayer(${idx}, 1)" title="Move down">↓</button>` : ''}
+          <button class="btn btn-red btn-icon" style="width:26px;height:26px;font-size:12px;" onclick="removeHiddenLayer(${idx})" title="Remove">×</button>
+        </div>
+      </div>
+      <div class="layer-card-body">
+        <div>
+          <label>Neurons</label>
+          <input type="number" value="${layer.neurons}" min="1" max="256" onchange="hiddenLayers[${idx}].neurons=parseInt(this.value);updateArchitecture()">
+        </div>
+        <div>
+          <label>Activation</label>
+          <select onchange="hiddenLayers[${idx}].activation=this.value;updateArchitecture()">
+            <option value="sigmoid" ${layer.activation==='sigmoid'?'selected':''}>Sigmoid</option>
+            <option value="relu" ${layer.activation==='relu'?'selected':''}>ReLU</option>
+            <option value="leaky_relu" ${layer.activation==='leaky_relu'?'selected':''}>Leaky ReLU</option>
+            <option value="tanh" ${layer.activation==='tanh'?'selected':''}>Tanh</option>
+            <option value="linear" ${layer.activation==='linear'?'selected':''}>Linear</option>
+            <option value="softsign" ${layer.activation==='softsign'?'selected':''}>Softsign</option>
+          </select>
+        </div>
+      </div>`;
+    container.appendChild(div);
+  });
+
+  updateArchitecture();
+}
+
+function addHiddenLayer() {
+  hiddenLayers.push({ neurons: 4, activation: 'sigmoid' });
+  renderHiddenLayers();
+}
+
+function removeHiddenLayer(idx) {
+  hiddenLayers.splice(idx, 1);
+  renderHiddenLayers();
+}
+
+function moveLayer(idx, dir) {
+  const tmp = hiddenLayers[idx];
+  hiddenLayers[idx] = hiddenLayers[idx + dir];
+  hiddenLayers[idx + dir] = tmp;
+  renderHiddenLayers();
+}
+
+function updateArchitecture() {
+  const inputN = parseInt(document.getElementById('input-neurons').value) || 2;
+  const outputN = parseInt(document.getElementById('output-neurons').value) || 1;
+  const sizes = [inputN, ...hiddenLayers.map(l => l.neurons), outputN];
+  document.getElementById('arch-summary').textContent = sizes.join(' → ');
+
+  // Count params
+  let params = 0;
+  for (let i = 0; i < sizes.length - 1; i++) {
+    params += sizes[i] * sizes[i+1] + sizes[i+1];
+  }
+  document.getElementById('param-count-header').textContent = params.toLocaleString() + ' params';
+
+  // Update prediction inputs
+  renderPredInputs(inputN);
+}
+
+function buildNetwork() {
+  network = createNetwork();
+  adamState = {};
+  t_step = 0;
+  lossHistory = [];
+  accHistory = [];
+  currentEpoch = 0;
+
+  updateStatusPills('ready');
+  document.getElementById('btn-train').disabled = false;
+  document.getElementById('btn-reset').disabled = false;
+  document.getElementById('btn-predict').disabled = false;
+
+  renderNetwork();
+  updateWeightInspector();
+  updateModelInfo();
+
+  const inputN = parseInt(document.getElementById('input-neurons').value);
+  const outputN = parseInt(document.getElementById('output-neurons').value);
+  const sizes = [inputN, ...hiddenLayers.map(l=>l.neurons), outputN];
+  let params = 0;
+  for (let i=0;i<sizes.length-1;i++) params += sizes[i]*sizes[i+1] + sizes[i+1];
+
+  log(`Network built: [${sizes.join('→')}] | ${params} parameters`, 'success');
+}
+
+function resetNetwork() {
+  if (!network) return;
+  network = createNetwork();
+  adamState = {};
+  t_step = 0;
+  lossHistory = [];
+  accHistory = [];
+  currentEpoch = 0;
+  renderNetwork();
+  updateWeightInspector();
+  resetMetrics();
+  log('Network weights reset.', 'warning');
+}
+
+function resetMetrics() {
+  ['m-epoch','m-loss','m-acc','m-lr','m-time','m-speed'].forEach(id => {
+    document.getElementById(id).textContent = '—';
+  });
+  document.getElementById('progress-fill').style.width = '0%';
+  document.getElementById('progress-label').textContent = '—';
+  updateGraphs();
+}
+
+// ===================================================
+// DATASET
+// ===================================================
+
+const presets = {
+  xor: '0,0 -> 0\n0,1 -> 1\n1,0 -> 1\n1,1 -> 0',
+  and: '0,0 -> 0\n0,1 -> 0\n1,0 -> 0\n1,1 -> 1',
+  or: '0,0 -> 0\n0,1 -> 1\n1,0 -> 1\n1,1 -> 1',
+  nand: '0,0 -> 1\n0,1 -> 1\n1,0 -> 1\n1,1 -> 0',
+};
+
+let activePreset = 'xor';
+
+function loadPreset(name) {
+  document.getElementById('dataset-input').value = presets[name];
+  activePreset = name;
+  document.querySelectorAll('.preset-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent === name.toUpperCase() || b.textContent === name);
+  });
+  parseDataset();
+}
+
+function parseDataset() {
+  const text = document.getElementById('dataset-input').value.trim();
+  const normalize = document.getElementById('normalize').checked;
+
+  dataset = [];
+  const errors = [];
+  const lines = text.split('\n').filter(l => l.trim());
+
+  lines.forEach((line, i) => {
+    const parts = line.split('->');
+    if (parts.length !== 2) { errors.push(`Line ${i+1}: missing '->'`); return; }
+    const inputs = parts[0].trim().split(',').map(Number);
+    const outputs = parts[1].trim().split(',').map(Number);
+
+    if (inputs.some(isNaN) || outputs.some(isNaN)) {
+      errors.push(`Line ${i+1}: invalid numbers`); return;
+    }
+    dataset.push({ inputs, outputs });
+  });
+
+  if (normalize && dataset.length > 0) {
+    const nIn = dataset[0].inputs.length;
+    for (let k = 0; k < nIn; k++) {
+      const vals = dataset.map(d => d.inputs[k]);
+      const min = Math.min(...vals), max = Math.max(...vals);
+      if (max > min) {
+        dataset.forEach(d => d.inputs[k] = (d.inputs[k] - min) / (max - min));
+      }
+    }
+  }
+
+  const info = document.getElementById('dataset-info');
+  if (errors.length > 0) {
+    info.innerHTML = `<span style="color:var(--red)">⚠ ${errors.join(', ')}</span>`;
+  } else {
+    info.innerHTML = `<span style="color:var(--green)">✓ ${dataset.length} samples loaded</span>`;
+  }
+}
+
+function shuffleDataset() {
+  const lines = document.getElementById('dataset-input').value.trim().split('\n');
+  for (let i = lines.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [lines[i], lines[j]] = [lines[j], lines[i]];
+  }
+  document.getElementById('dataset-input').value = lines.join('\n');
+  parseDataset();
+  log('Dataset shuffled.', 'info');
+}
+
+function generateRandom() {
+  const n = parseInt(document.getElementById('input-neurons').value) || 2;
+  const count = 20;
+  const lines = [];
+  for (let i = 0; i < count; i++) {
+    const inputs = Array.from({length: n}, () => parseFloat(Math.random().toFixed(3)));
+    const output = Math.round(Math.random());
+    lines.push(`${inputs.join(',')} -> ${output}`);
+  }
+  document.getElementById('dataset-input').value = lines.join('\n');
+  parseDataset();
+  log(`Generated ${count} random samples.`, 'info');
+}
+
+function loadFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('dataset-input').value = e.target.result;
+    parseDataset();
+    log(`Loaded file: ${file.name}`, 'success');
+  };
+  reader.readAsText(file);
+}
+
+// ===================================================
+// SVG NETWORK VISUALIZATION
+// ===================================================
+
+function renderNetwork() {
+  if (!network) return;
+
+  const svg = document.getElementById('network-svg');
+  const g = document.getElementById('svg-transform-group');
+  g.innerHTML = '';
+
+  const W = 800, H = 380;
+  const sizes = network.layerSizes;
+  const L = sizes.length;
+  const margin = 60;
+  const layerGap = (W - 2 * margin) / Math.max(L - 1, 1);
+  const maxNeurons = Math.max(...sizes);
+  const neuronR = Math.max(8, Math.min(18, (H - 80) / maxNeurons / 2.5));
+
+  // Calculate positions
+  const positions = [];
+  for (let l = 0; l < L; l++) {
+    const layerPos = [];
+    const nCount = sizes[l];
+    const totalH = (nCount - 1) * (neuronR * 2 + 10);
+    const startY = H / 2 - totalH / 2;
+    const x = margin + l * layerGap;
+    for (let n = 0; n < nCount; n++) {
+      layerPos.push({ x, y: startY + n * (neuronR * 2 + 10) });
+    }
+    positions.push(layerPos);
+  }
+
+  // Clamp max connections rendered
+  const MAX_CONN = 600;
+  let connCount = 0;
+  let totalConn = 0;
+  for (let l = 0; l < L - 1; l++) totalConn += sizes[l] * sizes[l+1];
+
+  // Draw connections
+  const connGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  for (let l = 0; l < L - 1; l++) {
+    const W_mat = network.weights[l];
+    for (let j = 0; j < sizes[l+1]; j++) {
+      for (let k = 0; k < sizes[l]; k++) {
+        if (connCount >= MAX_CONN) continue;
+        connCount++;
+
+        const w = W_mat[j][k];
+        const norm = Math.min(1, Math.abs(w) / 2);
+        const color = w >= 0 ? `rgba(79,195,247,${0.1 + norm * 0.6})` : `rgba(255,82,82,${0.1 + norm * 0.6})`;
+        const strokeW = 0.5 + norm * 2;
+
+        const from = positions[l][k];
+        const to = positions[l+1][j];
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', from.x);
+        line.setAttribute('y1', from.y);
+        line.setAttribute('x2', to.x);
+        line.setAttribute('y2', to.y);
+        line.setAttribute('stroke', color);
+        line.setAttribute('stroke-width', strokeW);
+        line.setAttribute('class', 'conn-line');
+        line.setAttribute('data-l', l);
+        line.setAttribute('data-j', j);
+        line.setAttribute('data-k', k);
+        line.setAttribute('data-w', w.toFixed(4));
+
+        line.addEventListener('mouseenter', e => showConnTooltip(e, l, j, k, w));
+        line.addEventListener('mouseleave', hideTooltip);
+
+        connGroup.appendChild(line);
+      }
+    }
+  }
+
+  if (totalConn > MAX_CONN) {
+    const warn = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    warn.setAttribute('x', W - 8);
+    warn.setAttribute('y', 12);
+    warn.setAttribute('text-anchor', 'end');
+    warn.setAttribute('font-size', '10');
+    warn.setAttribute('fill', 'rgba(255,171,64,0.7)');
+    warn.setAttribute('font-family', 'DM Sans, sans-serif');
+    warn.textContent = `Showing ${MAX_CONN}/${totalConn} connections`;
+    g.appendChild(warn);
+  }
+
+  g.appendChild(connGroup);
+
+  // Draw neurons
+  const neuronGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  for (let l = 0; l < L; l++) {
+    // Layer label
+    const layerLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    layerLabel.setAttribute('x', positions[l][0].x);
+    layerLabel.setAttribute('y', H - 14);
+    layerLabel.setAttribute('text-anchor', 'middle');
+    layerLabel.setAttribute('font-size', '11');
+    layerLabel.setAttribute('fill', 'rgba(146,152,168,0.7)');
+    layerLabel.setAttribute('font-family', 'DM Sans, sans-serif');
+    layerLabel.textContent = l === 0 ? 'Input' : l === L-1 ? 'Output' : `Hidden ${l}`;
+    neuronGroup.appendChild(layerLabel);
+
+    // Activation label
+    const actLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    actLabel.setAttribute('x', positions[l][0].x);
+    actLabel.setAttribute('y', H - 4);
+    actLabel.setAttribute('text-anchor', 'middle');
+    actLabel.setAttribute('font-size', '10');
+    actLabel.setAttribute('fill', 'rgba(79,195,247,0.5)');
+    actLabel.setAttribute('font-family', 'DM Mono, monospace');
+    actLabel.textContent = network.activations[l] || '';
+    neuronGroup.appendChild(actLabel);
+
+    for (let n = 0; n < sizes[l]; n++) {
+      const pos = positions[l][n];
+
+      // Get activation value
+      let actVal = 0;
+      if (network.as && network.as[l] && network.as[l][n] !== undefined) {
+        actVal = network.as[l][n];
+      }
+
+      const biasVal = l > 0 && network.biases[l-1] && network.biases[l-1][n] !== undefined
+        ? network.biases[l-1][n] : 0;
+
+      const brightness = Math.min(1, Math.abs(actVal));
+      const color = actVal > 0.5 ? `rgba(105,240,174,${0.4 + brightness * 0.6})` : `rgba(79,195,247,${0.3 + brightness * 0.5})`;
+
+      // Glow circle
+      const glow = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      glow.setAttribute('cx', pos.x);
+      glow.setAttribute('cy', pos.y);
+      glow.setAttribute('r', neuronR + 4);
+      glow.setAttribute('fill', color.replace(/ *, *[0-9.]+\)$/, ', 0.12)'));
+      glow.setAttribute('style', 'filter:url(#glow)');
+      neuronGroup.appendChild(glow);
+
+      // Main circle
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('cx', pos.x);
+      circle.setAttribute('cy', pos.y);
+      circle.setAttribute('r', neuronR);
+      circle.setAttribute('fill', color);
+      circle.setAttribute('stroke', 'rgba(255,255,255,0.2)');
+      circle.setAttribute('stroke-width', '1');
+      circle.setAttribute('style', 'cursor:pointer');
+      circle.setAttribute('data-l', l);
+      circle.setAttribute('data-n', n);
+
+      circle.addEventListener('mouseenter', e => showNeuronTooltip(e, l, n, actVal, biasVal, sizes));
+      circle.addEventListener('mouseleave', hideTooltip);
+      neuronGroup.appendChild(circle);
+
+      // Neuron index label
+      if (neuronR >= 12) {
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', pos.x);
+        text.setAttribute('y', pos.y + 4);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('font-size', Math.max(8, neuronR * 0.6));
+        text.setAttribute('fill', 'rgba(255,255,255,0.9)');
+        text.setAttribute('font-family', 'DM Mono, monospace');
+        text.setAttribute('pointer-events', 'none');
+        text.textContent = n;
+        neuronGroup.appendChild(text);
+      }
+    }
+  }
+
+  g.appendChild(neuronGroup);
+  applyTransform();
+}
+
+// Neuron tooltip
+function showNeuronTooltip(e, l, n, actVal, biasVal, sizes) {
+  const tt = document.getElementById('neuron-tooltip');
+  const rect = document.getElementById('svg-container').getBoundingClientRect();
+  const inCount = l > 0 ? sizes[l-1] : 0;
+  const outCount = l < sizes.length-1 ? sizes[l+1] : 0;
+
+  tt.innerHTML = `
+    <strong>Layer ${l}, Neuron ${n}</strong>
+    <div class="tt-row"><span>Activation</span><span class="tt-val">${actVal.toFixed(4)}</span></div>
+    <div class="tt-row"><span>Bias</span><span class="tt-val">${biasVal.toFixed(4)}</span></div>
+    <div class="tt-row"><span>Incoming</span><span class="tt-val">${inCount}</span></div>
+    <div class="tt-row"><span>Outgoing</span><span class="tt-val">${outCount}</span></div>
+  `;
+
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  tt.style.left = Math.min(mx + 12, rect.width - 200) + 'px';
+  tt.style.top = Math.max(0, my - 60) + 'px';
+  tt.classList.add('visible');
+}
+
+function showConnTooltip(e, l, j, k, w) {
+  const tt = document.getElementById('neuron-tooltip');
+  const rect = document.getElementById('svg-container').getBoundingClientRect();
+
+  tt.innerHTML = `
+    <strong>Connection</strong>
+    <div class="tt-row"><span>Weight</span><span class="tt-val">${w.toFixed(6)}</span></div>
+    <div class="tt-row"><span>From</span><span class="tt-val">L${l}·N${k}</span></div>
+    <div class="tt-row"><span>To</span><span class="tt-val">L${l+1}·N${j}</span></div>
+    <div class="tt-row"><span>Direction</span><span class="tt-val" style="color:${w>=0?'var(--green)':'var(--red)'};">${w>=0?'positive':'negative'}</span></div>
+  `;
+
+  tt.style.left = Math.min(e.clientX - rect.left + 12, rect.width - 200) + 'px';
+  tt.style.top = Math.max(0, e.clientY - rect.top - 60) + 'px';
+  tt.classList.add('visible');
+}
+
+function hideTooltip() {
+  document.getElementById('neuron-tooltip').classList.remove('visible');
+}
+
+// SVG Pan/Zoom
+function applyTransform() {
+  const g = document.getElementById('svg-transform-group');
+  g.setAttribute('transform', `translate(${svgTransX}, ${svgTransY}) scale(${svgScale})`);
+}
+
+function zoomIn() { svgScale = Math.min(svgScale * 1.2, 4); applyTransform(); }
+function zoomOut() { svgScale = Math.max(svgScale / 1.2, 0.3); applyTransform(); }
+function resetView() { svgScale = 1; svgTransX = 0; svgTransY = 0; applyTransform(); }
+
+const svgContainer = document.getElementById('svg-container');
+
+svgContainer.addEventListener('wheel', e => {
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? 0.9 : 1.1;
+  svgScale = Math.max(0.3, Math.min(4, svgScale * delta));
+  applyTransform();
+}, { passive: false });
+
+svgContainer.addEventListener('mousedown', e => {
+  if (e.target.closest('.svg-controls')) return;
+  svgDragging = true;
+  svgDragStart = { x: e.clientX - svgTransX, y: e.clientY - svgTransY };
+});
+
+window.addEventListener('mousemove', e => {
+  if (!svgDragging) return;
+  svgTransX = e.clientX - svgDragStart.x;
+  svgTransY = e.clientY - svgDragStart.y;
+  applyTransform();
+});
+
+window.addEventListener('mouseup', () => { svgDragging = false; });
+
+// ===================================================
+// TRAINING GRAPHS
+// ===================================================
+
+function updateGraphs() {
+  renderGraph('loss-path', lossHistory, 600, 120);
+  renderGraph('acc-path', accHistory, 600, 120);
+}
+
+function renderGraph(pathId, data, w, h) {
+  const path = document.getElementById(pathId);
+  if (!data || data.length < 2) { path.setAttribute('d', ''); return; }
+
+  const pad = 10;
+  const maxVal = Math.max(...data, 0.001);
+  const minVal = Math.min(...data, 0);
+
+  const pts = data.map((v, i) => {
+    const x = pad + (i / (data.length - 1)) * (w - 2 * pad);
+    const y = (h - pad) - ((v - minVal) / (maxVal - minVal)) * (h - 2 * pad);
+    return `${x},${y}`;
+  });
+
+  path.setAttribute('d', 'M' + pts.join(' L'));
+}
+
+// ===================================================
+// WEIGHT INSPECTOR
+// ===================================================
+
+function updateWeightInspector() {
+  if (!network) return;
+  const container = document.getElementById('weight-inspector');
+  container.innerHTML = '';
+
+  for (let l = 0; l < network.weights.length; l++) {
+    const section = document.createElement('div');
+    section.className = 'weight-section';
+
+    const header = document.createElement('div');
+    header.className = 'weight-section-header';
+    header.innerHTML = `
+      <span class="weight-section-title">Layer ${l} → ${l+1} Weights</span>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <span style="font-size:11px;color:var(--text3);">${network.weights[l].length}×${network.weights[l][0].length}</span>
+        <span class="chevron">▸</span>
+      </div>`;
+
+    const body = document.createElement('div');
+    body.className = 'weight-matrix weight-collapsed';
+
+    // Weights
+    const wLabel = document.createElement('div');
+    wLabel.style.cssText = 'font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600;';
+    wLabel.textContent = 'Weights:';
+    body.appendChild(wLabel);
+
+    const maxShow = Math.min(network.weights[l].length, 8);
+    for (let j = 0; j < maxShow; j++) {
+      const row = document.createElement('div');
+      row.className = 'weight-row';
+      const maxK = Math.min(network.weights[l][j].length, 8);
+      for (let k = 0; k < maxK; k++) {
+        const v = network.weights[l][j][k];
+        const cell = document.createElement('div');
+        cell.className = `weight-cell ${v >= 0 ? 'pos' : 'neg'}`;
+        cell.textContent = v.toFixed(4);
+        row.appendChild(cell);
+      }
+      body.appendChild(row);
+    }
+
+    // Biases
+    const bLabel = document.createElement('div');
+    bLabel.style.cssText = 'font-size:11px;color:var(--text3);margin:8px 0 4px;font-weight:600;';
+    bLabel.textContent = 'Biases:';
+    body.appendChild(bLabel);
+
+    const biasRow = document.createElement('div');
+    biasRow.className = 'weight-row';
+    const maxB = Math.min(network.biases[l].length, 8);
+    for (let j = 0; j < maxB; j++) {
+      const v = network.biases[l][j];
+      const cell = document.createElement('div');
+      cell.className = `weight-cell ${v >= 0 ? 'pos' : 'neg'}`;
+      cell.textContent = v.toFixed(4);
+      biasRow.appendChild(cell);
+    }
+    body.appendChild(biasRow);
+
+    header.addEventListener('click', () => {
+      const isOpen = !body.classList.contains('weight-collapsed');
+      body.classList.toggle('weight-collapsed', isOpen);
+      header.querySelector('.chevron').classList.toggle('open', !isOpen);
+    });
+
+    section.appendChild(header);
+    section.appendChild(body);
+    container.appendChild(section);
+  }
+}
+
+function exportWeights() {
+  if (!network) return;
+  const data = JSON.stringify({ weights: network.weights, biases: network.biases }, null, 2);
+  download('weights.json', data, 'application/json');
+  log('Weights exported as weights.json', 'success');
+}
+
+// ===================================================
+// MODEL FILE (.hsi)
+// ===================================================
+
+function saveModel() {
+  if (!network) return;
+
+  const model = {
+    format: 'hsi',
+    version: '1.0',
+    name: 'HSI Neural Network',
+    timestamp: new Date().toISOString(),
+    metadata: {
+      accuracy: accHistory[accHistory.length-1] ?? 0,
+      loss: lossHistory[lossHistory.length-1] ?? null,
+      epochs_trained: currentEpoch,
+      dataset_samples: dataset.length,
+    },
+    architecture: {
+      layerSizes: network.layerSizes,
+      activations: network.activations,
+    },
+    weights: network.weights,
+    biases: network.biases,
+    training_config: {
+      optimizer: document.getElementById('optimizer').value,
+      loss_fn: document.getElementById('loss-fn').value,
+      learning_rate: trainLR,
+      momentum: parseFloat(document.getElementById('momentum').value),
+    },
+  };
+
+  download('model.hsi', JSON.stringify(model, null, 2), 'application/json');
+  log('Model saved as model.hsi', 'success');
+}
+
+function loadModel(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const model = JSON.parse(e.target.result);
+      if (model.format !== 'hsi') throw new Error('Not a .hsi file');
+
+      // Rebuild hiddenLayers array
+      hiddenLayers = [];
+      for (let i = 1; i < model.architecture.layerSizes.length - 1; i++) {
+        hiddenLayers.push({
+          neurons: model.architecture.layerSizes[i],
+          activation: model.architecture.activations[i],
+        });
+      }
+      renderHiddenLayers();
+
+      document.getElementById('input-neurons').value = model.architecture.layerSizes[0];
+      document.getElementById('output-neurons').value = model.architecture.layerSizes[model.architecture.layerSizes.length - 1];
+      document.getElementById('output-activation').value = model.architecture.activations[model.architecture.activations.length - 1];
+
+      network = {
+        layerSizes: model.architecture.layerSizes,
+        activations: model.architecture.activations,
+        weights: model.weights,
+        biases: model.biases,
+        zs: [],
+        as: [],
+      };
+
+      updateArchitecture();
+      renderNetwork();
+      updateWeightInspector();
+      updateModelInfo();
+      updateStatusPills('trained');
+
+      document.getElementById('btn-train').disabled = false;
+      document.getElementById('btn-predict').disabled = false;
+      document.getElementById('btn-save').disabled = false;
+
+      log(`Model loaded: ${file.name} | Acc: ${(model.metadata.accuracy * 100).toFixed(1)}%`, 'success');
+    } catch(err) {
+      log(`Failed to load model: ${err.message}`, 'error');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function cloneModel() {
+  if (!network) return;
+  const cloned = JSON.parse(JSON.stringify(network));
+  download('model_clone.hsi', JSON.stringify({ format:'hsi', version:'1.0', timestamp: new Date().toISOString(), architecture: { layerSizes: cloned.layerSizes, activations: cloned.activations }, weights: cloned.weights, biases: cloned.biases }), 'application/json');
+  log('Model cloned.', 'success');
+}
+
+function confirmReset() {
+  if (confirm('Reset and wipe all network weights?')) {
+    network = null;
+    adamState = {};
+    lossHistory = [];
+    accHistory = [];
+    currentEpoch = 0;
+    document.getElementById('weight-inspector').innerHTML = '';
+    document.getElementById('model-info').innerHTML = '';
+    const g = document.getElementById('svg-transform-group');
+    g.innerHTML = '<text x="400" y="200" text-anchor="middle" fill="rgba(255,255,255,0.1)" font-size="14" font-family="DM Sans, sans-serif">Build a network to visualize</text>';
+    updateStatusPills('none');
+    resetMetrics();
+    document.getElementById('btn-train').disabled = true;
+    document.getElementById('btn-save').disabled = true;
+    document.getElementById('btn-clone').disabled = true;
+    document.getElementById('btn-predict').disabled = true;
+    log('Network wiped.', 'warning');
+  }
+}
+
+function updateModelInfo() {
+  if (!network) return;
+  const sizes = network.layerSizes;
+  let params = 0;
+  for (let i = 0; i < sizes.length - 1; i++) params += sizes[i] * sizes[i+1] + sizes[i+1];
+
+  document.getElementById('model-info').innerHTML = `
+    <div><span style="color:var(--text3)">Architecture:</span> ${sizes.join(' → ')}</div>
+    <div><span style="color:var(--text3)">Parameters:</span> <span style="color:var(--accent)">${params.toLocaleString()}</span></div>
+    <div><span style="color:var(--text3)">Epochs:</span> ${currentEpoch.toLocaleString()}</div>
+    <div><span style="color:var(--text3)">Loss:</span> ${lossHistory[lossHistory.length-1]?.toFixed(6) ?? '—'}</div>
+    <div><span style="color:var(--text3)">Accuracy:</span> <span style="color:var(--green)">${((accHistory[accHistory.length-1] ?? 0)*100).toFixed(1)}%</span></div>
+  `;
+}
+
+// ===================================================
+// PREDICTION
+// ===================================================
+
+function renderPredInputs(n) {
+  const container = document.getElementById('pred-inputs');
+  container.innerHTML = '';
+  for (let i = 0; i < n; i++) {
+    const div = document.createElement('div');
+    div.className = 'field';
+    div.innerHTML = `<label>Input ${i + 1}</label><input type="number" id="pred-in-${i}" value="0" step="0.01">`;
+    container.appendChild(div);
+  }
+}
+
+function runPrediction() {
+  if (!network) return;
+
+  const n = network.layerSizes[0];
+  const inputs = [];
+  for (let i = 0; i < n; i++) {
+    const v = parseFloat(document.getElementById(`pred-in-${i}`)?.value ?? 0);
+    inputs.push(isNaN(v) ? 0 : v);
+  }
+
+  const output = forward(network, inputs);
+  renderNetwork(); // Update activations
+
+  const val = output[0];
+  document.getElementById('pred-value').textContent = val.toFixed(4);
+  document.getElementById('pred-class').textContent = val > 0.5 ? 'Class: 1 (Positive)' : 'Class: 0 (Negative)';
+  document.getElementById('confidence-fill').style.width = (val * 100) + '%';
+
+  const expected = document.getElementById('pred-expected').value;
+  if (expected !== '') {
+    const exp = parseFloat(expected);
+    const correct = (val > 0.5 ? 1 : 0) === (exp > 0.5 ? 1 : 0);
+    document.getElementById('pred-compare').innerHTML = `Expected: <span style="color:${correct?'var(--green)':'var(--red)'}">${exp} ${correct?'✓ Correct':'✗ Wrong'}</span>`;
+  } else {
+    document.getElementById('pred-compare').textContent = '';
+  }
+
+  document.getElementById('pred-result').style.display = 'block';
+
+  // Show all dataset predictions
+  if (dataset.length > 0) {
+    const allPred = document.getElementById('all-predictions');
+    allPred.innerHTML = '<div style="font-size:12px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">All Predictions</div>';
+    dataset.forEach((s, i) => {
+      const pred = forward(network, s.inputs)[0];
+      const predClass = pred > 0.5 ? 1 : 0;
+      const expected = s.outputs[0] > 0.5 ? 1 : 0;
+      const correct = predClass === expected;
+      const row = document.createElement('div');
+      row.style.cssText = `display:flex;justify-content:space-between;align-items:center;padding:4px 8px;border-radius:4px;margin-bottom:3px;background:${correct?'rgba(105,240,174,0.07)':'rgba(255,82,82,0.07)'};font-size:12px;font-family:var(--mono);`;
+      row.innerHTML = `<span style="color:var(--text3)">[${s.inputs.map(v=>v.toFixed(1)).join(',')}]</span> <span style="color:var(--text2)">→ ${pred.toFixed(3)}</span> <span style="color:${correct?'var(--green)':'var(--red)'}">${correct?'✓':'✗'}</span>`;
+      allPred.appendChild(row);
+    });
+  }
+}
+
+// ===================================================
+// STATUS / CONSOLE
+// ===================================================
+
+function updateStatusPills(state) {
+  const modelPill = document.getElementById('model-status-pill');
+  const trainPill = document.getElementById('train-status-pill');
+  const modelText = document.getElementById('model-status-text');
+  const trainText = document.getElementById('train-status-text');
+
+  modelPill.classList.remove('active', 'training');
+  trainPill.classList.remove('active', 'training');
+
+  if (state === 'none') { modelText.textContent = 'No Model'; trainText.textContent = 'Idle'; }
+  else if (state === 'ready') { modelPill.classList.add('active'); modelText.textContent = 'Ready'; trainText.textContent = 'Idle'; }
+  else if (state === 'training') { modelPill.classList.add('active'); trainPill.classList.add('training'); modelText.textContent = 'Active'; trainText.textContent = 'Training'; }
+  else if (state === 'paused') { modelPill.classList.add('active'); trainText.textContent = 'Paused'; }
+  else if (state === 'trained') { modelPill.classList.add('active'); trainPill.classList.add('active'); modelText.textContent = 'Trained'; trainText.textContent = 'Done'; }
+}
+
+function log(message, type = 'info') {
+  const console_el = document.getElementById('console-log');
+  const div = document.createElement('div');
+  div.className = `log-entry ${type}`;
+  const ts = new Date().toLocaleTimeString('en-US', { hour12: false });
+  div.textContent = `[${ts}] ${message}`;
+  console_el.appendChild(div);
+  console_el.scrollTop = console_el.scrollHeight;
+}
+
+function clearConsole() {
+  document.getElementById('console-log').innerHTML = '';
+}
+
+// ===================================================
+// HELPERS
+// ===================================================
+
+function download(filename, data, type) {
+  const blob = new Blob([data], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ===================================================
+// INIT
+// ===================================================
+
+window.addEventListener('load', () => {
+  renderHiddenLayers();
+  loadPreset('xor');
+  renderPredInputs(2);
+  updateArchitecture();
+  log('HSI Neural Trainer initialized. Build a network and load a dataset to begin.', 'accent');
+  log('Tip: Click "Build Network" then "Start Training" to train on XOR.', 'info');
+});
+</script>
+</body>
+</html>
