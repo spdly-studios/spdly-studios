@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coupled TL Lattice Diagram Solver</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,300;9..144,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f4f2ee;
+  --surface: #ffffff;
+  --surface2: #f9f8f6;
+  --border: #e2ddd8;
+  --text: #1a1714;
+  --text2: #6b6560;
+  --accent: #c2410c;
+  --accent2: #0369a1;
+  --accent3: #047857;
+  --accent4: #7c3aed;
+  --even-color: #0369a1;
+  --odd-color: #c2410c;
+  --incident-color: #047857;
+  --reflect-color: #7c3aed;
+  --shadow: 0 2px 12px rgba(0,0,0,0.07);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
+  --radius: 14px;
+  --transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+[data-theme="dark"] {
+  --bg: #141210;
+  --surface: #1e1b18;
+  --surface2: #252119;
+  --border: #33302a;
+  --text: #f0ece6;
+  --text2: #a09890;
+  --accent: #fb923c;
+  --accent2: #38bdf8;
+  --accent3: #34d399;
+  --accent4: #a78bfa;
+  --even-color: #38bdf8;
+  --odd-color: #fb923c;
+  --incident-color: #34d399;
+  --reflect-color: #a78bfa;
+  --shadow: 0 2px 12px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.4);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);transition:var(--transition);min-height:100vh;line-height:1.6}
+
+/* ── Header ── */
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow)}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-icon svg{width:18px;height:18px;fill:white}
+.logo-text{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:300;letter-spacing:-0.01em}
+.logo-text span{color:var(--accent);font-weight:400}
+.header-actions{display:flex;align-items:center;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:inherit;font-size:0.82rem;font-weight:500;cursor:pointer;transition:var(--transition);white-space:nowrap}
+.btn:hover{background:var(--surface2);border-color:var(--accent);color:var(--accent)}
+.btn-primary{background:var(--accent);color:white;border-color:var(--accent)}
+.btn-primary:hover{opacity:0.88;color:white}
+.btn-sm{padding:5px 10px;font-size:0.78rem}
+.theme-toggle{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition);color:var(--text2)}
+.theme-toggle:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── Layout ── */
+.app-layout{display:grid;grid-template-columns:340px 1fr;min-height:calc(100vh - 60px)}
+@media(max-width:900px){.app-layout{grid-template-columns:1fr}}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;max-height:calc(100vh - 60px);position:sticky;top:60px}
+.main{padding:20px;display:flex;flex-direction:column;gap:20px;overflow-x:hidden}
+
+/* ── Cards ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.card-header{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;gap:8px}
+.card-header h3{font-size:0.88rem;font-weight:600;letter-spacing:0.01em;color:var(--text)}
+.card-body{padding:14px 16px;border-top:1px solid var(--border)}
+.collapse-icon{transition:transform 0.2s;color:var(--text2);flex-shrink:0}
+.collapsed .collapse-icon{transform:rotate(-90deg)}
+.collapsed .card-body{display:none}
+
+/* ── Inputs ── */
+.input-group{margin-bottom:10px;position:relative}
+.input-group label{display:block;font-size:0.78rem;font-weight:500;color:var(--text2);margin-bottom:4px}
+.input-group input{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--text);font-family:'DM Mono',monospace;font-size:0.83rem;transition:var(--transition)}
+.input-group input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 15%,transparent)}
+.input-group input.error{border-color:#ef4444}
+.input-unit{position:absolute;right:10px;bottom:7px;font-size:0.75rem;color:var(--text2);font-family:'DM Mono',monospace;pointer-events:none}
+.tooltip-wrapper{position:relative;display:inline-block;margin-left:4px}
+.tooltip-icon{width:14px;height:14px;border-radius:50%;background:var(--border);color:var(--text2);font-size:0.65rem;display:inline-flex;align-items:center;justify-content:center;cursor:help;font-weight:700;vertical-align:middle}
+.tooltip-text{display:none;position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 6px);background:var(--text);color:var(--bg);padding:6px 10px;border-radius:8px;font-size:0.73rem;white-space:nowrap;z-index:200;pointer-events:none;max-width:220px;white-space:normal;text-align:center;line-height:1.4}
+.tooltip-wrapper:hover .tooltip-text{display:block}
+
+/* ── Presets ── */
+.presets{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.preset-btn{padding:6px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);font-size:0.74rem;font-weight:500;cursor:pointer;color:var(--text);font-family:inherit;transition:var(--transition);text-align:center}
+.preset-btn:hover{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent)}
+
+/* ── Results Grid ── */
+.results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.result-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;transition:var(--transition)}
+.result-card:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:var(--shadow)}
+.result-label{font-size:0.72rem;color:var(--text2);font-weight:500;margin-bottom:4px;line-height:1.3}
+.result-value{font-family:'DM Mono',monospace;font-size:1.02rem;font-weight:500;color:var(--text)}
+.result-unit{font-size:0.7rem;color:var(--text2);font-weight:400}
+.result-card.even{border-left:3px solid var(--even-color)}
+.result-card.odd{border-left:3px solid var(--odd-color)}
+.result-card.delay{border-left:3px solid var(--accent3)}
+.result-card.reflect{border-left:3px solid var(--accent4)}
+
+/* ── Tabs ── */
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--border);margin-bottom:18px}
+.tab{padding:8px 16px;border:none;background:transparent;font-family:inherit;font-size:0.84rem;font-weight:500;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:var(--transition);border-radius:8px 8px 0 0}
+.tab:hover{color:var(--text);background:var(--surface2)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* ── SVG Diagram ── */
+.diagram-container{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.diagram-toolbar{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.diagram-toolbar h3{font-size:0.88rem;font-weight:600;margin-right:auto}
+.anim-controls{display:flex;align-items:center;gap:8px}
+.speed-label{font-size:0.74rem;color:var(--text2)}
+.speed-input{width:70px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;background:var(--surface2);color:var(--text);font-family:'DM Mono',monospace;font-size:0.78rem}
+#lattice-svg-wrap{overflow:hidden;cursor:grab;position:relative;background:var(--surface2)}
+#lattice-svg-wrap:active{cursor:grabbing}
+#lattice-svg{width:100%;display:block;min-height:420px}
+
+/* ── Waveform ── */
+.waveform-wrap{background:var(--surface2);border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.waveform-wrap + .waveform-wrap{margin-top:10px}
+.waveform-title{padding:8px 12px;font-size:0.78rem;font-weight:600;color:var(--text2);border-bottom:1px solid var(--border)}
+#waveform-svg{display:block;width:100%}
+
+/* ── Legend ── */
+.legend{display:flex;flex-wrap:wrap;gap:10px;padding:10px 14px;border-top:1px solid var(--border);font-size:0.75rem}
+.legend-item{display:flex;align-items:center;gap:5px;color:var(--text2)}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.legend-line{width:18px;height:2px;flex-shrink:0}
+
+/* ── Formula Popup ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:500;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);width:min(600px,95vw);max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
+.modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-header h3{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:300}
+.modal-close{background:none;border:none;color:var(--text2);font-size:1.4rem;cursor:pointer;line-height:1}
+.modal-body{padding:20px}
+.formula-block{background:var(--surface2);border-radius:10px;padding:12px 16px;margin-bottom:12px;border:1px solid var(--border)}
+.formula-block h4{font-size:0.8rem;font-weight:600;color:var(--accent);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em}
+.formula{font-family:'DM Mono',monospace;font-size:0.88rem;color:var(--text);line-height:1.8}
+
+/* ── Tooltip hover on SVG paths ── */
+#svg-tooltip{position:fixed;background:var(--text);color:var(--bg);padding:8px 12px;border-radius:8px;font-size:0.75rem;pointer-events:none;z-index:300;display:none;max-width:200px;line-height:1.5}
+#svg-tooltip.visible{display:block}
+
+/* ── Notification ── */
+.notify{position:fixed;bottom:20px;right:20px;background:var(--text);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:0.82rem;z-index:600;transform:translateY(80px);opacity:0;transition:all 0.3s;box-shadow:var(--shadow-lg)}
+.notify.show{transform:translateY(0);opacity:1}
+
+/* ── Reflection slider ── */
+.slider-wrap{display:flex;align-items:center;gap:8px}
+.slider-wrap input[type=range]{flex:1;accent-color:var(--accent)}
+.slider-val{font-family:'DM Mono',monospace;font-size:0.8rem;min-width:20px;text-align:right;color:var(--text2)}
+
+/* ── Export ── */
+.export-row{display:flex;gap:6px;flex-wrap:wrap;padding:10px 14px;border-top:1px solid var(--border)}
+
+/* ── Footer ── */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:14px 24px;text-align:center;font-size:0.76rem;color:var(--text2)}
+footer a{color:var(--accent);text-decoration:none}
+footer a:hover{text-decoration:underline}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--text2)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 20 20"><path d="M2 10 Q6 4 10 10 Q14 16 18 10"/></svg>
+    </div>
+    <span class="logo-text">Coupled TL <span>Lattice Solver</span></span>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-sm" onclick="openFormulas()">📐 Formulas</button>
+    <button class="btn btn-sm" onclick="saveConfig()">💾 Save</button>
+    <button class="btn btn-sm" onclick="loadConfig()">📂 Load</button>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀️</button>
+  </div>
+</header>
+
+<div class="app-layout">
+
+<!-- ── Sidebar: Inputs ── -->
+<aside class="sidebar">
+
+  <!-- Presets -->
+  <div class="card">
+    <div class="card-header" onclick="toggleCard(this)">
+      <h3>⚡ Quick Presets</h3>
+      <span class="collapse-icon">▾</span>
+    </div>
+    <div class="card-body">
+      <div class="presets">
+        <button class="preset-btn" onclick="applyPreset('pcb')">PCB Stripline</button>
+        <button class="preset-btn" onclick="applyPreset('micro')">Microstrip</button>
+        <button class="preset-btn" onclick="applyPreset('diff')">Diff. Pair</button>
+        <button class="preset-btn" onclick="applyPreset('twisted')">Twisted Pair</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Line Parameters -->
+  <div class="card">
+    <div class="card-header" onclick="toggleCard(this)">
+      <h3>📏 Line Parameters</h3>
+      <span class="collapse-icon">▾</span>
+    </div>
+    <div class="card-body">
+      <div class="input-group">
+        <label>Self Inductance L<sub>s</sub>
+          <span class="tooltip-wrapper"><span class="tooltip-icon">?</span><span class="tooltip-text">Per-unit-length self inductance of each conductor (H/m). Typically 100–500 nH/m for PCB traces.</span></span>
+        </label>
+        <input type="number" id="Ls" value="3.5e-7" step="any" oninput="compute()">
+        <span class="input-unit">H/m</span>
+      </div>
+      <div class="input-group">
+        <label>Mutual Inductance L<sub>m</sub>
+          <span class="tooltip-wrapper"><span class="tooltip-icon">?</span><span class="tooltip-text">Mutual inductance between conductors (H/m). Represents inductive coupling. Must be &lt; Ls.</span></span>
+        </label>
+        <input type="number" id="Lm" value="1.0e-7" step="any" oninput="compute()">
+        <span class="input-unit">H/m</span>
+      </div>
+      <div class="input-group">
+        <label>Self Capacitance C<sub>s</sub>
+          <span class="tooltip-wrapper"><span class="tooltip-icon">?</span><span class="tooltip-text">Per-unit-length self capacitance to ground (F/m). Typically 50–200 pF/m for PCB traces.</span></span>
+        </label>
+        <input type="number" id="Cs" value="1.2e-10" step="any" oninput="compute()">
+        <span class="input-unit">F/m</span>
+      </div>
+      <div class="input-group">
+        <label>Mutual Capacitance C<sub>m</sub>
+          <span class="tooltip-wrapper"><span class="tooltip-icon">?</span><span class="tooltip-text">Capacitance between the two lines (F/m). Represents capacitive coupling. Must be &lt; Cs.</span></span>
+        </label>
+        <input type="number" id="Cm" value="3.0e-11" step="any" oninput="compute()">
+        <span class="input-unit">F/m</span>
+      </div>
+      <div class="input-group">
+        <label>Line Length
+          <span class="tooltip-wrapper"><span class="tooltip-icon">?</span><span class="tooltip-text">Physical length of the coupled transmission line (meters).</span></span>
+        </label>
+        <input type="number" id="lineLen" value="0.1" step="any" oninput="compute()">
+        <span class="input-unit">m</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Circuit Parameters -->
+  <div class="card">
+    <div class="card-header" onclick="toggleCard(this)">
+      <h3>🔌 Circuit Parameters</h3>
+      <span class="collapse-icon">▾</span>
+    </div>
+    <div class="card-body">
+      <div class="input-group">
+        <label>Source Voltage V<sub>s</sub>
+          <span class="tooltip-wrapper"><span class="tooltip-icon">?</span><span class="tooltip-text">Step voltage applied at the source end of the line (volts).</span></span>
+        </label>
+        <input type="number" id="Vs" value="12" step="any" oninput="compute()">
+        <span class="input-unit">V</span>
+      </div>
+      <div class="input-group">
+        <label>Rise Time t<sub>r</sub>
+          <span class="tooltip-wrapper"><span class="tooltip-icon">?</span><span class="tooltip-text">10–90% rise time of the source signal (seconds). Determines if signal is electrically long.</span></span>
+        </label>
+        <input type="number" id="tr" value="1e-9" step="any" oninput="compute()">
+        <span class="input-unit">s</span>
+      </div>
+      <div class="input-group">
+        <label>Source Impedance Z<sub>S</sub>
+          <span class="tooltip-wrapper"><span class="tooltip-icon">?</span><span class="tooltip-text">Thevenin source resistance driving the line (Ω). Determines source reflection coefficient.</span></span>
+        </label>
+        <input type="number" id="Zs" value="50" step="any" oninput="compute()">
+        <span class="input-unit">Ω</span>
+      </div>
+      <div class="input-group">
+        <label>Load Impedance Z<sub>L</sub>
+          <span class="tooltip-wrapper"><span class="tooltip-icon">?</span><span class="tooltip-text">Load resistance at the far end of the line (Ω). Determines load reflection coefficient.</span></span>
+        </label>
+        <input type="number" id="Zl" value="100" step="any" oninput="compute()">
+        <span class="input-unit">Ω</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Simulation -->
+  <div class="card">
+    <div class="card-header" onclick="toggleCard(this)">
+      <h3>⚙️ Simulation Settings</h3>
+      <span class="collapse-icon">▾</span>
+    </div>
+    <div class="card-body">
+      <div class="input-group">
+        <label>Simulation Window
+          <span class="tooltip-wrapper"><span class="tooltip-icon">?</span><span class="tooltip-text">Total time to simulate (seconds). Should be several multiples of the propagation delay.</span></span>
+        </label>
+        <input type="number" id="tWindow" value="5e-9" step="any" oninput="compute()">
+        <span class="input-unit">s</span>
+      </div>
+      <div class="input-group">
+        <label>Number of Reflections
+          <span class="tooltip-wrapper"><span class="tooltip-icon">?</span><span class="tooltip-text">How many round-trip reflections to calculate. More = longer computation.</span></span>
+        </label>
+        <div class="slider-wrap">
+          <input type="range" id="nRef" min="1" max="8" value="4" oninput="document.getElementById('nRefVal').textContent=this.value;compute()">
+          <span class="slider-val" id="nRefVal">4</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="compute()" style="width:100%">▶ Recalculate</button>
+
+</aside>
+
+<!-- ── Main Content ── -->
+<main class="main">
+
+  <!-- Results -->
+  <div class="card">
+    <div class="card-header" onclick="toggleCard(this)">
+      <h3>📊 Calculated Results</h3>
+      <span class="collapse-icon">▾</span>
+    </div>
+    <div class="card-body">
+      <div class="results-grid" id="results-grid">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Lattice Diagram -->
+  <div class="diagram-container">
+    <div class="diagram-toolbar">
+      <h3>📡 Lattice Diagram</h3>
+      <div class="anim-controls">
+        <span class="speed-label">Speed:</span>
+        <input type="range" id="animSpeed" min="0.2" max="3" step="0.1" value="1" style="width:70px;accent-color:var(--accent)">
+        <button class="btn btn-sm" id="playBtn" onclick="toggleAnim()">▶ Play</button>
+        <button class="btn btn-sm" onclick="resetAnim()">↺ Reset</button>
+      </div>
+      <button class="btn btn-sm" onclick="zoomIn()">＋</button>
+      <button class="btn btn-sm" onclick="zoomOut()">－</button>
+      <button class="btn btn-sm" onclick="resetZoom()">⊙</button>
+    </div>
+    <div id="lattice-svg-wrap">
+      <svg id="lattice-svg" viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-line" style="background:var(--even-color)"></div> Even mode</div>
+      <div class="legend-item"><div class="legend-line" style="background:var(--odd-color)"></div> Odd mode</div>
+      <div class="legend-item"><div class="legend-line" style="background:var(--incident-color)"></div> Incident wave</div>
+      <div class="legend-item"><div class="legend-line" style="background:var(--reflect-color)"></div> Reflected wave</div>
+    </div>
+    <div class="export-row">
+      <button class="btn btn-sm" onclick="exportSVG()">⬇ SVG</button>
+      <button class="btn btn-sm" onclick="exportPNG()">⬇ PNG</button>
+      <button class="btn btn-sm" onclick="exportJSON()">⬇ JSON</button>
+    </div>
+  </div>
+
+  <!-- Waveforms -->
+  <div class="card">
+    <div class="card-header" onclick="toggleCard(this)">
+      <h3>📈 Waveform Plots</h3>
+      <span class="collapse-icon">▾</span>
+    </div>
+    <div class="card-body">
+      <div class="tabs">
+        <button class="tab active" onclick="showTab('tab-agg',this)">Aggressor</button>
+        <button class="tab" onclick="showTab('tab-vic',this)">Victim (NEXT/FEXT)</button>
+        <button class="tab" onclick="showTab('tab-even',this)">Even Mode</button>
+        <button class="tab" onclick="showTab('tab-odd',this)">Odd Mode</button>
+      </div>
+      <div id="tab-agg">
+        <div class="waveform-wrap">
+          <div class="waveform-title">Aggressor voltage at load — V<sub>load</sub>(t)</div>
+          <svg id="wf-agg" viewBox="0 0 860 180" style="width:100%;display:block"></svg>
+        </div>
+      </div>
+      <div id="tab-vic" style="display:none">
+        <div class="waveform-wrap">
+          <div class="waveform-title">Victim NEXT — Near-End Crosstalk</div>
+          <svg id="wf-next" viewBox="0 0 860 180" style="width:100%;display:block"></svg>
+        </div>
+        <div class="waveform-wrap" style="margin-top:10px">
+          <div class="waveform-title">Victim FEXT — Far-End Crosstalk</div>
+          <svg id="wf-fext" viewBox="0 0 860 180" style="width:100%;display:block"></svg>
+        </div>
+      </div>
+      <div id="tab-even" style="display:none">
+        <div class="waveform-wrap">
+          <div class="waveform-title">Even Mode Voltage V<sub>e</sub>(t)</div>
+          <svg id="wf-even" viewBox="0 0 860 180" style="width:100%;display:block"></svg>
+        </div>
+      </div>
+      <div id="tab-odd" style="display:none">
+        <div class="waveform-wrap">
+          <div class="waveform-title">Odd Mode Voltage V<sub>o</sub>(t)</div>
+          <svg id="wf-odd" viewBox="0 0 860 180" style="width:100%;display:block"></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<!-- Footer -->
+<footer>
+  <p>© SpDly Studios &nbsp;·&nbsp; <a href="https://spdly.is-a.dev" target="_blank">spdly.is-a.dev</a></p>
+</footer>
+
+<!-- Formula Modal -->
+<div class="modal-overlay" id="formula-modal" onclick="if(event.target===this)closeFormulas()">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>📐 Formula Reference</h3>
+      <button class="modal-close" onclick="closeFormulas()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="formula-block">
+        <h4>Even / Odd Mode Inductance</h4>
+        <div class="formula">Le = Ls + Lm<br>Lo = Ls − Lm</div>
+      </div>
+      <div class="formula-block">
+        <h4>Even / Odd Mode Capacitance</h4>
+        <div class="formula">Ce = Cs − Cm<br>Co = Cs + Cm</div>
+      </div>
+      <div class="formula-block">
+        <h4>Characteristic Impedance</h4>
+        <div class="formula">Z₀e = √(Le / Ce)<br>Z₀o = √(Lo / Co)</div>
+      </div>
+      <div class="formula-block">
+        <h4>Propagation Velocity</h4>
+        <div class="formula">ve = 1 / √(Le · Ce)<br>vo = 1 / √(Lo · Co)</div>
+      </div>
+      <div class="formula-block">
+        <h4>Propagation Delay</h4>
+        <div class="formula">te = ℓ / ve<br>to = ℓ / vo<br>Δt = to − te  (delay skew)</div>
+      </div>
+      <div class="formula-block">
+        <h4>Reflection Coefficients</h4>
+        <div class="formula">ΓL = (ZL − Z₀) / (ZL + Z₀)<br>ΓS = (ZS − Z₀) / (ZS + Z₀)</div>
+      </div>
+      <div class="formula-block">
+        <h4>Initial Incident Wave</h4>
+        <div class="formula">V⁺ = VS · Z₀ / (Z₀ + ZS)</div>
+      </div>
+      <div class="formula-block">
+        <h4>Crosstalk (NEXT / FEXT)</h4>
+        <div class="formula">NEXT ∝ (Lm/Ls + Cm/Cs) / 4<br>FEXT ∝ (Lm/Ls − Cm/Cs) · ℓ / (2·T)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SVG Tooltip -->
+<div id="svg-tooltip"></div>
+
+<!-- Notify -->
+<div class="notify" id="notify"></div>
+
+<input type="file" id="file-input" accept=".json" style="display:none" onchange="loadConfigFile(event)">
+
+<script>
+// ─── State ───────────────────────────────────────────────────────────────────
+let results = {};
+let animRunning = false, animFrame = null, animProgress = 0;
+let svgScale = 1, svgPanX = 0, svgPanY = 0;
+let isPanning = false, panStart = {x:0,y:0};
+let waveSegments = [];
+
+// ─── Presets ─────────────────────────────────────────────────────────────────
+const PRESETS = {
+  pcb:     {Ls:'3.5e-7',Lm:'1.0e-7',Cs:'1.2e-10',Cm:'3.0e-11',lineLen:'0.1', Vs:'12',tr:'1e-9', Zs:'50',Zl:'100'},
+  micro:   {Ls:'2.8e-7',Lm:'6.0e-8',Cs:'9.0e-11',Cm:'1.5e-11',lineLen:'0.08',Vs:'5', tr:'5e-10',Zs:'50',Zl:'50'},
+  diff:    {Ls:'4.0e-7',Lm:'2.0e-7',Cs:'1.4e-10',Cm:'5.0e-11',lineLen:'0.15',Vs:'2', tr:'2e-10',Zs:'100',Zl:'100'},
+  twisted: {Ls:'5.0e-7',Lm:'2.5e-7',Cs:'8.0e-11',Cm:'2.0e-11',lineLen:'0.3', Vs:'5', tr:'1e-8', Zs:'50',Zl:'120'},
+};
+function applyPreset(key){
+  const p=PRESETS[key];
+  Object.entries(p).forEach(([k,v])=>{const el=document.getElementById(k);if(el)el.value=v;});
+  compute(); notify('Preset applied: '+key.toUpperCase());
+}
+
+// ─── Get inputs ──────────────────────────────────────────────────────────────
+function getInputs(){
+  return {
+    Ls:  parseFloat(document.getElementById('Ls').value)||3.5e-7,
+    Lm:  parseFloat(document.getElementById('Lm').value)||1e-7,
+    Cs:  parseFloat(document.getElementById('Cs').value)||1.2e-10,
+    Cm:  parseFloat(document.getElementById('Cm').value)||3e-11,
+    len: parseFloat(document.getElementById('lineLen').value)||0.1,
+    Vs:  parseFloat(document.getElementById('Vs').value)||12,
+    tr:  parseFloat(document.getElementById('tr').value)||1e-9,
+    Zs:  parseFloat(document.getElementById('Zs').value)||50,
+    Zl:  parseFloat(document.getElementById('Zl').value)||100,
+    tW:  parseFloat(document.getElementById('tWindow').value)||5e-9,
+    nRef:parseInt(document.getElementById('nRef').value)||4,
+  };
+}
+
+// ─── Core calculation ─────────────────────────────────────────────────────────
+function compute(){
+  const p = getInputs();
+  const Le = p.Ls + p.Lm;
+  const Lo = p.Ls - p.Lm;
+  const Ce = p.Cs - p.Cm;
+  const Co = p.Cs + p.Cm;
+
+  if(Ce<=0||Lo<=0){notify('❌ Invalid: Lm must be < Ls and Cm must be < Cs','error');return;}
+
+  const Z0e = Math.sqrt(Le/Ce);
+  const Z0o = Math.sqrt(Lo/Co);
+  const ve  = 1/Math.sqrt(Le*Ce);
+  const vo  = 1/Math.sqrt(Lo*Co);
+  const te  = p.len/ve;
+  const to  = p.len/vo;
+  const dt  = to - te;
+
+  // Use average Z0 for reflection coefficients
+  const Z0avg = (Z0e+Z0o)/2;
+  const GammaL_e = (p.Zl-Z0e)/(p.Zl+Z0e);
+  const GammaS_e = (p.Zs-Z0e)/(p.Zs+Z0e);
+  const GammaL_o = (p.Zl-Z0o)/(p.Zl+Z0o);
+  const GammaS_o = (p.Zs-Z0o)/(p.Zs+Z0o);
+
+  // Initial incident voltages
+  const Vinc_e = p.Vs * Z0e/(Z0e+p.Zs);
+  const Vinc_o = p.Vs * Z0o/(Z0o+p.Zs);
+
+  // Crosstalk coefficients
+  const kL = p.Lm/p.Ls;
+  const kC = p.Cm/p.Cs;
+  const NEXT_coeff = (kL + kC)/4;
+  const FEXT_coeff = (kL - kC)/2;
+  const NEXT_V = p.Vs * NEXT_coeff;
+  const FEXT_V = p.Vs * FEXT_coeff;
+
+  results = {p,Le,Lo,Ce,Co,Z0e,Z0o,ve,vo,te,to,dt,
+    GammaL_e,GammaS_e,GammaL_o,GammaS_o,Vinc_e,Vinc_o,
+    NEXT_V,FEXT_V,NEXT_coeff,FEXT_coeff};
+
+  renderResults();
+  renderLattice();
+  renderWaveforms();
+}
+
+// ─── Format numbers ───────────────────────────────────────────────────────────
+function fmt(v,dec=3){
+  if(v===undefined||isNaN(v))return '—';
+  const a=Math.abs(v);
+  if(a===0)return '0';
+  if(a>=1e9)return (v/1e9).toFixed(dec)+' G';
+  if(a>=1e6)return (v/1e6).toFixed(dec)+' M';
+  if(a>=1e3)return (v/1e3).toFixed(dec)+' k';
+  if(a>=1)  return v.toFixed(dec);
+  if(a>=1e-3)return (v*1e3).toFixed(dec)+' m';
+  if(a>=1e-6)return (v*1e6).toFixed(dec)+' µ';
+  if(a>=1e-9)return (v*1e9).toFixed(dec)+' n';
+  if(a>=1e-12)return (v*1e12).toFixed(dec)+' p';
+  return v.toExponential(2);
+}
+
+// ─── Render results cards ─────────────────────────────────────────────────────
+function renderResults(){
+  const r = results;
+  const grid = document.getElementById('results-grid');
+  const cards = [
+    {label:'Even Mode Impedance Z₀e',  val:r.Z0e,   unit:'Ω',  cls:'even'},
+    {label:'Odd Mode Impedance Z₀o',   val:r.Z0o,   unit:'Ω',  cls:'odd'},
+    {label:'Even Mode Velocity vₑ',    val:r.ve,    unit:'m/s',cls:'even'},
+    {label:'Odd Mode Velocity v₀',     val:r.vo,    unit:'m/s',cls:'odd'},
+    {label:'Even Delay tₑ',            val:r.te,    unit:'s',  cls:'delay'},
+    {label:'Odd Delay t₀',             val:r.to,    unit:'s',  cls:'delay'},
+    {label:'Delay Skew Δt',            val:r.dt,    unit:'s',  cls:'delay'},
+    {label:'Γ Load (even)',            val:r.GammaL_e,unit:'', cls:'reflect'},
+    {label:'Γ Source (even)',          val:r.GammaS_e,unit:'', cls:'reflect'},
+    {label:'Γ Load (odd)',             val:r.GammaL_o,unit:'', cls:'reflect'},
+    {label:'Γ Source (odd)',           val:r.GammaS_o,unit:'', cls:'reflect'},
+    {label:'Incident V (even)',        val:r.Vinc_e, unit:'V', cls:'even'},
+    {label:'Incident V (odd)',         val:r.Vinc_o, unit:'V', cls:'odd'},
+    {label:'NEXT Voltage',             val:r.NEXT_V, unit:'V', cls:'reflect'},
+    {label:'FEXT Voltage',             val:r.FEXT_V, unit:'V', cls:'delay'},
+  ];
+  grid.innerHTML = cards.map(c=>`
+    <div class="result-card ${c.cls}">
+      <div class="result-label">${c.label}</div>
+      <div class="result-value">${fmt(c.val)} <span class="result-unit">${c.unit}</span></div>
+    </div>`).join('');
+}
+
+// ─── Lattice Diagram ──────────────────────────────────────────────────────────
+function renderLattice(){
+  const r = results;
+  const svg = document.getElementById('lattice-svg');
+  const W=900, H=500;
+  const PAD_L=80, PAD_R=80, PAD_T=50, PAD_B=40;
+  const diagramW = W-PAD_L-PAD_R;
+  const diagramH = H-PAD_T-PAD_B;
+
+  // X positions: source=left, load=right
+  const xS = PAD_L, xL = W-PAD_R;
+  const yTop = PAD_T, yBot = H-PAD_B;
+
+  // Compute reflections for even mode
+  const seg_e = computeReflections(r.Vinc_e, r.GammaL_e, r.GammaS_e, r.te, r.p.nRef, r.p.tW);
+  const seg_o = computeReflections(r.Vinc_o, r.GammaL_o, r.GammaS_o, r.to, r.p.nRef, r.p.tW);
+  waveSegments = [...seg_e.map(s=>({...s,mode:'even'})), ...seg_o.map(s=>({...s,mode:'odd'}))];
+
+  // Time scale: map [0..tW] to [yTop..yBot]
+  const tW = r.p.tW;
+  const tToY = t => yTop + (t/tW)*diagramH;
+  const xToX = x => xS + x*diagramW; // x in [0,1] (0=source,1=load)
+
+  let svgStr = '';
+  const cs = getComputedStyle(document.documentElement);
+  const clrEven   = cs.getPropertyValue('--even-color').trim()||'#0369a1';
+  const clrOdd    = cs.getPropertyValue('--odd-color').trim()||'#c2410c';
+  const clrText   = cs.getPropertyValue('--text').trim()||'#1a1714';
+  const clrText2  = cs.getPropertyValue('--text2').trim()||'#6b6560';
+  const clrBorder = cs.getPropertyValue('--border').trim()||'#e2ddd8';
+  const clrSurf2  = cs.getPropertyValue('--surface2').trim()||'#f9f8f6';
+
+  // Defs
+  svgStr += `<defs>
+    <marker id="arr-e" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="${clrEven}" opacity="0.85"/>
+    </marker>
+    <marker id="arr-o" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="${clrOdd}" opacity="0.85"/>
+    </marker>
+    <marker id="arr-e-rev" markerWidth="8" markerHeight="6" refX="1" refY="3" orient="auto">
+      <polygon points="8 0, 0 3, 8 6" fill="${clrEven}" opacity="0.85"/>
+    </marker>
+    <marker id="arr-o-rev" markerWidth="8" markerHeight="6" refX="1" refY="3" orient="auto">
+      <polygon points="8 0, 0 3, 8 6" fill="${clrOdd}" opacity="0.85"/>
+    </marker>
+  </defs>`;
+
+  // Background
+  svgStr += `<rect width="${W}" height="${H}" fill="var(--surface2)"/>`;
+
+  // Grid lines (time)
+  const nGrid = 5;
+  for(let i=0;i<=nGrid;i++){
+    const y = yTop + i*(diagramH/nGrid);
+    const t = (i/nGrid)*tW;
+    svgStr += `<line x1="${xS}" y1="${y}" x2="${xL}" y2="${y}" stroke="${clrBorder}" stroke-width="1" stroke-dasharray="4,4"/>`;
+    svgStr += `<text x="${xS-6}" y="${y+4}" text-anchor="end" font-size="10" fill="${clrText2}" font-family="DM Mono,monospace">${fmt(t,1)}s</text>`;
+  }
+
+  // Source / Load vertical lines
+  svgStr += `<line x1="${xS}" y1="${yTop-10}" x2="${xS}" y2="${yBot+10}" stroke="${clrText}" stroke-width="2.5"/>`;
+  svgStr += `<line x1="${xL}" y1="${yTop-10}" x2="${xL}" y2="${yBot+10}" stroke="${clrText}" stroke-width="2.5"/>`;
+
+  // Labels
+  svgStr += `<text x="${xS}" y="${yTop-14}" text-anchor="middle" font-size="13" font-weight="600" fill="${clrText}" font-family="DM Sans,sans-serif">Source (ZS=${r.p.Zs}Ω)</text>`;
+  svgStr += `<text x="${xL}" y="${yTop-14}" text-anchor="middle" font-size="13" font-weight="600" fill="${clrText}" font-family="DM Sans,sans-serif">Load (ZL=${r.p.Zl}Ω)</text>`;
+  svgStr += `<text x="${xS-40}" y="${yTop-2}" text-anchor="middle" font-size="11" fill="${clrText2}" font-family="DM Sans,sans-serif" transform="rotate(-90,${xS-55},${yTop+diagramH/2})">Time ↓</text>`;
+
+  // Draw wave segments
+  for(let si=0;si<waveSegments.length;si++){
+    const seg = waveSegments[si];
+    const clr = seg.mode==='even'?clrEven:clrOdd;
+    const y1 = tToY(seg.t1);
+    const y2 = tToY(seg.t2);
+    if(y1>yBot||y2<yTop)continue;
+    const x1 = seg.dir>0?xS:xL;
+    const x2 = seg.dir>0?xL:xS;
+    const arrId = seg.mode==='even'?(seg.dir>0?'arr-e':'arr-e-rev'):(seg.dir>0?'arr-o':'arr-o-rev');
+    const dashLen = seg.order===0?'none':'6,3';
+    svgStr += `<line 
+      x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"
+      stroke="${clr}" stroke-width="${seg.order===0?2.5:1.8}"
+      stroke-dasharray="${dashLen}"
+      marker-end="url(#${arrId})"
+      opacity="${Math.max(0.3,1-seg.order*0.12)}"
+      data-idx="${si}"
+      class="wave-seg"
+      style="cursor:pointer"
+    />`;
+    // Label
+    const mx=(x1+x2)/2, my=(y1+y2)/2;
+    const vStr = (seg.V>=0?'+':'')+seg.V.toFixed(3)+'V';
+    svgStr += `<text x="${mx}" y="${my-7}" text-anchor="middle" font-size="9.5"
+      fill="${clr}" font-family="DM Mono,monospace" font-weight="500"
+      opacity="${Math.max(0.4,1-seg.order*0.15)}">${vStr}</text>`;
+  }
+
+  // Voltage at source and load over time (step markers)
+  const nodeVs = computeNodeVoltages(seg_e, seg_o, 0, tW);
+  const nodeVl = computeNodeVoltages(seg_e, seg_o, 1, tW);
+  [
+    {node: nodeVs, x: xS-28, anchor:'end', label:'VS'},
+    {node: nodeVl, x: xL+6, anchor:'start', label:'VL'}
+  ].forEach(({node,x,anchor,label})=>{
+    let prevY=null;
+    node.forEach((pt,i)=>{
+      const y = tToY(pt.t);
+      if(prevY!==null){
+        svgStr+=`<line x1="${x+(anchor==='end'?0:0)}" y1="${prevY}" x2="${x}" y2="${y}" stroke="${clrText2}" stroke-width="1" stroke-dasharray="2,2" opacity="0.4"/>`;
+      }
+      svgStr+=`<circle cx="${x}" cy="${y}" r="3" fill="${clrText2}" opacity="0.5"/>`;
+      svgStr+=`<text x="${x+(anchor==='end'?-6:6)}" y="${y+4}" text-anchor="${anchor}" font-size="8.5" fill="${clrText2}" font-family="DM Mono,monospace" opacity="0.8">${pt.V.toFixed(2)}V</text>`;
+      prevY=y;
+    });
+  });
+
+  svg.innerHTML = svgStr;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+
+  // Attach hover tooltips
+  svg.querySelectorAll('.wave-seg').forEach(el=>{
+    el.addEventListener('mousemove', e=>{
+      const idx=parseInt(el.getAttribute('data-idx'));
+      const seg=waveSegments[idx];
+      if(!seg)return;
+      const tt=document.getElementById('svg-tooltip');
+      tt.innerHTML=`<b>${seg.mode} mode</b><br>V = ${seg.V.toFixed(4)}V<br>Γ = ${seg.gamma.toFixed(4)}<br>${seg.dir>0?'→ Source to Load':'← Load to Source'}<br>t₁ = ${fmt(seg.t1,2)}s<br>t₂ = ${fmt(seg.t2,2)}s`;
+      tt.classList.add('visible');
+      tt.style.left=(e.clientX+14)+'px';
+      tt.style.top=(e.clientY-20)+'px';
+    });
+    el.addEventListener('mouseleave',()=>{document.getElementById('svg-tooltip').classList.remove('visible');});
+  });
+}
+
+// Compute bounce reflections; returns array of segments
+function computeReflections(Vinc, GL, GS, delay, nRef, tWindow){
+  const segs=[];
+  let V=Vinc;
+  let t=0;
+  let dir=1; // +1: src->load, -1: load->src
+  let gamma=GL; // first reflection at load
+  segs.push({V,t1:0,t2:delay,dir:1,order:0,gamma:GS});
+  for(let i=0;i<nRef;i++){
+    t+=delay;
+    if(t>tWindow)break;
+    const Vref=V*gamma;
+    const t2=Math.min(t+delay, tWindow);
+    segs.push({V:Vref,t1:t,t2:t2,dir:-dir,order:i+1,gamma});
+    V=Vref;
+    t+=delay;
+    if(t>tWindow)break;
+    dir=-dir;
+    // alternate gamma
+    const Vref2=V*(dir>0?GS:GL);
+    const tNext=Math.min(t+delay, tWindow);
+    segs.push({V:Vref2,t1:t,t2:tNext,dir:-dir,order:i+2,gamma:dir>0?GS:GL});
+    V=Vref2;
+    gamma = (dir>0?GL:GS);
+  }
+  return segs;
+}
+
+// Compute accumulated node voltages
+function computeNodeVoltages(seg_e, seg_o, x, tWindow){
+  // Collect time events
+  const events=[];
+  [...seg_e,...seg_o].forEach(seg=>{
+    const at = x===0 ? (seg.dir>0?seg.t1:seg.t2) : (seg.dir>0?seg.t2:seg.t1);
+    if(at<=tWindow) events.push({t:at, V:seg.V*(x===0?1:1)});
+  });
+  events.sort((a,b)=>a.t-b.t);
+  let vAcc=0;
+  const pts=[{t:0,V:0}];
+  events.forEach(ev=>{vAcc+=ev.V; pts.push({t:ev.t,V:vAcc});});
+  return pts;
+}
+
+// ─── Waveform Plots ───────────────────────────────────────────────────────────
+function renderWaveforms(){
+  const r=results;
+  const tW=r.p.tW;
+  const N=400;
+  const dt=tW/N;
+
+  // Aggressor: step waveform with reflections at load
+  const aggData=[];
+  for(let i=0;i<=N;i++){
+    const t=i*dt;
+    let v=0;
+    waveSegments.filter(s=>s.mode==='even'||s.mode==='odd').forEach(s=>{
+      // simplified: add contribution when wave reaches load
+      if(t>=s.t2) v+=s.V;
+    });
+    aggData.push({t,v});
+  }
+
+  // Even mode
+  const evenData=[], oddData=[];
+  const seg_e=computeReflections(r.Vinc_e,r.GammaL_e,r.GammaS_e,r.te,r.p.nRef,tW);
+  const seg_o=computeReflections(r.Vinc_o,r.GammaL_o,r.GammaS_o,r.to,r.p.nRef,tW);
+  for(let i=0;i<=N;i++){
+    const t=i*dt;
+    let ve=0,vo=0;
+    seg_e.forEach(s=>{if(t>=s.t2)ve+=s.V;});
+    seg_o.forEach(s=>{if(t>=s.t2)vo+=s.V;});
+    evenData.push({t,v:ve});
+    oddData.push({t,v:vo});
+  }
+
+  // NEXT: near-end crosstalk ~~ pulse arriving at t=0, duration = 2*delay
+  const nextData=[], fextData=[];
+  for(let i=0;i<=N;i++){
+    const t=i*dt;
+    const pulse = (t>=0 && t<2*r.te) ? r.NEXT_V*(1-t/(2*r.te)) : 0;
+    const fpulse= (t>=r.te && t<r.te+r.p.tr) ? r.FEXT_V : 0;
+    nextData.push({t,v:pulse});
+    fextData.push({t,v:fpulse});
+  }
+
+  drawWaveform('wf-agg', aggData, tW, 'var(--incident-color)', 'Aggressor V at Load');
+  drawWaveform('wf-even', evenData, tW, 'var(--even-color)', 'Even Mode');
+  drawWaveform('wf-odd', oddData, tW, 'var(--odd-color)', 'Odd Mode');
+  drawWaveform('wf-next', nextData, tW, 'var(--reflect-color)', 'NEXT');
+  drawWaveform('wf-fext', fextData, tW, 'var(--accent3)', 'FEXT');
+}
+
+function drawWaveform(svgId, data, tW, color, label){
+  const svg=document.getElementById(svgId);
+  if(!svg)return;
+  const W=860,H=180,PL=50,PR=20,PT=20,PB=30;
+  const dW=W-PL-PR, dH=H-PT-PB;
+  let vMin=Infinity,vMax=-Infinity;
+  data.forEach(d=>{if(d.v<vMin)vMin=d.v;if(d.v>vMax)vMax=d.v;});
+  const vRange=vMax-vMin||1;
+  const vPad=vRange*0.1;
+  const vLo=vMin-vPad,vHi=vMax+vPad;
+  const xScale=t=>(t/tW)*dW+PL;
+  const yScale=v=>PT+dH-(((v-vLo)/(vHi-vLo))*dH);
+  const cs=getComputedStyle(document.documentElement);
+  const clrBorder=cs.getPropertyValue('--border').trim()||'#e2ddd8';
+  const clrText2=cs.getPropertyValue('--text2').trim()||'#888';
+
+  let path='';
+  data.forEach((d,i)=>{path+=(i===0?'M':'L')+xScale(d.t).toFixed(1)+','+yScale(d.v).toFixed(1);});
+
+  // Axes
+  const y0=yScale(0);
+  let html=`<rect x="${PL}" y="${PT}" width="${dW}" height="${dH}" fill="none" stroke="${clrBorder}" stroke-width="1"/>`;
+  html+=`<line x1="${PL}" y1="${y0}" x2="${PL+dW}" y2="${y0}" stroke="${clrBorder}" stroke-width="1" stroke-dasharray="4,4"/>`;
+  // Grid lines
+  for(let gi=0;gi<=4;gi++){
+    const ty=PT+gi*(dH/4);
+    const tv=vHi-(gi/4)*(vHi-vLo);
+    html+=`<line x1="${PL}" y1="${ty}" x2="${PL+dW}" y2="${ty}" stroke="${clrBorder}" stroke-width="0.7" stroke-dasharray="3,4" opacity="0.5"/>`;
+    html+=`<text x="${PL-4}" y="${ty+4}" text-anchor="end" font-size="9" fill="${clrText2}" font-family="DM Mono,monospace">${tv.toFixed(2)}</text>`;
+  }
+  // X axis labels
+  for(let gi=0;gi<=4;gi++){
+    const tx=PL+gi*(dW/4);
+    const tt=gi*(tW/4);
+    html+=`<text x="${tx}" y="${H-6}" text-anchor="middle" font-size="9" fill="${clrText2}" font-family="DM Mono,monospace">${fmt(tt,1)}s</text>`;
+  }
+  html+=`<text x="${PL+dW/2}" y="${H}" text-anchor="middle" font-size="10" fill="${clrText2}" font-family="DM Sans,sans-serif">Time</text>`;
+  // Waveform path
+  html+=`<path d="${path}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round"/>`;
+  // Area fill
+  const yBase=yScale(0);
+  html+=`<path d="${path} L${xScale(tW)},${yBase} L${PL},${yBase} Z" fill="${color}" opacity="0.08"/>`;
+  svg.innerHTML=html;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+}
+
+// ─── Animation ───────────────────────────────────────────────────────────────
+let animSegs = [];
+function toggleAnim(){
+  animRunning=!animRunning;
+  document.getElementById('playBtn').textContent=animRunning?'⏸ Pause':'▶ Play';
+  if(animRunning) runAnim();
+  else cancelAnimationFrame(animFrame);
+}
+function resetAnim(){
+  animRunning=false;
+  cancelAnimationFrame(animFrame);
+  document.getElementById('playBtn').textContent='▶ Play';
+  animProgress=0;
+  renderLattice();
+}
+function runAnim(){
+  // Animate by progressively drawing segments
+  const speed=parseFloat(document.getElementById('animSpeed').value)||1;
+  const r=results;
+  if(!r.tW)return;
+  animProgress+=0.008*speed;
+  if(animProgress>=1){animProgress=1;animRunning=false;document.getElementById('playBtn').textContent='▶ Play';}
+  // Temporarily limit tW
+  const fakeTW = animProgress * r.p.tW;
+  // Re-render with limited time
+  renderLatticeWithTW(fakeTW);
+  if(animRunning) animFrame=requestAnimationFrame(runAnim);
+}
+function renderLatticeWithTW(tW){
+  const r=results;
+  const origTW=r.p.tW;
+  r.p.tW=tW;
+  renderLattice();
+  r.p.tW=origTW;
+}
+
+// ─── Zoom / Pan ───────────────────────────────────────────────────────────────
+function applyTransform(){
+  const wrap=document.getElementById('lattice-svg');
+  wrap.style.transform=`scale(${svgScale}) translate(${svgPanX}px,${svgPanY}px)`;
+}
+function zoomIn(){svgScale=Math.min(svgScale*1.3,5);applyTransform();}
+function zoomOut(){svgScale=Math.max(svgScale/1.3,0.3);applyTransform();}
+function resetZoom(){svgScale=1;svgPanX=0;svgPanY=0;applyTransform();}
+
+(function setupPan(){
+  const wrap=document.getElementById('lattice-svg-wrap');
+  wrap.addEventListener('mousedown',e=>{isPanning=true;panStart={x:e.clientX-svgPanX,y:e.clientY-svgPanY};wrap.style.cursor='grabbing';});
+  window.addEventListener('mousemove',e=>{if(!isPanning)return;svgPanX=e.clientX-panStart.x;svgPanY=e.clientY-panStart.y;applyTransform();});
+  window.addEventListener('mouseup',()=>{isPanning=false;document.getElementById('lattice-svg-wrap').style.cursor='grab';});
+  wrap.addEventListener('wheel',e=>{e.preventDefault();svgScale*=e.deltaY<0?1.1:0.9;svgScale=Math.max(0.3,Math.min(5,svgScale));applyTransform();},{passive:false});
+})();
+
+// ─── UI helpers ───────────────────────────────────────────────────────────────
+function toggleCard(header){
+  header.parentElement.classList.toggle('collapsed');
+}
+function showTab(id,btn){
+  document.querySelectorAll('[id^="tab-"]').forEach(el=>el.style.display='none');
+  document.getElementById(id).style.display='block';
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+}
+function toggleTheme(){
+  const html=document.documentElement;
+  const isDark=html.getAttribute('data-theme')==='dark';
+  html.setAttribute('data-theme',isDark?'light':'dark');
+  document.querySelector('.theme-toggle').textContent=isDark?'☀️':'🌙';
+  setTimeout(()=>renderLattice(),100);
+}
+function notify(msg,type='ok'){
+  const el=document.getElementById('notify');
+  el.textContent=msg;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2500);
+}
+
+// ─── Formula Modal ────────────────────────────────────────────────────────────
+function openFormulas(){document.getElementById('formula-modal').classList.add('open');}
+function closeFormulas(){document.getElementById('formula-modal').classList.remove('open');}
+
+// ─── Save / Load ──────────────────────────────────────────────────────────────
+function saveConfig(){
+  const p=getInputs();
+  const json=JSON.stringify({version:'1.0',params:p},null,2);
+  const blob=new Blob([json],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='coupled_tl_config.json';a.click();
+  notify('Configuration saved!');
+}
+function loadConfig(){document.getElementById('file-input').click();}
+function loadConfigFile(e){
+  const file=e.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const data=JSON.parse(ev.target.result);
+      const p=data.params;
+      Object.entries(p).forEach(([k,v])=>{const el=document.getElementById(k);if(el)el.value=v;});
+      if(p.nRef)document.getElementById('nRef').value=p.nRef;
+      compute();
+      notify('Configuration loaded!');
+    }catch{notify('Error loading config');}
+  };
+  reader.readAsText(file);
+}
+
+// ─── Export ───────────────────────────────────────────────────────────────────
+function exportSVG(){
+  const svg=document.getElementById('lattice-svg');
+  const svgStr=new XMLSerializer().serializeToString(svg);
+  const blob=new Blob([svgStr],{type:'image/svg+xml'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='lattice_diagram.svg';a.click();
+  notify('SVG exported!');
+}
+function exportPNG(){
+  const svg=document.getElementById('lattice-svg');
+  const canvas=document.createElement('canvas');
+  const W=1800,H=1000;canvas.width=W;canvas.height=H;
+  const ctx=canvas.getContext('2d');
+  const svgStr=new XMLSerializer().serializeToString(svg);
+  const img=new Image();
+  img.onload=()=>{ctx.drawImage(img,0,0,W,H);canvas.toBlob(b=>{const url=URL.createObjectURL(b);const a=document.createElement('a');a.href=url;a.download='lattice_diagram.png';a.click();notify('PNG exported!');});};
+  img.src='data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(svgStr)));
+}
+function exportJSON(){
+  const r=results;
+  const data={
+    inputs:r.p,
+    results:{
+      Le:r.Le,Lo:r.Lo,Ce:r.Ce,Co:r.Co,
+      Z0e:r.Z0e,Z0o:r.Z0o,ve:r.ve,vo:r.vo,
+      te:r.te,to:r.to,delaySkew:r.dt,
+      GammaL_e:r.GammaL_e,GammaS_e:r.GammaS_e,
+      GammaL_o:r.GammaL_o,GammaS_o:r.GammaS_o,
+      Vinc_e:r.Vinc_e,Vinc_o:r.Vinc_o,
+      NEXT_V:r.NEXT_V,FEXT_V:r.FEXT_V
+    },
+    waveSegments:waveSegments
+  };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='coupled_tl_results.json';a.click();
+  notify('JSON results exported!');
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+compute();
+</script>
+</body>
+</html>
