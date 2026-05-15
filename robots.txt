@@ -1,24 +1,49 @@
-# robots.txt — SpDly Studios Portfolio
+# robots.txt — Shivaprasad V Portfolio
 # https://spdly.is-a.dev/robots.txt
+# Last Updated: 2026-05-15
 
 User-agent: *
 Allow: /
 Disallow: /admin/
 Disallow: /e/
-Disallow: /tools/internal/
+Disallow: /zohoverify/
 Crawl-delay: 1
 
 User-agent: Googlebot
 Allow: /
+Disallow: /admin/
+Disallow: /e/
+Disallow: /zohoverify/
 Crawl-delay: 0.5
 
 User-agent: Bingbot
 Allow: /
+Disallow: /admin/
+Disallow: /e/
+Disallow: /zohoverify/
 Crawl-delay: 1
 
 User-agent: AhrefsBot
 Allow: /
+Disallow: /admin/
+Disallow: /e/
+Disallow: /zohoverify/
 Crawl-delay: 2
 
-Host: https://spdly.is-a.dev
+User-agent: SemrushBot
+Allow: /
+Disallow: /admin/
+Disallow: /e/
+Disallow: /zohoverify/
+Crawl-delay: 2
+
+# Allow indexing of static assets
+Allow: /assets/
+Allow: /css/
+Allow: /js/
+
+# Sitemap reference
 Sitemap: https://spdly.is-a.dev/sitemap.xml
+
+# Domain
+Host: https://spdly.is-a.dev

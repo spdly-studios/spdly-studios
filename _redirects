@@ -1,2 +1,39 @@
-/home /index.html 301
-/work/* /work.html:splat 200
+# ==========================================
+# 1. STATIC REDIRECTS & EXPLICIT PATHS
+# ==========================================
+
+# Redirect /home to root
+/home / 301
+
+# Explicit error page routes (if someone visits them directly)
+/e/400.html /e/400.html 200
+/e/401.html /e/401.html 200
+/e/403.html /e/403.html 200
+/e/404.html /e/404.html 200
+/e/500.html /e/500.html 200
+/e/503.html /e/503.html 200
+
+
+# ==========================================
+# 2. DYNAMIC / WILDCARD RULES
+# ==========================================
+
+# Tools routes
+/tools/* /tools/index.html 200
+
+# Work/project routes
+/work/* /work.html 200
+
+
+# ==========================================
+# 3. CATCH-ALL / ERROR HANDLING
+# ==========================================
+
+# Option A: For Single Page Apps (SPA)
+# If your app handles routing on the client side, keep this:
+/* /index.html 200
+
+# Option B: For Static Sites (True 404 Routing)
+# If you want any broken link to point directly to your /e/ folder, 
+# COMMENT OUT Option A and UNCOMMENT the line below:
+# /* /e/404.html 200
