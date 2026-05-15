@@ -1416,10 +1416,138 @@ async function saveEducation() { await fsSet('education', { items: appData.educa
 /* ════════════════════════════════════════════════
    TOOLS & UTILITIES
    ════════════════════════════════════════════════ */
-function renderTools() {
+
+// ── Dynamic /tools directory scanner ──────────────────────────
+// Cached result so we only scan once per session
+let _discoveredToolFiles = null;
+
+/**
+ * Fetches a directory URL, parses all <a href> links, and returns
+ * { htmlFiles: string[], subDirs: string[] } relative to site root.
+ */
+async function _fetchDirEntries(dirUrl) {
+  try {
+    const res = await fetch(dirUrl, { cache: 'no-store' });
+    if (!res.ok) return { htmlFiles: [], subDirs: [] };
+    const text = await res.text();
+    const doc  = new DOMParser().parseFromString(text, 'text/html');
+    const base = new URL(dirUrl);          // e.g. https://host/tools/
+    const htmlFiles = [];
+    const subDirs   = [];
+    [...doc.querySelectorAll('a[href]')].forEach(a => {
+      let href = a.getAttribute('href');
+      if (!href) return;
+      // Decode percent-encoded chars (%5C → \) then normalize backslashes to /
+      try { href = decodeURIComponent(href); } catch {}
+      href = href.replace(/\\/g, '/');
+      // Skip external, parent, or query-only links
+      if (href.startsWith('http') || href.startsWith('?') || href.includes('..')) return;
+      // Resolve to an absolute pathname so any format works
+      let resolved;
+      try { resolved = new URL(href, base).pathname; } catch { return; }
+      // Must be a direct child of this directory
+      if (!resolved.startsWith(base.pathname)) return;
+      const name = resolved.slice(base.pathname.length); // e.g. "foo.html" or "hsi/"
+      if (!name || name.includes('/')) return;           // skip deeper nesting or empty
+      if (name.endsWith('.html'))     htmlFiles.push(name);
+      else if (!name.includes('.'))  subDirs.push(name + '/'); // bare dir name
+    });
+    return { htmlFiles, subDirs };
+  } catch { return { htmlFiles: [], subDirs: [] }; }
+}
+
+/**
+ * Recursively scans /tools/ and returns an array of
+ * { file: 'tools/foo.html', label: 'Foo' } objects.
+ */
+async function discoverToolFiles() {
+  if (_discoveredToolFiles) return _discoveredToolFiles;
+
+  const baseUrl  = window.location.origin;
+  const toolsDir = baseUrl + '/tools/';
+  const results  = [];
+
+  async function scanDir(dirUrl, relPrefix) {
+    const { htmlFiles, subDirs } = await _fetchDirEntries(dirUrl);
+    for (const f of htmlFiles) {
+      const relPath = relPrefix + f;
+      const label   = fileNameToLabel(f.replace(/\.html$/i, ''));
+      results.push({ file: relPath, label });
+    }
+    for (const d of subDirs) {
+      await scanDir(dirUrl + d, relPrefix + d);
+    }
+  }
+
+  await scanDir(toolsDir, 'tools/');
+  _discoveredToolFiles = results;
+  return results;
+}
+
+/** Convert a kebab/snake filename to a human-readable label */
+function fileNameToLabel(name) {
+  return name
+    .replace(/[-_]+/g, ' ')
+    .replace(/\b\w/g, c => c.toUpperCase())
+    .replace(/\bIeee\b/, 'IEEE')
+    .replace(/\bHsi\b/,  'HSI')
+    .replace(/\bFp\b/,   'FP')
+    .replace(/\bTl\b/,   'TL');
+}
+
+/** Normalize any tool URL to a comparable form: tools/foo.html */
+function normalizeToolUrl(url) {
+  if (!url) return '';
+  let u = url.trim();
+  // Strip full domain if present (https://spdly.is-a.dev/tools/... → /tools/...)
+  try { u = new URL(u).pathname; } catch {}
+  // Normalize slashes & strip leading/trailing
+  u = u.replace(/\\/g, '/').replace(/^\/+/, '').replace(/\/+$/, '');
+  // Treat underscores and hyphens as equivalent (coupled_tl_solver ↔ coupled-tl-solver)
+  u = u.replace(/[_-]+/g, '-');
+  // Strip .html extension (Firestore URLs omit it)
+  u = u.replace(/\.html$/i, '');
+  return u.toLowerCase();
+}
+
+/** Returns tool files not yet registered in Firestore */
+async function getUnregisteredTools() {
+  const known = await discoverToolFiles();
+  const registeredUrls = new Set(appData.tools.map(t => normalizeToolUrl(t.url)));
+  return known.filter(f => !registeredUrls.has(normalizeToolUrl(f.file)));
+}
+
+async function renderTools() {
   const list = document.getElementById('tools-list');
+  list.innerHTML = '<div style="color:var(--muted);font-size:.85rem">Scanning /tools…</div>';
+
+  // Dynamically discover tool files and diff against Firestore
+  const unregistered = await getUnregisteredTools();
+
   list.innerHTML = '';
-  if (!appData.tools.length) { list.innerHTML = '<p style="color:var(--muted)">No tools yet.</p>'; return; }
+
+  if (unregistered.length) {
+    const banner = document.createElement('div');
+    banner.style.cssText = 'background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.25);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1rem;';
+    banner.innerHTML = `
+      <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem">
+        <span style="font-size:1rem">⚠️</span>
+        <span style="font-weight:600;font-size:.9rem;color:var(--yellow)">${unregistered.length} tool file${unregistered.length>1?'s':''} found in /tools not yet added to Firestore</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:.4rem">
+        ${unregistered.map(f => `<button class="btn btn-ghost btn-sm" onclick="quickAddTool('${esc(f.file)}','${esc(f.label)}')" style="border-color:var(--yellow);color:var(--yellow)">+ ${esc(f.label)}</button>`).join('')}
+      </div>`;
+    list.appendChild(banner);
+  }
+
+  if (!appData.tools.length) {
+    const p = document.createElement('p');
+    p.style.cssText = 'color:var(--muted)';
+    p.textContent = 'No tools yet.';
+    list.appendChild(p);
+    return;
+  }
+
   appData.tools.forEach((t, i) => {
     const div = document.createElement('div');
     div.className = 'list-item';
@@ -1430,6 +1558,7 @@ function renderTools() {
         <div class="list-item-tags">
           ${t.icon ? '<span class="tag-sm">' + t.icon + '</span>' : ''}
           ${(t.tags||[]).slice(0,2).map(tag=>`<span class="tag-sm">${tag}</span>`).join('')}
+          <span class="tag-sm" style="color:var(--muted);border-color:transparent">${t.url || ''}</span>
         </div>
       </div>
       <div class="list-item-actions">
@@ -1440,36 +1569,94 @@ function renderTools() {
   });
 }
 
+// Quick-add a tool from the unregistered banner
+function quickAddTool(filePath, label) {
+  const slug = filePathToSlug(filePath);
+  const prefilled = {
+    id: slug,
+    title: label,
+    description: '',
+    icon: '⚙️',
+    domain: '',
+    field: '',
+    url: filePath,
+    isExternal: false,
+    tags: []
+  };
+  openToolModal(-1, prefilled);
+}
+
+// Convert a file path like tools/my-tool.html → my-tool
+function filePathToSlug(filePath) {
+  return filePath
+    .replace(/^tools\//i, '')
+    .replace(/\//, '-')
+    .replace(/\.html$/i, '');
+}
+
+// Generate slug from title string
+function titleToSlug(title) {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
 function openAddTool() { openToolModal(-1); }
 function editTool(i)   { openToolModal(i); }
 
-function openToolModal(idx) {
+async function openToolModal(idx, prefilled) {
   const isNew = idx === -1;
-  const t = isNew ? {
-    id:'', title:'', description:'', icon:'⚙️', domain:'', field:'',
-    url:'', isExternal:false, tags:[]
-  } : JSON.parse(JSON.stringify(appData.tools[idx]));
+  const t = prefilled ? prefilled
+    : isNew ? { id:'', title:'', description:'', icon:'⚙️', domain:'', field:'', url:'', isExternal:false, tags:[] }
+    : JSON.parse(JSON.stringify(appData.tools[idx]));
+
+  const unregistered = await getUnregisteredTools();
+  const suggestionOptions = unregistered.map(f =>
+    `<option value="${esc(f.file)}" data-label="${esc(f.label)}">${esc(f.label)} — ${esc(f.file)}</option>`
+  ).join('');
+  const suggestionBlock = unregistered.length ? `
+    <div class="field" style="background:rgba(124,109,255,.06);border:1px solid rgba(124,109,255,.2);border-radius:8px;padding:.75rem 1rem;margin-bottom:1rem">
+      <label style="color:var(--accent2)">⚡ Unregistered Tool Suggestions</label>
+      <select id="tf-suggestion" onchange="applyToolSuggestion()" style="margin-top:.35rem">
+        <option value="">— Select a file from /tools to pre-fill —</option>
+        ${suggestionOptions}
+      </select>
+    </div>` : '';
 
   document.getElementById('modal-title').textContent = isNew ? 'Add Tool' : 'Edit Tool';
   document.getElementById('modal-body').innerHTML = `
-    <div class="field"><label>Tool ID (slug, no spaces)</label><input id="tf-id" value="${esc(t.id)}" placeholder="my-tool" /></div>
-    <div class="field"><label>Title</label><input id="tf-title" value="${esc(t.title)}" /></div>
+    ${suggestionBlock}
+    <div class="fields-row">
+      <div class="field">
+        <label>Title</label>
+        <input id="tf-title" value="${esc(t.title)}" placeholder="My Awesome Tool" oninput="onToolTitleInput(this.value)" />
+      </div>
+      <div class="field">
+        <label>Tool ID / Slug <span style="color:var(--muted);font-size:.72rem">(auto-generated)</span></label>
+        <input id="tf-id" value="${esc(t.id)}" placeholder="my-awesome-tool" oninput="onToolSlugInput(this.value)" style="font-family:var(--mono);font-size:.85rem" />
+      </div>
+    </div>
     <div class="field"><label>Description</label><textarea id="tf-desc">${esc(t.description)}</textarea></div>
     <div class="fields-row">
-      <div class="field"><label>Icon (emoji or text)</label><input id="tf-icon" value="${esc(t.icon)}" placeholder="⚙️" /></div>
+      <div class="field"><label>Icon (emoji)</label><input id="tf-icon" value="${esc(t.icon)}" placeholder="⚙️" /></div>
       <div class="field"><label>Domain</label><input id="tf-domain" value="${esc(t.domain)}" placeholder="Signal Processing" /></div>
     </div>
     <div class="fields-row">
-      <div class="field"><label>Field/Category</label><input id="tf-field" value="${esc(t.field)}" placeholder="DSP" /></div>
-      <div class="field"><label>URL</label><input id="tf-url" value="${esc(t.url)}" placeholder="https://… or /tools/my-tool.html" /></div>
+      <div class="field"><label>Field / Category</label><input id="tf-field" value="${esc(t.field)}" placeholder="DSP" /></div>
+      <div class="field">
+        <label>URL <span style="color:var(--muted);font-size:.72rem">(auto-generated from slug)</span></label>
+        <input id="tf-url" value="${esc(t.url)}" placeholder="tools/my-tool.html" />
+      </div>
     </div>
     <div class="field">
       <label>External Link?</label>
       <input type="checkbox" id="tf-external" ${t.isExternal?'checked':''} style="margin-top:.35rem" />
       <span style="font-size:.75rem;color:var(--muted);margin-left:.5rem">Check if link goes outside your site</span>
     </div>
-    <div class="field"><label>Tags (comma-separated)</label><div id="tf-tags" class="tag-input-wrap"></div></div>`;
-  
+    <div class="field"><label>Tags</label><div id="tf-tags" class="tag-input-wrap"></div></div>`;
+
   initTagInput('tf-tags', t.tags || []);
   document.getElementById('modal-save-btn').textContent = isNew ? 'Add Tool' : 'Save Changes';
 
@@ -1482,6 +1669,40 @@ function openToolModal(idx) {
     return true;
   };
   openModal();
+}
+
+// Called when user picks a suggestion from dropdown
+function applyToolSuggestion() {
+  const sel = document.getElementById('tf-suggestion');
+  const filePath = sel.value;
+  if (!filePath) return;
+  const opt = sel.options[sel.selectedIndex];
+  const label = opt.dataset.label || '';
+  const slug = filePathToSlug(filePath);
+  document.getElementById('tf-title').value = label;
+  document.getElementById('tf-id').value    = slug;
+  document.getElementById('tf-url').value   = filePath;
+}
+
+// Auto-generate slug and URL from title
+function onToolTitleInput(title) {
+  const slugEl = document.getElementById('tf-id');
+  const urlEl  = document.getElementById('tf-url');
+  // Only auto-update if slug/url look auto-generated (i.e. they match a previous auto-gen or are empty)
+  const slug = titleToSlug(title);
+  slugEl.value = slug;
+  // Only set URL if it's empty or was a generated one
+  if (!urlEl.value || urlEl.dataset.autogenerated === 'true') {
+    urlEl.value = slug ? `tools/${slug}.html` : '';
+    urlEl.dataset.autogenerated = 'true';
+  }
+}
+
+// When user manually edits the slug field, update URL too
+function onToolSlugInput(slug) {
+  const urlEl = document.getElementById('tf-url');
+  urlEl.value = slug ? `tools/${slug}.html` : '';
+  urlEl.dataset.autogenerated = 'true';
 }
 
 function readToolForm() {
@@ -1515,8 +1736,8 @@ function getStaticTools() {
   return [
     {
       id: 'robertson-multiplier',
-      title: 'Robertson\'s Multiplier',
-      description: 'Calculate multiplier values for Robertson\'s method in signal processing',
+      title: "Robertson's Multiplier",
+      description: "Calculate multiplier values for Robertson's method in signal processing",
       icon: '🧮',
       domain: 'Signal Processing',
       field: 'DSP',
