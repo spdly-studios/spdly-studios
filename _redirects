@@ -31,9 +31,9 @@
 
 # Option A: For Single Page Apps (SPA)
 # If your app handles routing on the client side, keep this:
-/* /index.html 200
+#/* /index.html 200
 
 # Option B: For Static Sites (True 404 Routing)
 # If you want any broken link to point directly to your /e/ folder, 
 # COMMENT OUT Option A and UNCOMMENT the line below:
-# /* /e/404.html 200
+/* /e/404.html 200
