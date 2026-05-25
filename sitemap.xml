@@ -7,7 +7,7 @@
   <!-- Homepage -->
   <url>
     <loc>https://spdly.is-a.dev/</loc>
-    <lastmod>2026-05-15</lastmod>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
 
@@ -15,7 +15,7 @@
       <image:loc>https://spdly.is-a.dev/assets/og-image.png</image:loc>
       <image:title>Shivaprasad V — Embedded Systems Engineer Portfolio</image:title>
       <image:caption>
-        System Design Engineer specializing in Embedded Systems, Signal Processing &amp; CubeSat ADCS
+        Embedded Systems, DSP, RF, FPGA, IoT and Communication Systems Portfolio
       </image:caption>
     </image:image>
 
@@ -24,10 +24,10 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://spdly.is-a.dev/" />
   </url>
 
-  <!-- Projects Listing -->
+  <!-- Projects -->
   <url>
-    <loc>https://spdly.is-a.dev/projects.html</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://spdly.is-a.dev/projects</loc>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
 
@@ -35,18 +35,19 @@
       <image:loc>https://spdly.is-a.dev/assets/og-image.png</image:loc>
       <image:title>Engineering Projects — Shivaprasad V</image:title>
       <image:caption>
-        Complete portfolio of engineering projects including CubeSat ADCS, signal processing, and embedded systems
+        DSP, FPGA, Embedded Systems, RF and Communication Engineering Projects
       </image:caption>
     </image:image>
 
-    <xhtml:link rel="alternate" hreflang="en-in" href="https://spdly.is-a.dev/projects.html" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://spdly.is-a.dev/projects.html" />
+    <xhtml:link rel="alternate" hreflang="en-in" href="https://spdly.is-a.dev/projects" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://spdly.is-a.dev/projects" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://spdly.is-a.dev/projects" />
   </url>
 
-  <!-- Work Page -->
+  <!-- Work -->
   <url>
-    <loc>https://spdly.is-a.dev/work.html</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://spdly.is-a.dev/work</loc>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
 
@@ -55,185 +56,157 @@
       <image:title>Project Details — Shivaprasad V</image:title>
     </image:image>
 
-    <xhtml:link rel="alternate" hreflang="en-in" href="https://spdly.is-a.dev/work.html" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://spdly.is-a.dev/work.html" />
+    <xhtml:link rel="alternate" hreflang="en-in" href="https://spdly.is-a.dev/work" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://spdly.is-a.dev/work" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://spdly.is-a.dev/work" />
   </url>
 
   <!-- Individual Projects -->
   <url>
     <loc>https://spdly.is-a.dev/work?id=fir-filter</loc>
-    <lastmod>2026-05-15</lastmod>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-
-    <xhtml:link rel="alternate" hreflang="en-in"
-      href="https://spdly.is-a.dev/work?id=fir-filter" />
-    <xhtml:link rel="alternate" hreflang="en"
-      href="https://spdly.is-a.dev/work?id=fir-filter" />
+    <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://spdly.is-a.dev/work?id=stellar-crest</loc>
-    <lastmod>2026-05-15</lastmod>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-
-    <xhtml:link rel="alternate" hreflang="en-in"
-      href="https://spdly.is-a.dev/work?id=stellar-crest" />
-    <xhtml:link rel="alternate" hreflang="en"
-      href="https://spdly.is-a.dev/work?id=stellar-crest" />
+    <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://spdly.is-a.dev/work?id=optical-am</loc>
-    <lastmod>2026-05-15</lastmod>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-
-    <xhtml:link rel="alternate" hreflang="en-in"
-      href="https://spdly.is-a.dev/work?id=optical-am" />
-    <xhtml:link rel="alternate" hreflang="en"
-      href="https://spdly.is-a.dev/work?id=optical-am" />
+    <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://spdly.is-a.dev/work?id=slope-sign-mod</loc>
-    <lastmod>2026-05-15</lastmod>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-
-    <xhtml:link rel="alternate" hreflang="en-in"
-      href="https://spdly.is-a.dev/work?id=slope-sign-mod" />
-    <xhtml:link rel="alternate" hreflang="en"
-      href="https://spdly.is-a.dev/work?id=slope-sign-mod" />
+    <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://spdly.is-a.dev/work?id=rtos-multicore</loc>
-    <lastmod>2026-05-15</lastmod>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-
-    <xhtml:link rel="alternate" hreflang="en-in"
-      href="https://spdly.is-a.dev/work?id=rtos-multicore" />
-    <xhtml:link rel="alternate" hreflang="en"
-      href="https://spdly.is-a.dev/work?id=rtos-multicore" />
+    <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://spdly.is-a.dev/work?id=shoreline-analysis</loc>
-    <lastmod>2026-05-15</lastmod>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-
-    <xhtml:link rel="alternate" hreflang="en-in"
-      href="https://spdly.is-a.dev/work?id=shoreline-analysis" />
-    <xhtml:link rel="alternate" hreflang="en"
-      href="https://spdly.is-a.dev/work?id=shoreline-analysis" />
+    <priority>0.8</priority>
   </url>
 
   <!-- Tools -->
   <url>
-    <loc>https://spdly.is-a.dev/tools.html</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://spdly.is-a.dev/tools</loc>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
 
     <image:image>
       <image:loc>https://spdly.is-a.dev/assets/og-image.png</image:loc>
       <image:title>Engineering Tools &amp; Utilities — Shivaprasad V</image:title>
       <image:caption>
-        Interactive tools for embedded systems, signal processing, and RF calculations
+        Interactive engineering calculators and RF/DSP utility tools
       </image:caption>
     </image:image>
 
-    <xhtml:link rel="alternate" hreflang="en-in" href="https://spdly.is-a.dev/tools.html" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://spdly.is-a.dev/tools.html" />
+    <xhtml:link rel="alternate" hreflang="en-in" href="https://spdly.is-a.dev/tools" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://spdly.is-a.dev/tools" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://spdly.is-a.dev/tools" />
   </url>
 
   <!-- Tool Pages -->
   <url>
-    <loc>https://spdly.is-a.dev/tools/coupled_tl_solver.html</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://spdly.is-a.dev/tools/coupled_tl_solver</loc>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://spdly.is-a.dev/tools/double-stub-matcher.html</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://spdly.is-a.dev/tools/double-stub-matcher</loc>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://spdly.is-a.dev/tools/fp-solver.html</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://spdly.is-a.dev/tools/fp-solver</loc>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://spdly.is-a.dev/tools/ieee754.html</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://spdly.is-a.dev/tools/ieee754</loc>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://spdly.is-a.dev/tools/number-system-converter.html</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://spdly.is-a.dev/tools/number-system-converter</loc>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://spdly.is-a.dev/tools/pipeline-hazard-analysis.html</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://spdly.is-a.dev/tools/pipeline-hazard-analysis</loc>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://spdly.is-a.dev/tools/robertsons-multiplier.html</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://spdly.is-a.dev/tools/robertsons-multiplier</loc>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://spdly.is-a.dev/tools/single-stub-matcher.html</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://spdly.is-a.dev/tools/single-stub-matcher</loc>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://spdly.is-a.dev/tools/smith-chart-solver.html</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://spdly.is-a.dev/tools/smith-chart-solver</loc>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://spdly.is-a.dev/tools/waveguide-toolbox.html</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://spdly.is-a.dev/tools/waveguide-toolbox</loc>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://spdly.is-a.dev/tools/hsi/inference.html</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://spdly.is-a.dev/tools/hsi/inference</loc>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://spdly.is-a.dev/tools/hsi/trainer.html</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://spdly.is-a.dev/tools/hsi/trainer</loc>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.7</priority>
   </url>
 
 </urlset>
