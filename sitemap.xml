@@ -15,7 +15,7 @@
       <image:loc>https://spdly.is-a.dev/assets/og-image.png</image:loc>
       <image:title>Shivaprasad V — Embedded Systems Engineer Portfolio</image:title>
       <image:caption>
-        Embedded Systems, DSP, RF, FPGA, IoT and Communication Systems Portfolio
+        System Design Engineer specializing in Embedded Systems, Signal Processing &amp; CubeSat ADCS
       </image:caption>
     </image:image>
 
@@ -26,7 +26,7 @@
 
   <!-- Projects -->
   <url>
-    <loc>https://spdly.is-a.dev/projects</loc>
+    <loc>https://spdly.is-a.dev/projects.html</loc>
     <lastmod>2026-05-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -46,7 +46,7 @@
 
   <!-- Work -->
   <url>
-    <loc>https://spdly.is-a.dev/work</loc>
+    <loc>https://spdly.is-a.dev/work.html</loc>
     <lastmod>2026-05-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
