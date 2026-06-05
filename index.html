@@ -251,13 +251,14 @@
   <!-- Layer 3: Content -->
   <div class="hero-content">
     <div class="hero-tagline reveal-hero" style="--d:0">
-      <span class="tagline-accent">SpDly Studios</span>
+      <span class="tagline-accent">Built Because Nobody Did</span>
     </div>
     
     <div class="hero-headline-wrapper reveal-hero" style="--d:1">
-      <h1 class="hero-headline">
-        Built Because<br />Nobody Did
+      <h1 class="hero-headline" aria-label="Shivaprasad">
+        <span class="char" style="--i:0">S</span><span class="char" style="--i:1">h</span><span class="char" style="--i:2">i</span><span class="char" style="--i:3">v</span><span class="char" style="--i:4">a</span><span class="char" style="--i:5">p</span><span class="char" style="--i:6">r</span><span class="char" style="--i:7">a</span><span class="char" style="--i:8">s</span><span class="char" style="--i:9">a</span><span class="char" style="--i:10">d</span>
       </h1>
+      <span class="hero-accent-line" aria-hidden="true"></span>
     </div>
     
     <div class="hero-roles reveal-hero" style="--d:2">
@@ -387,7 +388,16 @@
     <div class="research-grid">
       <div class="research-card featured reveal">
         <div class="research-card-inner">
-          <div class="research-institution mono">MIT Anna University · 2025–Present</div>
+          <div class="research-header">
+            <div class="research-institution mono">MIT Anna University · 2025–Present</div>
+            <div class="rssi-signal-wave" aria-hidden="true" title="Simulating real-time signal RSSI tracking">
+              <span class="rssi-bar"></span>
+              <span class="rssi-bar"></span>
+              <span class="rssi-bar"></span>
+              <span class="rssi-bar"></span>
+              <span class="rssi-bar"></span>
+            </div>
+          </div>
           <h3 class="research-title">Wireless Occupancy Estimation via RSSI</h3>
           <p class="research-desc">What if you could understand space occupancy without dedicated sensors? Exploring how ambient wireless signals contain information about people and movement. A investigation into signal processing, pattern recognition, and the hidden structure in everyday radio noise.</p>
           <div class="research-metric-row">
@@ -529,8 +539,7 @@
 <script defer src="js/core/config.js"></script>
 <script defer src="js/core/firebase-config.js"></script>
 <!-- App scripts — all deferred, execute in declaration order -->
-<script defer src="js/core/firebase-loader.js"></script>
-<script defer src="js/data/work-data.js"></script>
+<script defer src="js/core/firebase-loader.js"></script><script defer src="js/core/neural-network.js"></script><script defer src="js/data/work-data.js"></script>
 <script defer src="js/core/ui.js"></script>
 <script defer src="js/pages/home.js"></script>
 <script defer src="js/core/form-handler.js"></script>

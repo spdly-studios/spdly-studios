@@ -12,8 +12,25 @@
 /* ─── Preloader ───────────────────────────────────────────── */
 document.body.classList.add('no-scroll');
 window.addEventListener('load', () => {
+  const label = document.querySelector('.pre-label');
+  if (label) {
+    const sequence = [
+      { time: 0, text: 'Connecting to network…' },
+      { time: 350, text: 'Acquiring radio signals…' },
+      { time: 700, text: 'Filtering ambient noise…' },
+      { time: 1100, text: 'Calibrating system parameters…' },
+      { time: 1500, text: 'Ready.' }
+    ];
+    sequence.forEach(step => {
+      setTimeout(() => {
+        label.textContent = step.text;
+      }, step.time);
+    });
+  }
+
   setTimeout(() => {
-    document.getElementById('preloader').classList.add('done');
+    const preloader = document.getElementById('preloader');
+    if (preloader) preloader.classList.add('done');
     document.body.classList.remove('no-scroll');
     initRevealObserver(); // defined in core/ui.js
   }, 1900);
