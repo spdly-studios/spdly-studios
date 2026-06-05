@@ -19,6 +19,101 @@ window.addEventListener('load', () => {
   }, 1900);
 });
 
+/* ─── Hero Roles Rotation with Enhanced Animations ───────────────────────────────────── */
+function initRoleRotation() {
+  const roles = ['Dreamer', 'Thinker', 'Builder'];
+  const roleItems = document.querySelectorAll('.role-item');
+  
+  if (roleItems.length === 0) return;
+  
+  let currentIndex = 0;
+  
+  // Set initial text
+  roleItems.forEach((el, i) => {
+    el.textContent = roles[i] || '';
+  });
+  
+  // Enhanced rotation with better transitions
+  const rotationInterval = setInterval(() => {
+    // Add 'prev' class to previous active item
+    const prevActive = document.querySelector('.role-item.active');
+    if (prevActive) {
+      prevActive.classList.remove('active');
+      prevActive.classList.add('prev');
+      // Remove 'prev' class after animation completes
+      setTimeout(() => prevActive.classList.remove('prev'), 500);
+    }
+    
+    // Move to next role
+    currentIndex = (currentIndex + 1) % roles.length;
+    roleItems[currentIndex].classList.add('active');
+  }, 3500); // Increased to 3.5 seconds for better story pacing
+  
+  // Set initial active state
+  roleItems[0].classList.add('active');
+  
+  // Optional: Update on click for interactivity
+  roleItems.forEach((item, index) => {
+    item.style.cursor = 'pointer';
+    item.addEventListener('click', () => {
+      // Clear the interval and restart
+      clearInterval(rotationInterval);
+      
+      // Remove all active/prev classes
+      roleItems.forEach(el => {
+        el.classList.remove('active', 'prev');
+      });
+      
+      // Set clicked item as active
+      currentIndex = index;
+      item.classList.add('active');
+      
+      // Restart the interval
+      initRoleRotation();
+    });
+  });
+  
+  return rotationInterval;
+}
+
+// Initialize roles when page loads
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initRoleRotation);
+} else {
+  initRoleRotation();
+}
+
+/* ─── Hero Parallax on Scroll ─────────────────────────────────────────────────────────── */
+function initHeroParallax() {
+  const heroSection = document.getElementById('hero');
+  const parallaxBg = document.getElementById('parallax-bg');
+  
+  if (!heroSection || !parallaxBg) return;
+  
+  const heroHeight = heroSection.offsetHeight;
+  
+  window.addEventListener('scroll', () => {
+    const scrollProgress = Math.min(window.scrollY / heroHeight, 1);
+    const parallaxValue = scrollProgress * 30; // 30px parallax depth
+    
+    // Apply subtle parallax to background
+    parallaxBg.style.transform = `translateY(${parallaxValue}px)`;
+    
+    // Subtle fade out of hero content on scroll
+    const heroContent = heroSection.querySelector('.hero-content');
+    if (heroContent) {
+      heroContent.style.opacity = Math.max(0.3, 1 - scrollProgress * 0.7);
+    }
+  });
+}
+
+// Initialize parallax when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initHeroParallax);
+} else {
+  initHeroParallax();
+}
+
 /* ─── Projects Grid ───────────────────────────────────────── */
 function renderWorkGrid(data, limit = 4) {
   const grid = document.getElementById('work-grid');
