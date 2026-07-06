@@ -196,6 +196,7 @@
     .pre-label{font-size:.6rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;letter-spacing:.12em}
     @keyframes preLoad{to{width:100%}}
     #scroll-progress{position:fixed;top:0;left:0;height:2px;background:var(--accent);z-index:9998;width:0}
+    #navbar.scrolled{border-color:var(--border-sub)}
   </style>
 
   <!-- ═══ MAIN STYLESHEET ═══ -->
@@ -240,28 +241,37 @@
 
 <!-- ═══════════════════ HERO ═══════════════════ -->
 <section id="hero" aria-label="Introduction">
+  <canvas id="hero-canvas" aria-hidden="true"></canvas>
+  <div class="hero-grid-overlay" aria-hidden="true"></div>
+  <div class="hero-rail" aria-hidden="true"><span>Available for work — 2026</span></div>
+  <div class="hero-index" aria-hidden="true">N° 01 / Portfolio</div>
+
   <div class="hero-content">
-    <div class="hero-tagline">Built Because Nobody Did</div>
-    <h1 class="hero-headline">Shivaprasad</h1>
-    <div class="hero-roles">
-      <span>Dreamer</span>
-      <span class="role-separator">/</span>
-      <span>Thinker</span>
-      <span class="role-separator">/</span>
-      <span>Builder</span>
+    <div class="hero-tagline anim-fade" style="--d:0">Built Because Nobody Did</div>
+    <h1 class="hero-headline anim-fade" style="--d:1" aria-label="Shivaprasad">
+      <span class="hero-word">Shiva</span><span class="hero-word accent">prasad</span>
+    </h1>
+    <div class="hero-roles anim-fade" style="--d:2">
+      <span>Creative</span>
+      <span class="role-separator" aria-hidden="true">/</span>
+      <span class="role-cycler" id="role-cycler" data-roles="Dreamer|Thinker|Builder">Dreamer</span>
+      <span class="role-separator" aria-hidden="true">/</span>
+      <span>Engineer</span>
     </div>
-    <p class="hero-description">
+    <p class="hero-description anim-fade" style="--d:3">
       I spend my time imagining systems, exploring ideas, and building things that don't yet exist.
     </p>
-    <div class="hero-cta">
-      <a href="#about" class="btn-primary">Explore My Journey</a>
-      <a href="#contact" class="btn-ghost">Let's Talk</a>
+    <div class="hero-cta anim-fade" style="--d:4">
+      <a href="#about" class="btn-primary"><span>Explore My Journey</span></a>
+      <a href="#contact" class="btn-ghost"><span>Let's Talk</span></a>
     </div>
   </div>
-  <div class="hero-scroll-cue" aria-hidden="true">
+
+  <div class="hero-scroll-cue anim-fade" style="--d:5" aria-hidden="true">
     <div class="cue-line"></div>
     <span>scroll</span>
   </div>
+  <div class="hero-cursor" id="hero-cursor" aria-hidden="true"></div>
 </section>
 
 <!-- ═══════════════════ ABOUT ═══════════════════ -->
@@ -514,6 +524,7 @@
 <!-- App scripts — all deferred, execute in declaration order -->
 <script defer src="js/core/firebase-loader.js"></script><script defer src="js/data/work-data.js"></script>
 <script defer src="js/core/ui.js"></script>
+<script defer src="js/core/hero-canvas.js"></script>
 <script defer src="js/pages/home.js"></script>
 <script defer src="js/core/form-handler.js"></script>
 </body>

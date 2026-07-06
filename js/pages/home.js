@@ -104,6 +104,76 @@ document.addEventListener('portfolioDataReady', (e) => {
   }
 });
 
+/* ─── Role Cycler ─────────────────────────────────────────── */
+(function initRoleCycler() {
+  const el = document.getElementById('role-cycler');
+  if (!el) return;
+  const roles = (el.dataset.roles || '').split('|').filter(Boolean);
+  if (!roles.length) return;
+
+  let ri = 0;
+  let ci = 0;
+  let deleting = false;
+
+  function render() {
+    const word = roles[ri];
+    el.innerHTML = '';
+    for (let i = 0; i < ci; i++) {
+      const s = document.createElement('span');
+      s.className = 'role-char';
+      s.textContent = word[i];
+      el.appendChild(s);
+    }
+  }
+
+  function step() {
+    const word = roles[ri];
+    if (!deleting) {
+      ci++;
+      render();
+      if (ci >= word.length) {
+        deleting = true;
+        setTimeout(step, 1500);
+        return;
+      }
+    } else {
+      ci--;
+      render();
+      if (ci <= 0) {
+        deleting = false;
+        ri = (ri + 1) % roles.length;
+      }
+    }
+    setTimeout(step, deleting ? 55 : 90);
+  }
+  step();
+})();
+
+/* ─── Magnetic Cursor Glow ─────────────────────────────────── */
+(function initHeroCursor() {
+  const hero = document.getElementById('hero');
+  const cursor = document.getElementById('hero-cursor');
+  if (!hero || !cursor) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+
+  let x = 0, y = 0, tx = 0, ty = 0;
+  hero.addEventListener('mousemove', (e) => {
+    const r = hero.getBoundingClientRect();
+    tx = e.clientX - r.left;
+    ty = e.clientY - r.top;
+  });
+  hero.addEventListener('mouseleave', () => { cursor.style.opacity = '0'; });
+  hero.addEventListener('mouseenter', () => { cursor.style.opacity = '1'; });
+
+  (function loop() {
+    x += (tx - x) * 0.18;
+    y += (ty - y) * 0.18;
+    cursor.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+    requestAnimationFrame(loop);
+  })();
+})();
+
 /* ─── Contact Form ────────────────────────────────────────── */
 const contactForm = document.getElementById('contact-form');
 if (contactForm) {
