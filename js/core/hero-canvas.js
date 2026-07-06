@@ -18,6 +18,24 @@
   const LINK = 130;
   const PULL = 190;
 
+  function palette() {
+    const cs = getComputedStyle(document.documentElement);
+    const dark = document.documentElement.dataset.theme === 'dark';
+    const base = dark ? '231,231,239' : '10,10,10';
+    const accent = cs.getPropertyValue('--accent').trim() || '#e54f4d';
+    return { base, accent };
+  }
+  let pal = palette();
+  window.addEventListener('themechange', () => { pal = palette(); });
+
+  function hexToRgba(hex, a) {
+    hex = (hex || '#e54f4d').replace('#', '');
+    if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+    const n = parseInt(hex, 16);
+    const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+    return `rgba(${r},${g},${b},${a})`;
+  }
+
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     width = canvas.offsetWidth;
@@ -80,7 +98,7 @@
         const dist = Math.hypot(dx, dy);
         if (dist > LINK) continue;
         const alpha = (1 - dist / LINK) * 0.10;
-        ctx.strokeStyle = `rgba(10,10,10,${alpha})`;
+        ctx.strokeStyle = `rgba(${pal.base},${alpha})`;
         ctx.lineWidth = 0.6;
         ctx.beginPath();
         ctx.moveTo(a.x, a.y);
@@ -93,7 +111,7 @@
     for (const n of nodes) {
       ctx.beginPath();
       ctx.arc(n.x, n.y, n.big ? 2.4 : 1.3, 0, Math.PI * 2);
-      ctx.fillStyle = n.big ? 'rgba(229,79,77,0.55)' : 'rgba(10,10,10,0.18)';
+      ctx.fillStyle = n.big ? hexToRgba(pal.accent, 0.55) : `rgba(${pal.base},0.18)`;
       ctx.fill();
     }
 
@@ -101,7 +119,7 @@
     if (mouse.x > -9000) {
       const t = frame * 0.04;
       const rad = 46;
-      ctx.strokeStyle = 'rgba(229,79,77,0.7)';
+      ctx.strokeStyle = hexToRgba(pal.accent, 0.7);
       ctx.lineWidth = 1.4;
       ctx.beginPath();
       ctx.arc(mouse.x, mouse.y, rad, t, t + Math.PI * 1.2);
@@ -114,9 +132,9 @@
     // horizontal scan line
     const sy = (frame * 0.6) % (height + 120) - 60;
     const g = ctx.createLinearGradient(0, sy - 40, 0, sy + 40);
-    g.addColorStop(0, 'rgba(229,79,77,0)');
-    g.addColorStop(0.5, 'rgba(229,79,77,0.10)');
-    g.addColorStop(1, 'rgba(229,79,77,0)');
+    g.addColorStop(0, hexToRgba(pal.accent, 0));
+    g.addColorStop(0.5, hexToRgba(pal.accent, 0.10));
+    g.addColorStop(1, hexToRgba(pal.accent, 0));
     ctx.fillStyle = g;
     ctx.fillRect(0, sy - 40, width, 80);
   }
