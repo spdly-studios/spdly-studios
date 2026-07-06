@@ -14,11 +14,8 @@ window.addEventListener('load', () => {
   const label = document.querySelector('.pre-label');
   if (label) {
     const sequence = [
-      { time: 0, text: 'Connecting to network…' },
-      { time: 350, text: 'Acquiring radio signals…' },
-      { time: 700, text: 'Filtering ambient noise…' },
-      { time: 1100, text: 'Calibrating system parameters…' },
-      { time: 1500, text: 'Ready.' }
+      { time: 0, text: 'Loading…' },
+      { time: 400, text: 'Ready' }
     ];
     sequence.forEach(step => {
       setTimeout(() => {
@@ -31,8 +28,8 @@ window.addEventListener('load', () => {
     const preloader = document.getElementById('preloader');
     if (preloader) preloader.classList.add('done');
     document.body.classList.remove('no-scroll');
-    initRevealObserver(); // defined in core/ui.js
-  }, 1900);
+    initRevealObserver();
+  }, 800);
 });
 
 /* ─── Projects Grid ───────────────────────────────────────── */
@@ -40,26 +37,24 @@ function renderAllProjectsGrid(data) {
   const grid = document.getElementById('projects-grid');
   if (!grid) return;
 
-  // Use Firestore data if available, otherwise fall back to static WORK_DATA
   const items = data || (typeof WORK_DATA !== 'undefined' ? WORK_DATA : []);
   if (!items.length) return;
 
-  grid.innerHTML = ''; // clear before re-render
+  grid.innerHTML = '';
 
   items.forEach(item => {
     const card = document.createElement('a');
-    card.className = 'project-card reveal';
+    card.className = 'project-card';
     card.href = item.url || `work.html?id=${item.id}`;
 
-    // Only render <img> if thumb exists
     const imgHTML = item.thumb
       ? `<img src="${item.thumb}" alt="${item.title}"
              loading="lazy"
              onerror="this.onerror=null;this.style.display='none';this.parentElement.querySelector('.img-fallback').style.display='flex'" />
-         <div class="img-fallback" style="display:none;align-items:center;justify-content:center;width:100%;height:200px;background:var(--surface);color:var(--text-3);font-size:0.75rem">
+         <div class="img-fallback" style="display:none;align-items:center;justify-content:center;width:100%;height:200px;background:var(--bg-alt);color:var(--text-3);font-size:0.75rem">
            <span>Thumbnail unavailable</span>
          </div>`
-      : '<div class="img-fallback" style="display:flex;align-items:center;justify-content:center;width:100%;height:200px;background:var(--surface);color:var(--text-3);font-size:0.75rem"><span>No thumbnail</span></div>';
+      : '<div class="img-fallback" style="display:flex;align-items:center;justify-content:center;width:100%;height:200px;background:var(--bg-alt);color:var(--text-3);font-size:0.75rem"><span>No thumbnail</span></div>';
 
     card.innerHTML = `
       <div class="project-card-img">${imgHTML}</div>
@@ -74,19 +69,6 @@ function renderAllProjectsGrid(data) {
       </div>
     `;
     grid.appendChild(card);
-  });
-
-  // Observe freshly added cards for scroll-reveal
-  grid.querySelectorAll('.reveal').forEach(el => {
-    const obs = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('revealed');
-          obs.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.08 });
-    obs.observe(el);
   });
 }
 

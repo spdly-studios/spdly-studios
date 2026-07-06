@@ -87,7 +87,7 @@ function renderWorkPage(item) {
 
   if (item.overview) {
     html += `
-      <div class="proj-section reveal">
+      <div class="proj-section">
         <div class="proj-section-title">Overview</div>
         <p>${item.overview}</p>
       </div>
@@ -96,7 +96,7 @@ function renderWorkPage(item) {
 
   if (item.objectives?.length) {
     html += `
-      <div class="proj-section reveal">
+      <div class="proj-section">
         <div class="proj-section-title">Objectives</div>
         <div class="proj-list">
           ${item.objectives.map(o => `<div class="proj-list-item">${o}</div>`).join('')}
@@ -107,7 +107,7 @@ function renderWorkPage(item) {
 
   if (item.stack?.length) {
     html += `
-      <div class="proj-section reveal">
+      <div class="proj-section">
         <div class="proj-section-title">Technical Stack</div>
         <div class="proj-stack-grid">
           ${item.stack.map(s => `
@@ -125,7 +125,7 @@ function renderWorkPage(item) {
 
   if (item.architecture) {
     html += `
-      <div class="proj-section reveal">
+      <div class="proj-section">
         <div class="proj-section-title">Architecture &amp; Workflow</div>
         <p>${item.architecture}</p>
       </div>
@@ -134,7 +134,7 @@ function renderWorkPage(item) {
 
   if (item.challenges?.length) {
     html += `
-      <div class="proj-section reveal">
+      <div class="proj-section">
         <div class="proj-section-title">Engineering Challenges</div>
         <div class="proj-list">
           ${item.challenges.map(c => `<div class="proj-list-item">${c}</div>`).join('')}
@@ -145,7 +145,7 @@ function renderWorkPage(item) {
 
   if (item.results) {
     html += `
-      <div class="proj-section reveal">
+      <div class="proj-section">
         <div class="proj-section-title">Results &amp; Performance</div>
         <p>${item.results}</p>
       </div>
@@ -156,7 +156,7 @@ function renderWorkPage(item) {
     const galleryItems = item.images.map(renderGalleryItem).filter(Boolean).join('');
     if (galleryItems) {
       html += `
-        <div class="proj-section reveal">
+        <div class="proj-section">
           <div class="proj-section-title">Images &amp; Diagrams</div>
           <div class="proj-gallery">${galleryItems}</div>
         </div>
@@ -166,7 +166,7 @@ function renderWorkPage(item) {
 
   if (item.future?.length) {
     html += `
-      <div class="proj-section reveal">
+      <div class="proj-section">
         <div class="proj-section-title">Future Improvements</div>
         <div class="proj-list">
           ${item.future.map(f => `<div class="proj-list-item">${f}</div>`).join('')}
@@ -176,17 +176,6 @@ function renderWorkPage(item) {
   }
 
   document.getElementById('proj-body').innerHTML = html;
-
-  // Observe newly injected sections for scroll-reveal
-  const revealObs = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('revealed');
-        revealObs.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 }
 
 function renderMoreWork(currentId, sourceData) {
@@ -198,47 +187,38 @@ function renderMoreWork(currentId, sourceData) {
 
   grid.innerHTML = ''; // clear before re-render
 
-  allItems
-    .filter(item => item.id !== currentId)
-    .slice(0, 3)
-    .forEach(item => {
-      const card = document.createElement('a');
-      card.className = 'project-card reveal';
-      card.href = item.url || `work.html?id=${item.id}`;
+    allItems
+      .filter(item => item.id !== currentId)
+      .slice(0, 3)
+      .forEach(item => {
+        const card = document.createElement('a');
+        card.className = 'project-card';
+        card.href = item.url || `work.html?id=${item.id}`;
 
-      // Only render <img> if thumb exists
-      const imgHTML = item.thumb
-        ? `<img src="${item.thumb}" alt="${item.title}"
-               loading="lazy"
-               onerror="this.onerror=null;this.style.display='none';this.parentElement.querySelector('.img-fallback').style.display='flex'" />
-           <div class="img-fallback" style="display:none;align-items:center;justify-content:center;width:100%;height:200px;background:var(--surface);color:var(--text-3);font-size:0.75rem">
-             <span>Thumbnail unavailable</span>
-           </div>`
-        : '<div class="img-fallback" style="display:flex;align-items:center;justify-content:center;width:100%;height:200px;background:var(--surface);color:var(--text-3);font-size:0.75rem"><span>No thumbnail</span></div>';
+        const imgHTML = item.thumb
+          ? `<img src="${item.thumb}" alt="${item.title}"
+                 loading="lazy"
+                 onerror="this.onerror=null;this.style.display='none';this.parentElement.querySelector('.img-fallback').style.display='flex'" />
+             <div class="img-fallback" style="display:none;align-items:center;justify-content:center;width:100%;height:200px;background:var(--bg-alt);color:var(--text-3);font-size:0.75rem">
+               <span>Thumbnail unavailable</span>
+             </div>`
+          : '<div class="img-fallback" style="display:flex;align-items:center;justify-content:center;width:100%;height:200px;background:var(--bg-alt);color:var(--text-3);font-size:0.75rem"><span>No thumbnail</span></div>';
 
-      card.innerHTML = `
-        <div class="project-card-img">${imgHTML}</div>
-        <div class="project-card-body">
-          <div class="project-card-cat">${item.category}</div>
-          <div class="project-card-title">${item.title}</div>
-          <div class="project-card-desc">${item.tagline}</div>
-          <div class="project-card-tags">
-            ${item.tags.slice(0, 3).map(t => `<span class="tag sm">${t}</span>`).join('')}
+        card.innerHTML = `
+          <div class="project-card-img">${imgHTML}</div>
+          <div class="project-card-body">
+            <div class="project-card-cat">${item.category}</div>
+            <div class="project-card-title">${item.title}</div>
+            <div class="project-card-desc">${item.tagline}</div>
+            <div class="project-card-tags">
+              ${item.tags.slice(0, 3).map(t => `<span class="tag sm">${t}</span>`).join('')}
+            </div>
           </div>
-        </div>
-      `;
-      grid.appendChild(card);
-    });
+        `;
+        grid.appendChild(card);
+      });
 
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('revealed');
-        obs.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.08 });
-  grid.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  grid.querySelectorAll('.project-card').forEach(el => el.style.opacity = '1');
 }
 
 /* ─── Init ────────────────────────────────────────────────── */

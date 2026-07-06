@@ -16,11 +16,8 @@ window.addEventListener('load', () => {
   const label = document.querySelector('.pre-label');
   if (label) {
     const sequence = [
-      { time: 0, text: 'Connecting to network…' },
-      { time: 350, text: 'Acquiring radio signals…' },
-      { time: 700, text: 'Filtering ambient noise…' },
-      { time: 1100, text: 'Calibrating system parameters…' },
-      { time: 1500, text: 'Ready.' }
+      { time: 0, text: 'Loading…' },
+      { time: 400, text: 'Ready' }
     ];
     sequence.forEach(step => {
       setTimeout(() => {
@@ -33,8 +30,8 @@ window.addEventListener('load', () => {
     const preloader = document.getElementById('preloader');
     if (preloader) preloader.classList.add('done');
     document.body.classList.remove('no-scroll');
-    initRevealObserver(); // defined in core/ui.js
-  }, 1900);
+    initRevealObserver();
+  }, 800);
 });
 
 /* ─── Tools Organization & Rendering ──────────────────────── */
@@ -101,7 +98,7 @@ function renderAllTools(data) {
   // Render each domain section
   Object.entries(grouped).forEach(([domain, domainTools]) => {
     const section = document.createElement('div');
-    section.className = 'tools-section reveal';
+    section.className = 'tools-section';
     
     const heading = document.createElement('div');
     heading.className = 'tools-section-heading';
@@ -116,21 +113,21 @@ function renderAllTools(data) {
     
     domainTools.forEach(tool => {
       const card = document.createElement('a');
-      card.className = 'tool-card reveal';
+      card.className = 'tool-card';
       card.href = tool.url || '#';
       card.target = tool.isExternal ? '_blank' : '_self';
       card.rel = tool.isExternal ? 'noopener noreferrer' : '';
       
       const fieldHTML = tool.field 
         ? `<div class="tool-field">${tool.field}</div>` 
-        : '';
+        '';
       
       const tagsHTML = (tool.tags || []).slice(0, 2)
         .map(t => `<span class="tool-badge">${t}</span>`)
         .join('');
       
       card.innerHTML = `
-        <div class="tool-icon">${tool.icon || '⚙️'}</div>
+        <div class="tool-icon">${tool.icon || '?'}</div>
         ${fieldHTML}
         <div class="tool-title">${tool.title || 'Untitled'}</div>
         <div class="tool-description">${tool.description || 'No description'}</div>
@@ -148,19 +145,6 @@ function renderAllTools(data) {
     
     section.appendChild(grid);
     container.appendChild(section);
-  });
-  
-  // Observe newly added cards for scroll-reveal
-  container.querySelectorAll('.reveal').forEach(el => {
-    const obs = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('revealed');
-          obs.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.08 });
-    obs.observe(el);
   });
 }
 

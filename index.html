@@ -184,17 +184,18 @@
   <!-- ═══ CRITICAL CSS ═══ -->
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--bg:#09090b;--fg:#dde1ea;--accent:#e54f4d;--muted:#464b58}
+    :root{--bg:#ffffff;--fg:#0a0a0a;--accent:#e54f4d;--muted:#8a8a8a}
     html{scroll-behavior:smooth;background:var(--bg);color:var(--fg)}
     body{font-family:'Outfit',sans-serif;background:var(--bg);overflow-x:hidden}
     #preloader{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center}
     .pre-inner{text-align:center}
-    .pre-wordmark{font-size:2rem;font-weight:700;letter-spacing:-.02em}
-    .pre-sp{color:var(--accent)}.pre-studios{color:var(--fg)}
-    .pre-bar-wrap{width:200px;height:2px;background:#242730;margin:1.5rem auto .75rem;border-radius:1px;overflow:hidden}
-    .pre-bar{height:100%;width:0;background:var(--accent);transition:width .3s ease}
-    .pre-label{font-size:.75rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;letter-spacing:.1em}
-    #scroll-progress{position:fixed;top:0;left:0;height:2px;background:var(--accent);z-index:9998;width:0;transition:width .1s linear}
+    .pre-wordmark{font-size:1.4rem;font-weight:700;letter-spacing:-.03em}
+    .pre-sp{color:var(--accent)}.pre-studios{color:var(--fg);font-weight:300;letter-spacing:.16em;font-size:.8em;text-transform:uppercase;margin-left:4px}
+    .pre-bar-wrap{width:160px;height:1px;background:#e0e0e0;margin:1.25rem auto .75rem;overflow:hidden}
+    .pre-bar{height:100%;width:0;background:var(--accent);animation:preLoad 1s ease .2s forwards}
+    .pre-label{font-size:.6rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;letter-spacing:.12em}
+    @keyframes preLoad{to{width:100%}}
+    #scroll-progress{position:fixed;top:0;left:0;height:2px;background:var(--accent);z-index:9998;width:0}
   </style>
 
   <!-- ═══ MAIN STYLESHEET ═══ -->
@@ -239,72 +240,44 @@
 
 <!-- ═══════════════════ HERO ═══════════════════ -->
 <section id="hero" aria-label="Introduction">
-  <!-- Layer 0: Subtle grid background -->
-  <div class="hero-grid-bg" aria-hidden="true"></div>
-  
-  <!-- Layer 1: Neural network visualization -->
-  <canvas id="neural-network-canvas" aria-hidden="true"></canvas>
-  
-  <!-- Layer 2: Data pulses overlay -->
-  <div id="pulses-container" aria-hidden="true"></div>
-  
-  <!-- Layer 3: Content -->
   <div class="hero-content">
-    <div class="hero-tagline reveal-hero" style="--d:0">
-      <span class="tagline-accent">Built Because Nobody Did</span>
+    <div class="hero-tagline">Built Because Nobody Did</div>
+    <h1 class="hero-headline">Shivaprasad</h1>
+    <div class="hero-roles">
+      <span>Dreamer</span>
+      <span class="role-separator">/</span>
+      <span>Thinker</span>
+      <span class="role-separator">/</span>
+      <span>Builder</span>
     </div>
-    
-    <div class="hero-headline-wrapper reveal-hero" style="--d:1">
-      <h1 class="hero-headline" aria-label="Shivaprasad">
-        <span class="char" style="--i:0">S</span><span class="char" style="--i:1">h</span><span class="char" style="--i:2">i</span><span class="char" style="--i:3">v</span><span class="char" style="--i:4">a</span><span class="char" style="--i:5">p</span><span class="char" style="--i:6">r</span><span class="char" style="--i:7">a</span><span class="char" style="--i:8">s</span><span class="char" style="--i:9">a</span><span class="char" style="--i:10">d</span>
-      </h1>
-      <span class="hero-accent-line" aria-hidden="true"></span>
-    </div>
-    
-    <div class="hero-roles reveal-hero" style="--d:2">
-      <span class="role-text">Dreamer</span>
-      <span class="role-separator" aria-hidden="true">•</span>
-      <span class="role-text">Thinker</span>
-      <span class="role-separator" aria-hidden="true">•</span>
-      <span class="role-text">Builder</span>
-    </div>
-    
-    <p class="hero-description reveal-hero" style="--d:3">
+    <p class="hero-description">
       I spend my time imagining systems, exploring ideas, and building things that don't yet exist.
     </p>
-    
-    <div class="hero-cta reveal-hero" style="--d:4">
+    <div class="hero-cta">
       <a href="#about" class="btn-primary">Explore My Journey</a>
       <a href="#contact" class="btn-ghost">Let's Talk</a>
     </div>
   </div>
-
   <div class="hero-scroll-cue" aria-hidden="true">
     <div class="cue-line"></div>
-    <span class="mono">scroll</span>
+    <span>scroll</span>
   </div>
-  <div class="hero-fade-bottom" aria-hidden="true"></div>
 </section>
 
 <!-- ═══════════════════ ABOUT ═══════════════════ -->
 <section id="about" class="section" aria-labelledby="about-heading">
   <div class="container">
     <div class="about-grid">
-
-      <div class="about-photo-col reveal-left">
+      <div class="about-photo-col">
         <div class="about-photo-frame">
           <div class="about-photo-inner">
             <img src="assets/profile.png" alt="Shivaprasad V"
               width="320" height="320" loading="lazy" decoding="async"
               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
-            <div class="img-fallback mono" style="display:none;align-items:center;justify-content:center;width:100%;height:100%;color:var(--muted);font-size:.75rem">
+            <div class="img-fallback mono" style="display:none;align-items:center;justify-content:center;width:100%;height:100%;color:var(--text-3);font-size:.75rem">
               image unavailable
             </div>
           </div>
-          <div class="frame-accent tl" aria-hidden="true"></div>
-          <div class="frame-accent tr" aria-hidden="true"></div>
-          <div class="frame-accent bl" aria-hidden="true"></div>
-          <div class="frame-accent br" aria-hidden="true"></div>
           <div class="about-badge mono"><span class="badge-dot" aria-hidden="true"></span>Available</div>
         </div>
         <div class="about-quick-facts">
@@ -314,16 +287,16 @@
         </div>
       </div>
 
-      <div class="about-text-col reveal-right">
-        <h2 id="about-heading" class="section-heading">A continuous <br /><span class="accent-text italic-serif">exploration</span></h2>
+      <div class="about-text-col">
+        <h2 id="about-heading" class="section-heading">A continuous <br />exploration</h2>
         <p>I'm obsessed with understanding how systems work. Not just the mechanics, but the deeper patterns—how information flows, how constraints shape design, how small decisions ripple through entire architectures.</p>
         <p>Most of my time is spent asking questions. Why was this built this way? What if we approached it differently? What could exist if someone actually built this idea? That curiosity leads to prototypes, which become projects, which become the things you see here.</p>
         <p>I don't just build things for the sake of building. Every project emerges from a genuine question or an unmet need. The technical depth comes naturally when you're solving something you genuinely care about.</p>
         <p>Currently, I'm pursuing my engineering degree at Madras Institute of Technology while actively researching wireless signal processing. But honestly, the research happens everywhere—in the ideas I sketch, the systems I tinker with, the problems I notice and refuse to ignore.</p>
         <div class="about-stats" aria-label="Statistics">
-          <div class="stat-card"><div class="stat-num" data-target="10">0</div><div class="stat-label">Ideas Realized</div></div>
-          <div class="stat-card"><div class="stat-num" data-target="2">0</div><div class="stat-label">Research Works</div></div>
-          <div class="stat-card"><div class="stat-num" data-target="2">0</div><div class="stat-label">Explorations</div></div>
+          <div class="stat-card"><div class="stat-num">10</div><div class="stat-label">Ideas Realized</div></div>
+          <div class="stat-card"><div class="stat-num">2</div><div class="stat-label">Research Works</div></div>
+          <div class="stat-card"><div class="stat-num">2</div><div class="stat-label">Explorations</div></div>
         </div>
       </div>
 
@@ -334,8 +307,8 @@
 <!-- ═══════════════════ SKILLS ═══════════════════ -->
 <section id="skills" class="section section-alt" aria-labelledby="skills-heading">
   <div class="container">
-    <h2 id="skills-heading" class="section-heading reveal">Technical <span class="accent-text">Stack</span></h2>
-    <div class="skills-grid reveal" role="list">
+    <h2 id="skills-heading" class="section-heading">Technical <span class="accent-text">Stack</span></h2>
+    <div class="skills-grid" role="list">
       <div class="skill-group" role="listitem"><div class="skill-group-label mono">Programming</div><div class="skill-tags"><span class="skill-tag">C</span><span class="skill-tag">C++</span><span class="skill-tag">Embedded C</span><span class="skill-tag">Python</span><span class="skill-tag">MATLAB</span></div></div>
       <div class="skill-group" role="listitem"><div class="skill-group-label mono">Hardware &amp; Systems</div><div class="skill-tags"><span class="skill-tag">PCB Design</span><span class="skill-tag">Signal Integrity</span><span class="skill-tag">HW–SW Integration</span><span class="skill-tag">Telemetry</span><span class="skill-tag">Ground Station</span><span class="skill-tag">Sensor Fusion</span></div></div>
       <div class="skill-group" role="listitem"><div class="skill-group-label mono">Embedded &amp; Real-Time</div><div class="skill-tags"><span class="skill-tag">FreeRTOS</span><span class="skill-tag">ESP32</span><span class="skill-tag">Arduino</span><span class="skill-tag">Interrupt ADC</span><span class="skill-tag">Circular Buffer</span><span class="skill-tag">Digital Twin</span></div></div>
@@ -349,13 +322,13 @@
 <!-- ═══════════════════ EXPERIENCE ═══════════════ -->
 <section id="experience" class="section" aria-labelledby="experience-heading">
   <div class="container">
-    <h2 id="experience-heading" class="section-heading reveal">Exploration <span class="accent-text">Timeline</span></h2>
+    <h2 id="experience-heading" class="section-heading">Exploration <span class="accent-text">Timeline</span></h2>
     <div class="timeline">
-      <div class="timeline-item reveal">
+      <div class="timeline-item">
         <div class="timeline-marker" aria-hidden="true"></div>
         <div class="timeline-content">
           <div class="timeline-meta"><span class="mono timeline-date">2025</span><span class="timeline-company">CE+T Power Solutions</span></div>
-          <div class="timeline-role">Exploring Power Electronics & Reliability</div>
+          <div class="timeline-role">Exploring Power Electronics &amp; Reliability</div>
           <ul class="timeline-points">
             <li>Understanding system behavior under thermal and fault conditions</li>
             <li>Learning how reliability testing reveals design brittleness</li>
@@ -364,7 +337,7 @@
           <div class="timeline-tags"><span class="tag sm">Power Electronics</span><span class="tag sm">Reliability</span><span class="tag sm">System Validation</span></div>
         </div>
       </div>
-      <div class="timeline-item reveal">
+      <div class="timeline-item">
         <div class="timeline-marker" aria-hidden="true"></div>
         <div class="timeline-content">
           <div class="timeline-meta"><span class="mono timeline-date">2024 – 2025</span><span class="timeline-company">Sri Sairam Techno Incubator Foundation</span></div>
@@ -384,9 +357,9 @@
 <!-- ═══════════════════ RESEARCH ═══════════════════ -->
 <section id="research" class="section section-alt" aria-labelledby="research-heading">
   <div class="container">
-    <h2 id="research-heading" class="section-heading reveal">Active <span class="accent-text">Investigations</span></h2>
+    <h2 id="research-heading" class="section-heading">Active <span class="accent-text">Investigations</span></h2>
     <div class="research-grid">
-      <div class="research-card featured reveal">
+      <div class="research-card featured">
         <div class="research-card-inner">
           <div class="research-header">
             <div class="research-institution mono">MIT Anna University · 2025–Present</div>
@@ -408,7 +381,7 @@
           <div class="research-conf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>Engineering Advances 2025 International Conference</div>
         </div>
       </div>
-      <div class="research-card reveal">
+      <div class="research-card">
         <div class="research-card-inner">
           <div class="research-institution mono">Sri Sairam Polytechnic · 2024–2025</div>
           <h3 class="research-title">GPS-Independent Localization</h3>
@@ -423,11 +396,11 @@
 <!-- ═══════════════════ PROJECTS ═══════════════════ -->
 <section id="projects" class="section" aria-labelledby="projects-heading">
   <div class="container">
-    <h2 id="projects-heading" class="section-heading reveal">Chapters in <span class="accent-text">Creation</span></h2>
-    <p class="section-description reveal">Ideas that refused to stay imaginary</p>
+    <h2 id="projects-heading" class="section-heading">Chapters in <span class="accent-text">Creation</span></h2>
+    <p class="section-description">Ideas that refused to stay imaginary</p>
     <div class="projects-grid" id="work-grid"></div>
     <div style="display: flex; justify-content: center; margin-top: 3rem;">
-      <a href="projects.html" class="btn-primary reveal">See All Projects</a>
+      <a href="projects.html" class="btn-primary">See All Projects</a>
     </div>
   </div>
 </section>
@@ -435,15 +408,15 @@
 <!-- ═══════════════════ EDUCATION ═══════════════════ -->
 <section id="education" class="section section-alt" aria-labelledby="education-heading">
   <div class="container">
-    <h2 id="education-heading" class="section-heading reveal">Formal <span class="accent-text">Learning</span></h2>
+    <h2 id="education-heading" class="section-heading">Formal <span class="accent-text">Learning</span></h2>
     <div class="edu-grid">
-      <div class="edu-card reveal">
+      <div class="edu-card">
         <div class="edu-year mono">2025 — 2028</div>
         <div class="edu-degree">B.E. Electronics and Communication</div>
         <div class="edu-institution">Madras Institute of Technology, Anna University</div>
         <div class="edu-note">Ongoing — exploring wireless systems and signal processing</div>
       </div>
-      <div class="edu-card reveal">
+      <div class="edu-card">
         <div class="edu-year mono">2022 — 2025</div>
         <div class="edu-degree">Diploma in Electronics and Communication</div>
         <div class="edu-institution">Sri Sairam Polytechnic College</div>
@@ -456,18 +429,18 @@
 <!-- ═══════════════════ PRESENTATIONS ═══════════════ -->
 <section id="presentations" class="section" aria-labelledby="presentations-heading">
   <div class="container">
-    <h2 id="presentations-heading" class="section-heading reveal">Sharing What I <span class="accent-text">Learn</span></h2>
+    <h2 id="presentations-heading" class="section-heading">Sharing What I <span class="accent-text">Learn</span></h2>
     <div class="pt-grid">
       <div class="pt-col">
         <h3 class="pt-sub mono">Presentations</h3>
-        <div class="pt-item reveal"><div class="pt-year mono">2025</div><div><div class="pt-title">Conference Presentation</div><div class="pt-desc">"Wireless Occupancy Estimation via RSSI Signal Processing" — Engineering Advances 2025</div></div></div>
-        <div class="pt-item reveal"><div class="pt-year mono">2024</div><div><div class="pt-title">Workshop: PCB Design from Concept to Manufacturing</div><div class="pt-desc">Teaching what I learned about taking designs from sketch to production reality</div></div></div>
+        <div class="pt-item"><div class="pt-year mono">2025</div><div><div class="pt-title">Conference Presentation</div><div class="pt-desc">"Wireless Occupancy Estimation via RSSI Signal Processing" — Engineering Advances 2025</div></div></div>
+        <div class="pt-item"><div class="pt-year mono">2024</div><div><div class="pt-title">Workshop: PCB Design from Concept to Manufacturing</div><div class="pt-desc">Teaching what I learned about taking designs from sketch to production reality</div></div></div>
       </div>
       <div class="pt-col">
         <h3 class="pt-sub mono">Learning Programs</h3>
-        <div class="pt-item reveal"><div class="pt-year mono">2026</div><div><div class="pt-title">CubeSats & Satellite Systems</div><div class="pt-desc">CEG Campus, Anna University</div></div></div>
-        <div class="pt-item reveal"><div class="pt-year mono">2025</div><div><div class="pt-title">Robotic Operating System Training</div><div class="pt-desc">Sri Sairam Techno Incubator</div></div></div>
-        <div class="pt-item reveal"><div class="pt-year mono">2024</div><div><div class="pt-title">Electronics Measurement & Instrumentation</div><div class="pt-desc">IIT Madras — INUP-i2i Program</div></div></div>
+        <div class="pt-item"><div class="pt-year mono">2026</div><div><div class="pt-title">CubeSats & Satellite Systems</div><div class="pt-desc">CEG Campus, Anna University</div></div></div>
+        <div class="pt-item"><div class="pt-year mono">2025</div><div><div class="pt-title">Robotic Operating System Training</div><div class="pt-desc">Sri Sairam Techno Incubator</div></div></div>
+        <div class="pt-item"><div class="pt-year mono">2024</div><div><div class="pt-title">Electronics Measurement & Instrumentation</div><div class="pt-desc">IIT Madras — INUP-i2i Program</div></div></div>
       </div>
     </div>
   </div>
@@ -476,10 +449,10 @@
 <!-- ═══════════════════ CONTACT ═══════════════════ -->
 <section id="contact" class="section section-alt" aria-labelledby="contact-heading">
   <div class="container">
-    <h2 id="contact-heading" class="section-heading reveal">Let's Build Something <span class="accent-text">Interesting</span></h2>
-    <p class="contact-intro-text reveal">Whether it's an idea, a product, a system, or a problem worth solving — I'd love to hear about it. Let's explore what's possible.</p>
+    <h2 id="contact-heading" class="section-heading">Let's Build Something <span class="accent-text">Interesting</span></h2>
+    <p class="contact-intro-text">Whether it's an idea, a product, a system, or a problem worth solving — I'd love to hear about it. Let's explore what's possible.</p>
     <div class="contact-grid">
-      <div class="contact-info reveal">
+      <div class="contact-info">
         <p class="contact-intro" data-field="contact-intro">Ready for conversations about interesting problems, creative collaborations, and ambitious ideas.</p>
         <address class="contact-links">
           <a href="mailto:vshivaprasad07@gmail.com" class="contact-link" data-field="contact-email">
@@ -504,7 +477,7 @@
           </a>
         </address>
       </div>
-      <form class="contact-form reveal" id="contact-form" novalidate>
+      <form class="contact-form" id="contact-form" novalidate>
         <div class="form-group">
           <label for="name">Name</label>
           <input type="text" id="name" name="name" placeholder="Your name" required autocomplete="name" />
@@ -522,7 +495,7 @@
           <textarea id="message" name="message" rows="5" placeholder="Tell me about your idea, problem, or vision…" required></textarea>
         </div>
         <button type="submit" class="btn-primary full-w" id="submit-btn">Send Message</button>
-        <div class="form-status" id="form-status" style="margin-top:1rem;font-size:.9rem;color:var(--muted);display:none" role="status" aria-live="polite"></div>
+        <div class="form-status" id="form-status" style="margin-top:1rem;font-size:.85rem;color:var(--text-3);display:none" role="status" aria-live="polite"></div>
       </form>
     </div>
   </div>
@@ -539,7 +512,7 @@
 <script defer src="js/core/config.js"></script>
 <script defer src="js/core/firebase-config.js"></script>
 <!-- App scripts — all deferred, execute in declaration order -->
-<script defer src="js/core/firebase-loader.js"></script><script defer src="js/core/neural-network.js"></script><script defer src="js/data/work-data.js"></script>
+<script defer src="js/core/firebase-loader.js"></script><script defer src="js/data/work-data.js"></script>
 <script defer src="js/core/ui.js"></script>
 <script defer src="js/pages/home.js"></script>
 <script defer src="js/core/form-handler.js"></script>
