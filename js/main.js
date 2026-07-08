@@ -166,7 +166,7 @@
   }
   doc.addEventListener("keydown", function (e) { if (e.key === "Escape") setMenu(false); });
 
-  /* ── 8. JOURNEY DRAG-SCROLL ────────────────────────────────── */
+  /* ── 8. JOURNEY HORIZONTAL SCROLL ──────────────────────────── */
   var rail = doc.querySelector(".journey-rail");
   if (rail) {
     var down = false, startX = 0, startLeft = 0, moved = false;
@@ -183,8 +183,16 @@
     function end() { down = false; rail.classList.remove("is-drag"); }
     rail.addEventListener("pointerup", end);
     rail.addEventListener("pointerleave", end);
-    // Prevent click navigation right after a drag
     rail.addEventListener("click", function (e) { if (moved) { e.preventDefault(); e.stopPropagation(); } }, true);
+
+    rail.addEventListener("wheel", function (e) {
+      var maxScroll = rail.scrollWidth - rail.clientWidth;
+      if (maxScroll <= 0) return;
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        e.preventDefault();
+        rail.scrollLeft += e.deltaY;
+      }
+    }, { passive: false });
   }
 
   /* ── 9. CONTACT FORM (client-side only) ────────────────────── */

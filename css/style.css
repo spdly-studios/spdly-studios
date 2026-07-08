@@ -265,7 +265,7 @@ section[id] { scroll-margin-top: clamp(72px, 10vh, 96px); }
   gap: 2.5rem;
   white-space: nowrap;
   will-change: transform;
-  animation: marquee 30s linear infinite;
+  animation: marquee 36s linear infinite;
 }
 .marquee-track span { font-family: var(--mono); font-size: clamp(0.8rem, 1.1vw, 1rem); letter-spacing: 0.1em; text-transform: uppercase; }
 .star { color: var(--red); }
@@ -274,12 +274,24 @@ section[id] { scroll-margin-top: clamp(72px, 10vh, 96px); }
 /* ── 9. HERO / COVER ──────────────────────────────────────────── */
 .hero {
   position: relative;
-  min-height: 100svh;
+  height: 100svh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding-top: clamp(96px, 13vh, 150px);
+  padding-block: clamp(96px, 13vh, 150px) clamp(20px, 2.5vh, 36px);
   overflow: hidden;
+  background: var(--paper);
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -15%;
+  width: 70%;
+  height: 90%;
+  transform: translateY(-50%);
+  background: radial-gradient(ellipse at center, rgba(226, 64, 44, 0.055), transparent 70%);
+  pointer-events: none;
 }
 .hero-rail {
   position: absolute;
@@ -316,8 +328,8 @@ section[id] { scroll-margin-top: clamp(72px, 10vh, 96px); }
 .hero-title {
   font-weight: 800;
   font-size: clamp(3rem, 13vw, 13rem);
-  line-height: 0.9;
-  letter-spacing: -0.025em;
+  line-height: 0.88;
+  letter-spacing: -0.03em;
   text-transform: uppercase;
 }
 .hero-title .line { display: block; overflow: hidden; padding-bottom: 0.04em; }
@@ -332,8 +344,31 @@ section[id] { scroll-margin-top: clamp(72px, 10vh, 96px); }
   line-height: 1.5;
 }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: clamp(1.8rem, 3vw, 2.6rem); }
+.hero-cta-link {
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gray);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+  transition: color 0.3s;
+  align-self: center;
+}
+.hero-cta-link:hover { color: var(--red); }
 
-.hero-portrait { position: relative; align-self: center; }
+.hero-portrait {
+  position: relative;
+  align-self: center;
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 1.2s var(--ease), transform 1.2s var(--ease);
+  transition-delay: 0.5s;
+}
+.hero-portrait.is-in {
+  opacity: 1;
+  transform: translateY(0);
+}
 .portrait-frame {
   position: relative;
   aspect-ratio: 4 / 5;
@@ -342,9 +377,28 @@ section[id] { scroll-margin-top: clamp(72px, 10vh, 96px); }
   margin-inline: auto;
   overflow: hidden;
   background: var(--ink);
-  border: 1px solid var(--line);
+  border: 2px solid var(--ink);
+  outline: 1px solid var(--red);
+  outline-offset: 6px;
+  box-shadow: 10px 10px 0px 0px rgba(226, 64, 44, 0.06);
+  animation: portraitFloat 7s ease-in-out infinite;
+  animation-delay: 1.8s;
 }
 .portrait-frame img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.06); }
+.portrait-frame::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  border: 1px solid var(--red);
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 0.6s var(--ease);
+}
+.hero-portrait:hover .portrait-frame::before { opacity: 0.7; }
 .portrait-frame::after {
   content: "";
   position: absolute;
@@ -497,6 +551,7 @@ section[id] { scroll-margin-top: clamp(72px, 10vh, 96px); }
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
   cursor: grab;
+  scroll-behavior: smooth;
 }
 .journey-rail::-webkit-scrollbar { display: none; }
 .journey-rail.is-drag { cursor: grabbing; }
@@ -730,7 +785,11 @@ section[id] { scroll-margin-top: clamp(72px, 10vh, 96px); }
 /* Mobile */
 @media (max-width: 680px) {
   :root { --pad-x: 20px; }
-  .hero { min-height: auto; padding-top: 110px; padding-bottom: 3rem; }
+  .hero {
+    height: 100svh;
+    padding-top: 100px;
+    padding-bottom: 2.5rem;
+  }
   .hero-rail { display: none; }
   .hero-portrait { max-width: 260px; margin-top: 1rem; }
   .work-link { grid-template-columns: auto 1fr; row-gap: 0.4rem; }
