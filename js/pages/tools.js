@@ -28,7 +28,7 @@ window.addEventListener('load', () => {
 
   setTimeout(() => {
     const preloader = document.getElementById('preloader');
-    if (preloader) preloader.classList.add('done');
+    if (preloader) preloader.classList.add('is-done');
     document.body.classList.remove('no-scroll');
     initRevealObserver();
   }, 800);
