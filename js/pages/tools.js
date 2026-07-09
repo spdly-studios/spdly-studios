@@ -120,7 +120,7 @@ function renderAllTools(data) {
       
       const fieldHTML = tool.field 
         ? `<div class="tool-field">${tool.field}</div>` 
-        '';
+        : '';
       
       const tagsHTML = (tool.tags || []).slice(0, 2)
         .map(t => `<span class="tool-badge">${t}</span>`)

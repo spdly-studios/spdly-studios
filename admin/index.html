@@ -774,6 +774,7 @@
             <button class="btn btn-ghost" onclick="nav('tools');setTimeout(()=>openAddTool(),200)">+ Add Tool</button>
             <button class="btn btn-ghost" onclick="nav('skills')">Edit Skills</button>
             <button class="btn btn-ghost" onclick="nav('about')">Edit Hero</button>
+            <button class="btn btn-ghost" onclick="triggerBackendReset()" style="color:var(--red);border-color:rgba(224,83,83,0.3)">⚠️ Reset & Reupload All Data</button>
           </div>
         </div>
         <div class="card">
@@ -1131,6 +1132,45 @@ async function fsGet(section) {
 
 async function fsSet(section, data) {
   await fsDoc(section).set(data, { merge: true });
+}
+
+async function triggerBackendReset() {
+  if (!confirm("Are you sure you want to RESET all Firestore collections and reupload all default static data (projects, experience, research, education, tools, presentations, skills, about, config, contact)? This will overwrite current database values.")) return;
+  
+  try {
+    showToast('Resetting database and seeding...', 'info');
+    
+    appData.projects      = getStaticProjects();
+    appData.experience    = getStaticExperience();
+    appData.research      = getStaticResearch();
+    appData.education     = getStaticEducation();
+    appData.tools         = getStaticTools();
+    appData.presentations = getStaticPresentations();
+    appData.skills        = getStaticSkills();
+    appData.about         = getStaticAbout();
+    appData.config        = getStaticConfig();
+    appData.contact       = getStaticContact();
+
+    await Promise.all([
+      fsDoc('projects').set({ items: appData.projects }),
+      fsDoc('experience').set({ items: appData.experience }),
+      fsDoc('research').set({ items: appData.research }),
+      fsDoc('education').set({ items: appData.education }),
+      fsDoc('tools').set({ items: appData.tools }),
+      fsDoc('presentations').set(appData.presentations),
+      fsDoc('skills').set({ groups: appData.skills }),
+      fsDoc('about').set(appData.about),
+      fsDoc('config').set(appData.config),
+      fsDoc('contact').set(appData.contact)
+    ]);
+    
+    showToast('Database reset and reuploaded successfully!', 'success');
+    renderAll();
+    updateDashboardStats();
+  } catch (e) {
+    console.error('Error during database reset:', e);
+    showToast('Database reset failed: ' + e.message, 'error');
+  }
 }
 
 /* ── Load all data ──────────────────────────────────────── */

@@ -93,20 +93,14 @@
   <!-- FULLSCREEN MENU -->
   <nav class="menu" id="menu" aria-hidden="true">
     <div class="menu-inner">
-      <div class="menu-index mono">Index — 12 sections</div>
+      <div class="menu-index mono">Index — 6 sections</div>
       <ul class="menu-list">
-        <li style="--i:0"><a href="#hero" data-cursor="link"><span class="menu-num">01</span>Cover</a></li>
+        <li style="--i:0"><a href="#hero" data-cursor="link"><span class="menu-num">01</span>Home</a></li>
         <li style="--i:1"><a href="#about" data-cursor="link"><span class="menu-num">02</span>About</a></li>
-        <li style="--i:2"><a href="#work" data-cursor="link"><span class="menu-num">03</span>Selected Work</a></li>
-        <li style="--i:3"><a href="#journey" data-cursor="link"><span class="menu-num">04</span>Journey</a></li>
-        <li style="--i:4"><a href="#experience" data-cursor="link"><span class="menu-num">05</span>Experience</a></li>
-        <li style="--i:5"><a href="#skills" data-cursor="link"><span class="menu-num">06</span>Disciplines</a></li>
-        <li style="--i:6"><a href="#timeline" data-cursor="link"><span class="menu-num">07</span>Timeline</a></li>
-        <li style="--i:7"><a href="#research" data-cursor="link"><span class="menu-num">08</span>Research</a></li>
-        <li style="--i:8"><a href="#publications" data-cursor="link"><span class="menu-num">09</span>Publications</a></li>
-        <li style="--i:9"><a href="#achievements" data-cursor="link"><span class="menu-num">10</span>Achievements</a></li>
-        <li style="--i:10"><a href="#blog" data-cursor="link"><span class="menu-num">11</span>Writing</a></li>
-        <li style="--i:11"><a href="#contact" data-cursor="link"><span class="menu-num">12</span>Contact</a></li>
+        <li style="--i:2"><a href="projects.html" data-cursor="link"><span class="menu-num">03</span>Projects</a></li>
+        <li style="--i:3"><a href="tools.html" data-cursor="link"><span class="menu-num">04</span>Tools</a></li>
+        <li style="--i:4"><a href="https://blog.spdly.is-a.dev" target="_blank" rel="noopener" data-cursor="link"><span class="menu-num">05</span>Blog</a></li>
+        <li style="--i:5"><a href="#contact" data-cursor="link"><span class="menu-num">06</span>Contact</a></li>
       </ul>
       <div class="menu-foot mono">
         <span>vshivaprasad07@gmail.com</span>
@@ -245,68 +239,81 @@
 
       <ol class="work-list">
         <li class="work-item" data-reveal>
-          <a class="work-link" href="#research" data-cursor="view">
+          <a class="work-link" href="work.html?id=fir-filter" data-cursor="view">
             <span class="work-index mono">01</span>
             <div class="work-main">
-              <h3 class="work-name">Wireless Occupancy Estimation</h3>
-              <p class="work-desc">Reading a room from ambient radio. A statistical-filtering pipeline that estimates occupancy from RSSI — no extra sensors, 89.47% accuracy.</p>
+              <h3 class="work-name">Adaptive FIR Filter System</h3>
+              <p class="work-desc">Real-time signal acquisition, adaptive filtering &amp; output reconstruction on Arduino UNO.</p>
             </div>
             <div class="work-meta mono">
-              <span>Comms · DSP</span><span>2025</span>
-            </div>
-            <span class="work-plate plate--rssi" aria-hidden="true"><span class="plate-wave"></span></span>
-          </a>
-        </li>
-        <li class="work-item" data-reveal>
-          <a class="work-link" href="#research" data-cursor="view">
-            <span class="work-index mono">02</span>
-            <div class="work-main">
-              <h3 class="work-name">GPS-Independent Localization</h3>
-              <p class="work-desc">Position from signal geometry alone. Triangulating a moving node using distributed receivers and real-time RSSI — infrastructure not required.</p>
-            </div>
-            <div class="work-meta mono">
-              <span>Comms · Robotics</span><span>2025</span>
-            </div>
-            <span class="work-plate plate--grid" aria-hidden="true"></span>
-          </a>
-        </li>
-        <li class="work-item" data-reveal>
-          <a class="work-link" href="#experience" data-cursor="view">
-            <span class="work-index mono">03</span>
-            <div class="work-main">
-              <h3 class="work-name">Telemetry Ground Station</h3>
-              <p class="work-desc">Bridging the bench and the sky. An end-to-end link — sensors, embedded transport, decoding and a live dashboard — built from concept to hardware.</p>
-            </div>
-            <div class="work-meta mono">
-              <span>Embedded · Comms</span><span>2024</span>
-            </div>
-            <span class="work-plate plate--tele" aria-hidden="true"></span>
-          </a>
-        </li>
-        <li class="work-item" data-reveal>
-          <a class="work-link" href="#skills" data-cursor="view">
-            <span class="work-index mono">04</span>
-            <div class="work-main">
-              <h3 class="work-name">Edge Signal Processor</h3>
-              <p class="work-desc">FIR design and statistical filtering running close to the metal — turning noisy analogue signals into decisions on constrained microcontrollers.</p>
-            </div>
-            <div class="work-meta mono">
-              <span>DSP · Embedded</span><span>2024</span>
+              <span>Embedded Systems</span><span>2024</span>
             </div>
             <span class="work-plate plate--dsp" aria-hidden="true"><span class="plate-bars"></span></span>
           </a>
         </li>
         <li class="work-item" data-reveal>
-          <a class="work-link" href="#skills" data-cursor="view">
-            <span class="work-index mono">05</span>
+          <a class="work-link" href="work.html?id=stellar-crest" data-cursor="view">
+            <span class="work-index mono">02</span>
             <div class="work-main">
-              <h3 class="work-name">Autonomous Rover Platform</h3>
-              <p class="work-desc">A small vehicle with big opinions. Cascaded PID, a complementary filter and sensor fusion keep it upright, aimed and moving on its own.</p>
+              <h3 class="work-name">Stellar Crest — CubeSat ADCS Prototype</h3>
+              <p class="work-desc">Attitude Determination &amp; Control System with SDR telemetry, digital twin, and custom ground station.</p>
             </div>
             <div class="work-meta mono">
-              <span>Robotics · AI</span><span>2025</span>
+              <span>Space Systems</span><span>2025</span>
+            </div>
+            <span class="work-plate plate--tele" aria-hidden="true"></span>
+          </a>
+        </li>
+        <li class="work-item" data-reveal>
+          <a class="work-link" href="work.html?id=optical-am" data-cursor="view">
+            <span class="work-index mono">03</span>
+            <div class="work-main">
+              <h3 class="work-name">AM Optical Communication Link</h3>
+              <p class="work-desc">DSB-FC optical transmitter-receiver system with experimental noise and bandwidth analysis.</p>
+            </div>
+            <div class="work-meta mono">
+              <span>Communication Systems</span><span>2024</span>
+            </div>
+            <span class="work-plate plate--rssi" aria-hidden="true"><span class="plate-wave"></span></span>
+          </a>
+        </li>
+        <li class="work-item" data-reveal>
+          <a class="work-link" href="work.html?id=slope-sign-mod" data-cursor="view">
+            <span class="work-index mono">04</span>
+            <div class="work-main">
+              <h3 class="work-name">Delay-Based Slope Sign Modulator</h3>
+              <p class="work-desc">Prototype SSM/SSD system using delay-based signal comparison across frequency and waveform conditions.</p>
+            </div>
+            <div class="work-meta mono">
+              <span>Communication Systems</span><span>2024</span>
+            </div>
+            <span class="work-plate plate--grid" aria-hidden="true"></span>
+          </a>
+        </li>
+        <li class="work-item" data-reveal>
+          <a class="work-link" href="work.html?id=rtos-multicore" data-cursor="view">
+            <span class="work-index mono">05</span>
+            <div class="work-main">
+              <h3 class="work-name">RTOS-Based Multi-Core System</h3>
+              <p class="work-desc">Dual-core task scheduling with semaphore synchronization and MQTT-bridged Python integration.</p>
+            </div>
+            <div class="work-meta mono">
+              <span>Embedded Systems</span><span>2025</span>
             </div>
             <span class="work-plate plate--bot" aria-hidden="true"></span>
+          </a>
+        </li>
+        <li class="work-item" data-reveal>
+          <a class="work-link" href="work.html?id=shoreline-analysis" data-cursor="view">
+            <span class="work-index mono">06</span>
+            <div class="work-main">
+              <h3 class="work-name">Automated Shoreline Analysis</h3>
+              <p class="work-desc">Python-based geospatial tool for automated shoreline change detection and statistical reporting.</p>
+            </div>
+            <div class="work-meta mono">
+              <span>Data &amp; Analysis</span><span>2025</span>
+            </div>
+            <span class="work-plate plate--grid" aria-hidden="true"></span>
           </a>
         </li>
       </ol>
