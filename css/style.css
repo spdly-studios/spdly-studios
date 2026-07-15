@@ -763,6 +763,25 @@ section[id] { scroll-margin-top: clamp(72px, 10vh, 96px); }
 .footer-col a:hover { color: var(--red); }
 .footer-colophon { color: rgba(243, 239, 230, 0.4); }
 
+/* ── 23. PROMPTING GUIDE PAGE ═══════════════════════════════════ */
+.hero--guide {
+  padding-block-end: clamp(40px, 6vh, 64px);
+}
+.hero--guide .hero-title {
+  font-size: clamp(2.2rem, 8vw, 8rem);
+}
+.hero--guide .portrait-frame {
+  overflow: visible;
+  background: transparent;
+}
+.hero--guide .portrait-frame img {
+  object-fit: contain;
+  filter: none;
+}
+.hero--guide .portrait-frame::before {
+  display: none;
+}
+
 /* ── 22. RESPONSIVE ───────────────────────────────────────────── */
 
 /* Tablet */

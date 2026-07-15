@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+  <!-- ═══ META ═══ -->
+  <title>Top 10 Prompt Techniques — SpDly Studios</title>
+  <meta name="description" content="A guide to the top 10 prompt techniques that enforce AI to think structurally, own its decisions, and strip away the fluff." />
+  <meta name="keywords" content="prompt engineering, AI prompts, structured thinking, prompt techniques, SpDly Studios" />
+  <meta name="author" content="Shivaprasad V" />
+  <meta name="theme-color" content="#090909" />
+  <meta name="color-scheme" content="light" />
+  <link rel="canonical" href="https://spdly.is-a.dev/prompting-techniques.html" />
+
+  <!-- OPEN GRAPH -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="SpDly Studios" />
+  <meta property="og:title" content="Top 10 Prompt Techniques — SpDly Studios" />
+  <meta property="og:description" content="A guide to prompt techniques that make AI think structurally, own its decisions, and remove the fluff." />
+  <meta property="og:url" content="https://spdly.is-a.dev/prompting-techniques.html" />
+  <meta property="og:image" content="https://spdly.is-a.dev/assets/prompt-cover.png" />
+
+  <!-- STRUCTURED DATA -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Top 10 Prompt Techniques — SpDly Studios",
+    "description": "A guide to the top 10 prompt techniques that enforce AI to think structurally, own its decisions, and strip away the fluff.",
+    "url": "https://spdly.is-a.dev/prompting-techniques.html",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "SpDly Studios",
+      "url": "https://spdly.is-a.dev"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "Shivaprasad V",
+      "alternateName": "SpDly",
+      "url": "https://spdly.is-a.dev"
+    }
+  }
+  </script>
+
+  <!-- FONTS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Space+Mono:wght@400;700&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Space+Mono:wght@400;700&display=swap" /></noscript>
+
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- GRAIN OVERLAY -->
+  <svg class="grain" aria-hidden="true" width="0" height="0">
+    <filter id="grain-filter"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+  </svg>
+  <div class="grain-overlay" aria-hidden="true"></div>
+
+  <!-- PRELOADER -->
+  <div id="preloader" aria-hidden="true">
+    <div class="pre-wrap">
+      <div class="pre-mark"><span>SPDLY</span><span class="pre-dot">®</span></div>
+      <div class="pre-bar"><span></span></div>
+      <div class="pre-cap mono">Loading the studio — 2026</div>
+    </div>
+  </div>
+
+  <!-- SCROLL PROGRESS -->
+  <div id="progress" aria-hidden="true"></div>
+
+  <!-- CUSTOM CURSOR -->
+  <div class="cursor cursor--ring" aria-hidden="true"></div>
+  <div class="cursor cursor--dot" aria-hidden="true"></div>
+
+  <!-- HEADER / NAV -->
+  <header class="topbar" id="topbar">
+    <a href="index.html" class="brand" data-cursor="link" aria-label="SpDly Studios — Home">
+      <span class="brand-sp">SPDLY</span><span class="brand-reg">®</span><span class="brand-st">STUDIOS</span>
+    </a>
+    <div class="topbar-meta mono">
+      <span>Chennai · IN</span>
+      <span class="topbar-hide">13.08°N / 80.27°E</span>
+    </div>
+    <button class="menu-btn" id="menu-btn" data-cursor="link" aria-expanded="false" aria-controls="menu">
+      <span class="menu-btn-label">Menu</span>
+      <span class="menu-btn-box"><i></i><i></i></span>
+    </button>
+  </header>
+
+  <!-- FULLSCREEN MENU -->
+  <nav class="menu" id="menu" aria-hidden="true">
+    <div class="menu-inner">
+      <div class="menu-index mono">Index — 6 sections</div>
+      <ul class="menu-list">
+        <li style="--i:0"><a href="index.html" data-cursor="link"><span class="menu-num">01</span>Home</a></li>
+        <li style="--i:1"><a href="index.html#about" data-cursor="link"><span class="menu-num">02</span>About</a></li>
+        <li style="--i:2"><a href="projects.html" data-cursor="link"><span class="menu-num">03</span>Projects</a></li>
+        <li style="--i:3"><a href="tools.html" data-cursor="link"><span class="menu-num">04</span>Tools</a></li>
+        <li style="--i:4"><a href="https://blog.spdly.is-a.dev" target="_blank" rel="noopener" data-cursor="link"><span class="menu-num">05</span>Blog</a></li>
+        <li style="--i:5"><a href="index.html#contact" data-cursor="link"><span class="menu-num">06</span>Contact</a></li>
+      </ul>
+      <div class="menu-foot mono">
+        <span>vshivaprasad07@gmail.com</span>
+        <span>@SpDly14</span>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+
+  <!-- ════════════════════════ HERO ════════════════════════ -->
+  <section class="hero hero--guide" id="hero" aria-label="Cover">
+    <div class="hero-rail mono" aria-hidden="true"><span>Prompt Engineering Guide — Est. 2026</span></div>
+
+    <div class="hero-grid">
+      <div class="hero-head">
+        <div class="hero-kicker mono" data-reveal>
+          <span>N°01</span><span class="hero-kicker-sep">/</span><span>Guide</span>
+        </div>
+        <h1 class="hero-title">
+          <span class="line"><span class="word" data-reveal>TOP</span> <span class="word" data-reveal>10</span></span>
+          <span class="line"><span class="word" data-reveal>PROMPT</span></span>
+          <span class="line"><span class="word word--accent" data-reveal>TECHNIQUES.</span></span>
+        </h1>
+        <p class="hero-sub" data-reveal>
+          Force AI to think structurally. Make it own its decisions. Strip away the fluff. A curated guide of the 10 techniques that actually change how you prompt.
+        </p>
+        <div class="hero-actions" data-reveal>
+          <a href="https://docs.google.com/document/d/1VYy23SkkBMSrAanvyZ3FsQRPhSgKoXrzUVTuLiAA2D8/edit?usp=sharing" target="_blank" rel="noopener" class="btn btn--solid" data-cursor="link" data-magnetic>Open in Google Docs</a>
+          <a href="#techniques" class="btn btn--ghost" data-cursor="link" data-magnetic>Preview Techniques</a>
+        </div>
+      </div>
+
+      <figure class="hero-portrait" data-reveal>
+        <div class="portrait-frame">
+          <img src="assets/prompt-cover.png" alt="Prompt Techniques Cover" width="640" height="800" loading="eager" decoding="async" />
+          <span class="portrait-grain" aria-hidden="true"></span>
+        </div>
+      </figure>
+    </div>
+
+    <div class="hero-marquee" aria-hidden="true">
+      <div class="marquee">
+        <div class="marquee-track">
+          <span>Council of Five</span><span class="star">✳</span>
+          <span>Devil's Advocate</span><span class="star">✳</span>
+          <span>Thesis-Antithesis-Synthesis</span><span class="star">✳</span>
+          <span>Tree of Thoughts</span><span class="star">✳</span>
+          <span>SCAMPER</span><span class="star">✳</span>
+          <span>Inversion Thinking</span><span class="star">✳</span>
+          <span>MECE Structuring</span><span class="star">✳</span>
+          <span>Six Thinking Hats</span><span class="star">✳</span>
+          <span>5 Whys — Root Cause Chain</span><span class="star">✳</span>
+          <span>Morphological Analysis</span><span class="star">✳</span>
+          <span>Council of Five</span><span class="star">✳</span>
+          <span>Devil's Advocate</span><span class="star">✳</span>
+          <span>Thesis-Antithesis-Synthesis</span><span class="star">✳</span>
+          <span>Tree of Thoughts</span><span class="star">✳</span>
+          <span>SCAMPER</span><span class="star">✳</span>
+          <span>Inversion Thinking</span><span class="star">✳</span>
+          <span>MECE Structuring</span><span class="star">✳</span>
+          <span>Six Thinking Hats</span><span class="star">✳</span>
+          <span>5 Whys — Root Cause Chain</span><span class="star">✳</span>
+          <span>Morphological Analysis</span><span class="star">✳</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ ABOUT THE GUIDE ════════════════════════ -->
+  <section class="about section" id="about" aria-labelledby="about-h">
+    <div class="container about-grid">
+      <div class="about-lead">
+        <p class="section-tag mono" data-reveal><span>02</span> — The Guide</p>
+        <h2 class="about-statement" id="about-h">
+          <span class="line" data-reveal>No more</span>
+          <span class="line" data-reveal>fluff.</span>
+          <span class="line line--accent" data-reveal>Only</span>
+          <span class="line" data-reveal>structure.</span>
+        </h2>
+      </div>
+
+      <div class="about-body">
+        <p class="about-p" data-reveal>
+          Most AI prompts produce vague answers because they lack structure. This guide collects the <strong>10 techniques</strong> that force large language models to think clearly, justify their reasoning, and commit to decisions instead of hedging.
+        </p>
+        <p class="about-p" data-reveal>
+          Each technique is explained with the underlying principle, a ready-to-use template, and examples so you can apply it immediately. No theory without practice. No practice without theory.
+        </p>
+        <blockquote class="about-quote" data-reveal>
+          "The difference between a useful prompt and a useless one is the difference between a system with constraints and a system without."
+        </blockquote>
+        <div class="about-meta">
+          <div class="about-meta-row" data-reveal>
+            <span class="mono">Format</span><span>Google Docs — Open and read online</span>
+          </div>
+          <div class="about-meta-row" data-reveal>
+            <span class="mono">Techniques</span><span>10 frameworks for structured AI reasoning</span>
+          </div>
+          <div class="about-meta-row" data-reveal>
+            <span class="mono">Access</span><span>Free — no download required</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ TECHNIQUES PREVIEW ════════════════════════ -->
+  <section class="skills section section--ink" id="techniques" aria-labelledby="skills-h">
+    <div class="container">
+      <header class="section-head">
+        <p class="section-tag mono" data-reveal><span>03</span> — The Techniques</p>
+        <h2 class="section-title section-title--light" id="skills-h" data-reveal>Ten<br>principles</h2>
+        <p class="section-note section-note--light" data-reveal>A preview of what's inside. The guide expands each into templates and worked examples.</p>
+      </header>
+
+      <div class="skills-grid">
+        <div class="skill-block skill-block--lg" data-reveal>
+          <span class="skill-kicker mono">Reasoning</span>
+          <p class="skill-words">Council of Five <span>·</span> Devil's Advocate <span>·</span> Thesis-Antithesis-Synthesis <span>·</span> Tree of Thoughts</p>
+        </div>
+        <div class="skill-block" data-reveal>
+          <span class="skill-kicker mono">Structure</span>
+          <p class="skill-words">SCAMPER <span>·</span> MECE Structuring <span>·</span> 5 Whys — Root Cause Chain</p>
+        </div>
+        <div class="skill-block skill-block--accent" data-reveal>
+          <span class="skill-kicker mono">Design</span>
+          <p class="skill-words">Morphological Analysis <span>·</span> Inversion Thinking <span>·</span> Six Thinking Hats</p>
+        </div>
+        <div class="skill-block skill-block--wide" data-reveal style="grid-column: span 8;">
+          <span class="skill-kicker mono">Why these ten</span>
+          <p class="skill-words">Selected for <strong>structural enforcement</strong>, <strong>decision commitment</strong>, and <strong>fluff removal</strong>. Every technique either adds reasoning scaffolding or removes ambiguity.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ OPEN GUIDE ════════════════════════ -->
+  <section class="section section--ink" id="download" aria-labelledby="download-h">
+    <div class="container" style="max-width: 720px; text-align: center;">
+      <p class="section-tag mono" data-reveal><span>04</span> — Get the Guide</p>
+      <h2 class="section-title section-title--light" id="download-h" data-reveal style="font-size: clamp(2rem, 7vw, 5rem);">Open<br>the guide.</h2>
+      <p class="section-note section-note--light" data-reveal style="margin-inline: auto; margin-top: 1.4rem; max-width: 52ch;">
+        A single document containing all 10 techniques, templates, examples, and the thinking behind each one. Free to open and use.
+      </p>
+      <div data-reveal style="margin-top: clamp(2rem, 4vw, 3rem);">
+        <a href="https://docs.google.com/document/d/1VYy23SkkBMSrAanvyZ3FsQRPhSgKoXrzUVTuLiAA2D8/edit?usp=sharing" target="_blank" rel="noopener" class="btn btn--solid" data-cursor="link" data-magnetic style="padding: 1.2rem 2.4rem; font-size: 0.8rem;">
+          Open in Google Docs — Prompting Techniques
+        </a>
+      </div>
+      <p class="mono" data-reveal style="margin-top: 1.2rem; font-size: 0.68rem; color: rgba(243,239,230,0.45); letter-spacing: 0.1em; text-transform: uppercase;">
+        docs.google.com/document/d/1VYy23SkkBMSrAanvyZ3FsQRPhSgKoXrzUVTuLiAA2D8
+      </p>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- ════════════════════════ FOOTER ════════════════════════ -->
+  <footer class="footer">
+    <div class="footer-marquee" aria-hidden="true">
+      <div class="marquee">
+        <div class="marquee-track">
+          <span>SpDly Studios</span><span class="star">✳</span>
+          <span>Systems Thinking</span><span class="star">✳</span>
+          <span>Build What Doesn't Exist</span><span class="star">✳</span>
+          <span>SpDly Studios</span><span class="star">✳</span>
+          <span>Systems Thinking</span><span class="star">✳</span>
+          <span>Build What Doesn't Exist</span><span class="star">✳</span>
+        </div>
+      </div>
+    </div>
+    <div class="container footer-cols">
+      <div class="footer-brand">
+        <span class="brand-sp">SPDLY</span><span class="brand-reg">®</span><span class="brand-st">STUDIOS</span>
+      </div>
+      <div class="footer-col mono">
+        <span>Shivaprasad V</span>
+        <span>Electronics &amp; Communication Engineer</span>
+        <span>Chennai, Tamil Nadu, India</span>
+      </div>
+      <div class="footer-col mono">
+        <a href="mailto:vshivaprasad07@gmail.com" data-cursor="link">vshivaprasad07@gmail.com</a>
+        <a href="https://spdly.is-a.dev" target="_blank" rel="noopener" data-cursor="link">spdly.is-a.dev</a>
+        <a href="https://github.com/SpDly14" target="_blank" rel="noopener" data-cursor="link">GitHub</a>
+        <a href="https://linkedin.com/in/spdly" target="_blank" rel="noopener" data-cursor="link">LinkedIn</a>
+      </div>
+      <div class="footer-col footer-colophon mono">
+        <span>Set in Bricolage Grotesque &amp; Space Mono</span>
+        <span>Hand-built with HTML · CSS · Vanilla JS</span>
+        <span>© <span id="year">2026</span> — All systems reserved</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
