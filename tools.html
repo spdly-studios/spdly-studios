@@ -93,29 +93,41 @@
 
   <!-- ═══ FONTS ═══ -->
   <link rel="preload" as="style"
-    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&amp;family=Space+Mono:wght@400;700&amp;display=swap"
     onload="this.onload=null;this.rel='stylesheet'" />
   <noscript>
     <link rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&display=swap" />
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&amp;family=Space+Mono:wght@400;700&amp;display=swap" />
   </noscript>
 
   <!-- ═══ CRITICAL CSS ═══ -->
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--bg:#ffffff;--fg:#0a0a0a;--accent:#e54f4d;--muted:#8a8a8a}
-    html{scroll-behavior:smooth;background:var(--bg);color:var(--fg)}
-    body{font-family:'Outfit',sans-serif;background:var(--bg);overflow-x:hidden}
-    #preloader{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center}
+    :root{
+      --ink:#090909;
+      --paper:#f3efe6;
+      --red:#e2402c;
+      --gray:#8b867b;
+      --display:"Bricolage Grotesque",system-ui,-apple-system,sans-serif;
+      --mono:"Space Mono",ui-monospace,"SFMono-Regular",monospace;
+    }
+    [data-theme="dark"]{
+      --ink:#f3efe6;
+      --paper:#090909;
+    }
+    html{scroll-behavior:smooth;background:var(--paper);color:var(--ink)}
+    body{font-family:var(--display);background:var(--paper);overflow-x:hidden}
+    #preloader{position:fixed;inset:0;background:var(--ink);color:var(--paper);z-index:9999;display:flex;align-items:center;justify-content:center;transition:transform 0.9s cubic-bezier(0.76, 0, 0.24, 1)}
+    #preloader.is-done{transform:translateY(-100%)}
     .pre-inner{text-align:center}
-    .pre-wordmark{font-size:1.4rem;font-weight:700;letter-spacing:-.03em}
-    .pre-sp{color:var(--accent)}.pre-studios{color:var(--fg);font-weight:300;letter-spacing:.16em;font-size:.8em;text-transform:uppercase;margin-left:4px}
-    .pre-bar-wrap{width:160px;height:1px;background:#e0e0e0;margin:1.25rem auto .75rem;overflow:hidden}
-    .pre-bar{height:100%;width:0;background:var(--accent);animation:preLoad 1s ease .2s forwards}
-    .pre-label{font-size:.6rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;letter-spacing:.12em}
+    .pre-wordmark{font-size:1.6rem;font-weight:800;letter-spacing:-0.02em}
+    .pre-sp{color:var(--red)}
+    .pre-studios{color:var(--paper);font-weight:300;letter-spacing:.16em;font-size:.8em;text-transform:uppercase;margin-left:4px}
+    .pre-bar-wrap{width:160px;height:1px;background:rgba(243,239,230,0.15);margin:1.2rem auto 0.7rem;overflow:hidden}
+    .pre-bar{height:100%;width:0;background:var(--red);animation:preLoad 1s ease .2s forwards}
+    .pre-label{font-size:.68rem;color:var(--gray);font-family:var(--mono);letter-spacing:.16em;text-transform:uppercase}
     @keyframes preLoad{to{width:100%}}
-    #scroll-progress{position:fixed;top:0;left:0;height:2px;background:var(--accent);z-index:9998;width:0}
-    #navbar.scrolled{border-color:var(--border-sub)}
+    #scroll-progress{position:fixed;top:0;left:0;height:3px;background:var(--red);z-index:9998;width:0}
   </style>
 
   <!-- ═══ THEME (no-flash) ═══ -->
@@ -132,164 +144,6 @@
   <!-- ═══ MAIN STYLESHEET ═══ -->
   <link rel="preload" as="style" href="css/style.css" onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link rel="stylesheet" href="css/style.css" /></noscript>
-
-  <!-- ═══ TOOLS PAGE STYLES ═══ -->
-  <style>
-    .tools-section {
-      margin-bottom: 3rem;
-    }
-    
-    .tools-section-heading {
-      display: flex;
-      align-items: baseline;
-      gap: 0.75rem;
-      margin-bottom: 1.25rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid var(--border);
-    }
-    
-    .tools-section-title {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--text);
-    }
-    
-    .tools-section-count {
-      font-size: 0.65rem;
-      color: var(--text-3);
-      font-family: var(--mono);
-      border: 1px solid var(--border);
-      padding: 2px 8px;
-    }
-    
-    .tools-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1rem;
-      margin-bottom: 2rem;
-    }
-    
-    .tool-card {
-      display: flex;
-      flex-direction: column;
-      border: 1px solid var(--border);
-      padding: 1.5rem;
-      transition: border-color 0.15s;
-      text-decoration: none;
-      color: inherit;
-      background: var(--surface);
-    }
-    
-    .tool-card:hover {
-      border-color: var(--text);
-    }
-    
-    .tool-icon {
-      width: 2rem; height: 2rem;
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 0.75rem;
-      font-size: 1rem;
-      flex-shrink: 0;
-    }
-    
-    .tool-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-bottom: 0.4rem;
-      line-height: 1.3;
-      color: var(--text);
-    }
-    
-    .tool-description {
-      font-size: 0.82rem;
-      color: var(--text-2);
-      margin-bottom: 0.75rem;
-      flex: 1;
-      line-height: 1.6;
-      font-weight: 300;
-    }
-    
-    .tool-field {
-      display: inline-block;
-      font-size: 0.6rem;
-      color: var(--text-3);
-      font-family: var(--mono);
-      border: 1px solid var(--border-sub);
-      padding: 2px 8px;
-      margin-bottom: 0.6rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-    
-    .tool-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: auto;
-      padding-top: 0.75rem;
-      border-top: 1px solid var(--border-sub);
-      font-size: 0.72rem;
-      color: var(--text-3);
-      font-family: var(--mono);
-    }
-    
-    .tool-badge {
-      font-size: 0.62rem;
-      padding: 2px 6px;
-      border: 1px solid var(--border-sub);
-      color: var(--text-2);
-    }
-    
-    .tool-link-icon {
-      color: var(--text);
-      opacity: 0.5;
-      transition: opacity 0.15s;
-    }
-    
-    .tool-card:hover .tool-link-icon {
-      opacity: 1;
-    }
-    
-    .tools-empty {
-      padding: 3rem 2rem;
-      text-align: center;
-      color: var(--text-2);
-      border: 1px solid var(--border);
-    }
-    
-    .tools-filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-      margin-bottom: 1.5rem;
-    }
-    
-    .filter-btn {
-      padding: 0.4rem 0.8rem;
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-2);
-      cursor: pointer;
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      transition: all 0.15s;
-      letter-spacing: 0.04em;
-    }
-    
-    .filter-btn:hover {
-      border-color: var(--text);
-      color: var(--text);
-    }
-    
-    .filter-btn.active {
-      background: var(--text);
-      color: var(--bg);
-      border-color: var(--text);
-    }
-  </style>
 
   <!-- ═══ FIREBASE ═══ -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>

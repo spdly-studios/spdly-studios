@@ -122,29 +122,41 @@
 
   <!-- ═══ FONTS ═══ -->
   <link rel="preload" as="style"
-    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&amp;family=Space+Mono:wght@400;700&amp;display=swap"
     onload="this.onload=null;this.rel='stylesheet'" />
   <noscript>
     <link rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&display=swap" />
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&amp;family=Space+Mono:wght@400;700&amp;display=swap" />
   </noscript>
 
   <!-- ═══ CRITICAL CSS ═══ -->
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--bg:#ffffff;--fg:#0a0a0a;--accent:#e54f4d;--muted:#8a8a8a}
-    html{scroll-behavior:smooth;background:var(--bg);color:var(--fg)}
-    body{font-family:'Outfit',sans-serif;background:var(--bg);overflow-x:hidden}
-    #preloader{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center}
+    :root{
+      --ink:#090909;
+      --paper:#f3efe6;
+      --red:#e2402c;
+      --gray:#8b867b;
+      --display:"Bricolage Grotesque",system-ui,-apple-system,sans-serif;
+      --mono:"Space Mono",ui-monospace,"SFMono-Regular",monospace;
+    }
+    [data-theme="dark"]{
+      --ink:#f3efe6;
+      --paper:#090909;
+    }
+    html{scroll-behavior:smooth;background:var(--paper);color:var(--ink)}
+    body{font-family:var(--display);background:var(--paper);overflow-x:hidden}
+    #preloader{position:fixed;inset:0;background:var(--ink);color:var(--paper);z-index:9999;display:flex;align-items:center;justify-content:center;transition:transform 0.9s cubic-bezier(0.76, 0, 0.24, 1)}
+    #preloader.is-done{transform:translateY(-100%)}
     .pre-inner{text-align:center}
-    .pre-wordmark{font-size:1.4rem;font-weight:700;letter-spacing:-.03em}
-    .pre-sp{color:var(--accent)}.pre-studios{color:var(--fg);font-weight:300;letter-spacing:.16em;font-size:.8em;text-transform:uppercase;margin-left:4px}
-    .pre-bar-wrap{width:160px;height:1px;background:#e0e0e0;margin:1.25rem auto .75rem;overflow:hidden}
-    .pre-bar{height:100%;width:0;background:var(--accent);animation:preLoad 1s ease .2s forwards}
-    .pre-label{font-size:.6rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;letter-spacing:.12em}
+    .pre-wordmark{font-size:1.6rem;font-weight:800;letter-spacing:-0.02em}
+    .pre-sp{color:var(--red)}
+    .pre-studios{color:var(--paper);font-weight:300;letter-spacing:.16em;font-size:.8em;text-transform:uppercase;margin-left:4px}
+    .pre-bar-wrap{width:160px;height:1px;background:rgba(243,239,230,0.15);margin:1.2rem auto 0.7rem;overflow:hidden}
+    .pre-bar{height:100%;width:0;background:var(--red);animation:preLoad 1s ease .2s forwards}
+    .pre-label{font-size:.68rem;color:var(--gray);font-family:var(--mono);letter-spacing:.16em;text-transform:uppercase}
     @keyframes preLoad{to{width:100%}}
-    #scroll-progress{position:fixed;top:0;left:0;height:2px;background:var(--accent);z-index:9998;width:0}
-    #navbar.scrolled{border-color:var(--border-sub)}
+    #scroll-progress{position:fixed;top:0;left:0;height:3px;background:var(--red);z-index:9998;width:0}
   </style>
 
   <!-- ═══ THEME (no-flash) ═══ -->
