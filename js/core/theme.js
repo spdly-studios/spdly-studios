@@ -51,7 +51,14 @@
     bindToggles();
   }
 
-  // Re-bind when new toggles appear (e.g. admin login reveals one)
-  const obs = new MutationObserver(bindToggles);
-  obs.observe(document.body, { childList: true, subtree: true });
+  function initObserver() {
+    const obs = new MutationObserver(bindToggles);
+    obs.observe(document.body, { childList: true, subtree: true });
+  }
+
+  if (document.body) {
+    initObserver();
+  } else {
+    document.addEventListener('DOMContentLoaded', initObserver);
+  }
 })();
