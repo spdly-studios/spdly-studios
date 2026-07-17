@@ -728,9 +728,38 @@ footer a:hover { text-decoration: underline; }
 .mq-perfect { background: var(--c1bg); color: var(--c1); border: 1px solid var(--c1s); }
 .mq-near { background: #1f2010; color: #a3e635; border: 1px solid #3a5020; }
 .mq-warn { background: var(--c-warn-bg); color: var(--c-warn); border: 1px solid #5a4000; }
+.tool-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  position: relative;
+  z-index: 101;
+}
+.tool-nav-back {
+  color: var(--c-accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+.tool-nav-back:hover {
+  text-decoration: underline;
+}
+.tool-nav-title {
+  color: var(--text-muted);
+  font-weight: 500;
+}
 </style>
 </head>
 <body>
+
+<nav class="tool-nav">
+  <a href="../tools.html" class="tool-nav-back">← Back to Tools</a>
+  <span class="tool-nav-title">SpDly Studios / Double Stub Matcher</span>
+</nav>
 
 <header>
   <div class="logo">D</div>

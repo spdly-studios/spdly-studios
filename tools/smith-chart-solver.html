@@ -409,9 +409,39 @@
     font-size: 11px;
     font-family: var(--font-mono);
   }
+.tool-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  position: relative;
+  z-index: 101;
+  width: 100%;
+}
+.tool-nav-back {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+.tool-nav-back:hover {
+  text-decoration: underline;
+}
+.tool-nav-title {
+  color: var(--text-muted);
+  font-weight: 500;
+}
 </style>
 </head>
 <body>
+
+<nav class="tool-nav">
+  <a href="../tools.html" class="tool-nav-back">← Back to Tools</a>
+  <span class="tool-nav-title">SpDly Studios / Smith Chart Solver</span>
+</nav>
 
 <header>
   <div class="logo-icon">S</div>
