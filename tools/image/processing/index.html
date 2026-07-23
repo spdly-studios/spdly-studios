@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pixel Extractor — Computer Vision Lab</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── TOP BAR ────────────────────────────────────────────── -->
+  <header id="topbar">
+    <div id="topbar-brand">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <rect x="1" y="1" width="9" height="9" rx="1" fill="#00e5ff" opacity=".9"/>
+        <rect x="12" y="1" width="9" height="9" rx="1" fill="#7c4dff" opacity=".9"/>
+        <rect x="1" y="12" width="9" height="9" rx="1" fill="#7c4dff" opacity=".9"/>
+        <rect x="12" y="12" width="9" height="9" rx="1" fill="#00e5ff" opacity=".9"/>
+      </svg>
+      <span class="brand-name">Pixel<span class="brand-accent">Extractor</span></span>
+      <span class="brand-tagline">Computer Vision Laboratory</span>
+    </div>
+    <div id="topbar-status">
+      <span id="status-dot" class="dot-idle"></span>
+      <span id="status-text">No image loaded</span>
+    </div>
+    <div id="topbar-actions">
+      <button class="tb-btn" id="btn-export-png" title="Export extracted PNG">Export PNG</button>
+      <button class="tb-btn" id="btn-export-mask" title="Export binary mask">Export Mask</button>
+      <button class="tb-btn tb-btn-ghost" id="btn-reset-all" title="Reset everything">Reset</button>
+    </div>
+  </header>
+
+  <!-- ── MAIN LAYOUT ────────────────────────────────────────── -->
+  <main id="app-layout">
+
+    <!-- ── LEFT PANEL ──────────────────────────────────────── -->
+    <aside id="panel-left">
+
+      <!-- Upload -->
+      <section class="card" id="upload-card">
+        <div class="card-header">Image Input</div>
+        <label id="drop-zone" for="file-input">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M16 4v16M8 12l8-8 8 8" stroke="#00e5ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 24h24" stroke="#555" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M4 28h24" stroke="#333" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span id="drop-label">Drop JPG / PNG here<br/><small>or click to browse</small></span>
+          <input type="file" id="file-input" accept="image/jpeg,image/png" hidden />
+        </label>
+        <div id="image-meta" class="meta-row hidden">
+          <span id="meta-dims">—</span>
+          <span id="meta-size">—</span>
+        </div>
+      </section>
+
+      <!-- View Mode -->
+      <section class="card">
+        <div class="card-header">Visualization Mode</div>
+        <div class="radio-group" id="view-mode-group">
+          <label><input type="radio" name="viewMode" value="original" checked /> Original</label>
+          <label><input type="radio" name="viewMode" value="edge" /> Edge Map</label>
+          <label><input type="radio" name="viewMode" value="contrast" /> Contrast Map</label>
+          <label><input type="radio" name="viewMode" value="gradient" /> Gradient Map</label>
+          <label><input type="radio" name="viewMode" value="mask" /> Mask</label>
+          <label><input type="radio" name="viewMode" value="extracted" /> Extracted</label>
+          <label><input type="radio" name="viewMode" value="overlay" /> Overlay</label>
+        </div>
+      </section>
+
+      <!-- Edge Detection -->
+      <section class="card">
+        <div class="card-header">Edge Detection</div>
+        <div class="ctrl-row">
+          <label class="ctrl-label">Algorithm</label>
+          <select id="edge-algo" class="ctrl-select">
+            <option value="sobel">Sobel</option>
+            <option value="prewitt">Prewitt</option>
+            <option value="laplacian">Laplacian</option>
+          </select>
+        </div>
+        <div class="ctrl-row">
+          <label class="ctrl-label">Threshold <span class="val-badge" id="edge-thresh-val">30</span></label>
+          <input type="range" id="edge-thresh" min="0" max="255" value="30" class="slider" />
+        </div>
+      </section>
+
+      <!-- Local Features -->
+      <section class="card">
+        <div class="card-header">Local Feature Settings</div>
+        <div class="ctrl-row">
+          <label class="ctrl-label">Window Size <span class="val-badge" id="win-size-val">5</span></label>
+          <input type="range" id="win-size" min="3" max="21" step="2" value="5" class="slider" />
+        </div>
+      </section>
+
+      <!-- Formula Editor -->
+      <section class="card" id="formula-card">
+        <div class="card-header">
+          Formula Engine
+          <button class="mini-btn" id="btn-formula-help" title="Show variable reference">?</button>
+        </div>
+        <textarea id="formula-input" spellcheck="false" placeholder="e.g. R > 150 && contrast > 10"></textarea>
+        <div id="formula-error" class="formula-error hidden"></div>
+        <div class="btn-row">
+          <button class="action-btn" id="btn-apply">Apply Formula</button>
+          <button class="action-btn action-btn-ghost" id="btn-clear-formula">Clear</button>
+        </div>
+        <!-- Variable reference overlay -->
+        <div id="var-ref" class="var-ref hidden">
+          <div class="var-ref-header">Available Variables <button id="btn-close-ref">✕</button></div>
+          <div class="var-ref-body">
+            <div class="var-group"><span class="var-label">Color</span> R, G, B, Gray, Hue, Saturation, Value</div>
+            <div class="var-group"><span class="var-label">Spatial</span> x, y</div>
+            <div class="var-group"><span class="var-label">Gradient</span> gradientMagnitude, gradientDirection</div>
+            <div class="var-group"><span class="var-label">Local</span> contrast, variance, localMean, edge</div>
+            <div class="var-group"><span class="var-label">Reference</span> refR, refG, refB, tolerance</div>
+            <div class="var-group"><span class="var-label">Examples</span></div>
+            <code>R &gt; 150 &amp;&amp; G &lt; 100</code>
+            <code>Hue &gt; 30 &amp;&amp; Hue &lt; 45</code>
+            <code>contrast &gt; 12</code>
+            <code>gradientMagnitude &gt; 20</code>
+            <code>Math.abs(R-refR) &lt; tolerance</code>
+            <code>(Hue&gt;30&amp;&amp;Hue&lt;45) &amp;&amp; contrast&gt;12</code>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tolerance for reference color -->
+      <section class="card">
+        <div class="card-header">Reference Color</div>
+        <div class="ctrl-row">
+          <label class="ctrl-label">Tolerance <span class="val-badge" id="tol-val">30</span></label>
+          <input type="range" id="tolerance-slider" min="0" max="255" value="30" class="slider" />
+        </div>
+        <div class="ref-color-display">
+          <div id="ref-color-swatch" class="color-swatch" title="Click image to set reference"></div>
+          <span id="ref-color-text">No reference set — click image</span>
+        </div>
+      </section>
+
+    </aside>
+
+    <!-- ── CENTER PANEL ─────────────────────────────────────── -->
+    <section id="panel-center">
+      <div id="canvas-toolbar">
+        <button class="cv-btn" id="btn-zoom-in" title="Zoom in">+</button>
+        <button class="cv-btn" id="btn-zoom-out" title="Zoom out">−</button>
+        <button class="cv-btn" id="btn-zoom-fit" title="Fit to view">⤢</button>
+        <span id="zoom-label">100%</span>
+        <div class="cv-sep"></div>
+        <button class="cv-btn active" id="btn-mode-select" title="Pick reference pixel">⊕ Pick</button>
+        <button class="cv-btn" id="btn-mode-pan" title="Pan">✥ Pan</button>
+        <div class="cv-sep"></div>
+        <span id="cursor-coords" class="coord-display">x: — y: —</span>
+      </div>
+
+      <div id="canvas-wrapper">
+        <div id="canvas-stage">
+          <canvas id="main-canvas"></canvas>
+          <canvas id="overlay-canvas"></canvas>
+        </div>
+        <div id="empty-state">
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+            <rect x="4" y="12" width="56" height="40" rx="4" stroke="#333" stroke-width="2"/>
+            <circle cx="22" cy="28" r="6" stroke="#444" stroke-width="1.5"/>
+            <path d="M4 40l14-10 10 8 10-12 14 12" stroke="#333" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+          <p>Upload an image to begin</p>
+        </div>
+      </div>
+
+      <!-- Processing progress -->
+      <div id="progress-bar-wrap" class="hidden">
+        <div id="progress-bar"></div>
+        <span id="progress-text">Processing…</span>
+      </div>
+    </section>
+
+    <!-- ── RIGHT PANEL ──────────────────────────────────────── -->
+    <aside id="panel-right">
+
+      <!-- Pixel Inspector -->
+      <section class="card">
+        <div class="card-header">Pixel Inspector</div>
+        <div id="pixel-inspector">
+          <div class="inspector-swatch-row">
+            <div id="inspect-swatch" class="color-swatch-lg"></div>
+            <div id="inspect-hex" class="hex-label">—</div>
+          </div>
+          <table class="inspect-table" id="inspect-table">
+            <tr><td>R</td><td id="iR">—</td><td>G</td><td id="iG">—</td><td>B</td><td id="iB">—</td></tr>
+            <tr><td>H</td><td id="iH">—</td><td>S</td><td id="iS">—</td><td>V</td><td id="iV">—</td></tr>
+            <tr><td>Gray</td><td id="iGray">—</td><td>Lum</td><td id="iLum">—</td><td></td><td></td></tr>
+          </table>
+        </div>
+      </section>
+
+      <!-- Feature Values -->
+      <section class="card">
+        <div class="card-header">Feature Values</div>
+        <table class="inspect-table" id="feature-table">
+          <tr><td>∇ Mag</td><td id="fGradMag">—</td></tr>
+          <tr><td>∇ Dir°</td><td id="fGradDir">—</td></tr>
+          <tr><td>Contrast</td><td id="fContrast">—</td></tr>
+          <tr><td>Variance</td><td id="fVariance">—</td></tr>
+          <tr><td>LocalMean</td><td id="fLocalMean">—</td></tr>
+          <tr><td>Edge</td><td id="fEdge">—</td></tr>
+        </table>
+      </section>
+
+      <!-- Histogram -->
+      <section class="card" id="histogram-card">
+        <div class="card-header">
+          Histogram
+          <span class="tab-group">
+            <button class="hist-tab active" data-hist="rgb">RGB</button>
+            <button class="hist-tab" data-hist="gray">Gray</button>
+          </span>
+        </div>
+        <canvas id="histogram-canvas" width="240" height="110"></canvas>
+      </section>
+
+      <!-- Processing Settings -->
+      <section class="card">
+        <div class="card-header">Processing Info</div>
+        <table class="inspect-table" id="proc-table">
+          <tr><td>Image</td><td id="pDims">—</td></tr>
+          <tr><td>Pixels</td><td id="pPixels">—</td></tr>
+          <tr><td>Window</td><td id="pWindow">—</td></tr>
+          <tr><td>Edge Algo</td><td id="pEdgeAlgo">—</td></tr>
+          <tr><td>Mask Active</td><td id="pMaskActive">No</td></tr>
+          <tr><td>Last Compute</td><td id="pLastCompute">—</td></tr>
+        </table>
+      </section>
+
+    </aside>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
