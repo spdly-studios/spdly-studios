@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Image Feature Analysis Lab</title>
+    <style>
+      :root {
+        --bg: #0f1115;
+        --panel: #171a21;
+        --border: #2a2e38;
+        --text: #e8e9ec;
+        --muted: #9aa0ab;
+        --accent: #5b8def;
+        --pos: #3ecf6e;
+        --neg: #e05b5b;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 20px;
+        font-weight: 600;
+        margin: 0 0 4px;
+      }
+
+      p.sub {
+        color: var(--muted);
+        font-size: 13px;
+        margin: 0 0 18px;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 1.3fr 1fr;
+        gap: 16px;
+        align-items: start;
+      }
+
+      @media (max-width:1000px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px;
+        margin-bottom: 16px;
+      }
+
+      .drop {
+        border: 2px dashed var(--border);
+        border-radius: 10px;
+        padding: 26px;
+        text-align: center;
+        cursor: pointer;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .drop:hover {
+        border-color: var(--accent);
+        color: var(--text);
+      }
+
+      input[type=file] {
+        display: none;
+      }
+
+      #canvasWrap {
+        position: relative;
+        max-width: 100%;
+        overflow: auto;
+        border-radius: 8px;
+      }
+
+      canvas.viewCanvas {
+        display: block;
+        max-width: 100%;
+        cursor: crosshair;
+        border-radius: 8px;
+      }
+
+      .row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin: 8px 0;
+        flex-wrap: wrap;
+      }
+
+      label.small {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      select,
+      button,
+      input[type=number],
+      input[type=text] {
+        background: #1f232c;
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 6px 10px;
+        font-size: 13px;
+        cursor: pointer;
+      }
+
+      input[type=text],
+      input[type=number] {
+        cursor: text;
+      }
+
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+
+      button.pos {
+        background: var(--pos);
+        border-color: var(--pos);
+        color: #08240f;
+      }
+
+      button.neg {
+        background: var(--neg);
+        border-color: var(--neg);
+        color: #2b0808;
+      }
+
+      button:hover {
+        filter: brightness(1.12);
+      }
+
+      h3 {
+        font-size: 13px;
+        margin: 14px 0 8px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: .04em;
+      }
+
+      h3:first-child {
+        margin-top: 0;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11px;
+        margin-top: 4px;
+      }
+
+      th,
+      td {
+        border-bottom: 1px solid var(--border);
+        padding: 5px 6px;
+        text-align: left;
+        white-space: nowrap;
+      }
+
+      th {
+        color: var(--muted);
+        font-weight: 500;
+        position: sticky;
+        top: 0;
+        background: var(--panel);
+      }
+
+      .tablewrap {
+        max-height: 220px;
+        overflow: auto;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+      }
+
+      .colorcell {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 4px;
+        border: 1px solid var(--border);
+        flex: none;
+      }
+
+      .del {
+        cursor: pointer;
+        color: var(--neg);
+        font-weight: bold;
+        padding: 2px 6px;
+      }
+
+      .empty {
+        color: var(--muted);
+        font-size: 12px;
+        padding: 8px 0;
+      }
+
+      .hint {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 6px;
+      }
+
+      canvas#histCanvas {
+        width: 100%;
+        height: 110px;
+        background: #0f1115;
+        border-radius: 6px;
+        margin-top: 6px;
+      }
+
+      .swatch {
+        width: 44px;
+        height: 44px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        position: relative;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+      }
+
+      .swatch span {
+        font-size: 8px;
+        background: rgba(0, 0, 0, .55);
+        color: #fff;
+        padding: 1px 3px;
+        border-radius: 3px;
+        margin-bottom: 2px;
+      }
+
+      .palette {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+
+      .inspector {
+        font-size: 11px;
+        line-height: 1.5;
+        background: #0f1115;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 8px;
+        min-height: 60px;
+      }
+
+      .inspector .k {
+        color: var(--muted);
+      }
+
+      .chk {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .flex-wrap {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .diffBad {
+        color: var(--neg);
+        font-weight: 600;
+      }
+
+      textarea#formulaInput {
+        width: 100%;
+        min-height: 60px;
+        font-family: monospace;
+        font-size: 12px;
+        background: #0f1115;
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 8px;
+        resize: vertical;
+      }
+
+      .tag {
+        display: inline-block;
+        font-size: 10px;
+        padding: 1px 6px;
+        border-radius: 10px;
+        background: #1f232c;
+        color: var(--muted);
+        margin-left: 6px;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <h1>Image feature analysis lab</h1>
+    <p class="sub">Client-side computer vision lab: feature maps, LAB color space, pixel inspector, positive/negative
+      sampling, feature comparison, formula-based masking, region cleanup, and export. No editing tools — analysis only.
+    </p>
+
+    <div class="layout">
+      <div class="left-col">
+        <div class="panel">
+          <div class="drop" id="dropZone">Click or drag a JPG / PNG here<input type="file" id="fileInput"
+              accept="image/png, image/jpeg"></div>
+          <div id="canvasWrap" style="display:none;">
+            <canvas class="viewCanvas" id="canvas"></canvas>
+          </div>
+          <div class="hint" id="canvasHint" style="display:none;">
+            Hover to inspect a pixel. Click to sample it as
+            <select id="sampleMode" style="padding:2px 6px;">
+              <option value="pos">positive</option>
+              <option value="neg">negative</option>
+            </select>.
+          </div>
+          <h3 id="inspHeader" style="display:none;">Pixel inspector</h3>
+          <div class="inspector" id="inspector" style="display:none;"></div>
+        </div>
+
+        <div class="panel" id="featurePanel" style="display:none;">
+          <h3>Feature map</h3>
+          <div class="row">
+            <select id="featureSelect">
+              <option value="rgb">RGB (original)</option>
+              <option value="gray">Grayscale</option>
+              <option value="hue">Hue</option>
+              <option value="sat">Saturation</option>
+              <option value="val">Value (HSV)</option>
+              <option value="lum">Luminance</option>
+              <option value="gradmag">Gradient magnitude</option>
+              <option value="graddir">Gradient direction</option>
+              <option value="sobel">Sobel</option>
+              <option value="prewitt">Prewitt</option>
+              <option value="laplacian">Laplacian</option>
+              <option value="localmean">Local mean</option>
+              <option value="localvar">Local variance</option>
+              <option value="localcontrast">Local contrast</option>
+            </select>
+            <button id="applyFeature" class="primary">Show map</button>
+          </div>
+          <div class="hint">Displayed as a false-color / grayscale overlay on the canvas. Switch back to RGB to restore
+            the original view.</div>
+        </div>
+
+        <div class="panel" id="formulaPanel" style="display:none;">
+          <h3>Formula engine <span class="tag">mask preview</span></h3>
+          <textarea id="formulaInput"
+            placeholder="e.g. hue > 172 && hue < 180 && contrast > 18 && gradientMagnitude > 20"></textarea>
+          <div class="row">
+            <button id="applyFormula" class="primary">Apply formula</button>
+            <button id="clearFormula">Clear</button>
+            <span class="hint" id="formulaError"></span>
+          </div>
+          <div class="row">
+            <span class="hint">Available:
+              r,g,b,gray,hue,sat,val,lum,L,A,B,gradientMagnitude,gradientDirection,contrast,variance,localMean,edge,x,y</span>
+          </div>
+          <h3>Region cleanup</h3>
+          <div class="row flex-wrap">
+            <button id="opRemoveIsolated">Remove isolated pixels</button>
+            <button id="opOpening">Opening</button>
+            <button id="opClosing">Closing</button>
+            <button id="opFillHoles">Fill small holes</button>
+            <label class="small">min size <input type="number" id="minCompSize" value="20" style="width:60px;"></label>
+            <button id="opRemoveSmall">Remove small components</button>
+          </div>
+          <div class="row">
+            <button id="exportMask" class="primary">Export mask as PNG</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-col">
+        <div class="panel">
+          <h3>Positive samples <span style="color:var(--pos)">●</span></h3>
+          <div class="tablewrap">
+            <table id="posTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Color</th>
+                  <th>HEX</th>
+                  <th>RGB</th>
+                  <th>HSV</th>
+                  <th>LAB</th>
+                  <th>Grad</th>
+                  <th>Contrast</th>
+                  <th>Var</th>
+                  <th>Mean</th>
+                  <th>x,y</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="posBody"></tbody>
+            </table>
+          </div>
+          <div class="empty" id="posEmpty">No positive samples yet. Click the image with mode set to "positive".</div>
+
+          <h3>Negative samples <span style="color:var(--neg)">●</span></h3>
+          <div class="tablewrap">
+            <table id="negTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Color</th>
+                  <th>HEX</th>
+                  <th>RGB</th>
+                  <th>HSV</th>
+                  <th>LAB</th>
+                  <th>Grad</th>
+                  <th>Contrast</th>
+                  <th>Var</th>
+                  <th>Mean</th>
+                  <th>x,y</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="negBody"></tbody>
+            </table>
+          </div>
+          <div class="empty" id="negEmpty">No negative samples yet.</div>
+
+          <div class="row">
+            <button id="exportCSV" class="primary">Export samples as CSV</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Feature comparison <span class="tag">pos vs neg</span></h3>
+          <div class="tablewrap">
+            <table id="compareTable">
+              <thead>
+                <tr>
+                  <th>Feature</th>
+                  <th>Pos mean</th>
+                  <th>Pos range</th>
+                  <th>Pos std</th>
+                  <th>Neg mean</th>
+                  <th>Neg range</th>
+                  <th>Neg std</th>
+                  <th>Separation</th>
+                </tr>
+              </thead>
+              <tbody id="compareBody"></tbody>
+            </table>
+          </div>
+          <div class="empty" id="compareEmpty">Add at least one positive and one negative sample to compare.</div>
+        </div>
+
+        <div class="panel">
+          <h3>Dominant colors</h3>
+          <div class="row">
+            <label class="small">Palette size</label>
+            <select id="paletteSize">
+              <option value="8">8</option>
+              <option value="12" selected>12</option>
+              <option value="16">16</option>
+              <option value="24">24</option>
+            </select>
+            <button id="reanalyze">Re-analyze</button>
+          </div>
+          <div class="palette" id="paletteWrap">
+            <div class="empty">Upload an image first.</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Statistics</h3>
+          <div id="statsWrap" class="empty">No image loaded.</div>
+        </div>
+
+        <div class="panel">
+          <h3>Histograms</h3>
+          <div class="row flex-wrap">
+            <label class="chk"><input type="checkbox" id="hR" checked> R</label>
+            <label class="chk"><input type="checkbox" id="hG" checked> G</label>
+            <label class="chk"><input type="checkbox" id="hB" checked> B</label>
+            <label class="chk"><input type="checkbox" id="hGray"> Gray</label>
+            <label class="chk"><input type="checkbox" id="hHue"> Hue</label>
+            <label class="chk"><input type="checkbox" id="hSat"> Sat</label>
+            <label class="chk"><input type="checkbox" id="hBright"> Brightness</label>
+          </div>
+          <canvas id="histCanvas" width="600" height="110"></canvas>
+        </div>
+
+        <div class="panel">
+          <h3>Export</h3>
+          <div class="row flex-wrap">
+            <button id="exportStatsJSON" class="primary">Export image stats as JSON</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="./features.js"></script>
+    <script src="./app.js"></script>
+  </body>
+
+</html>
