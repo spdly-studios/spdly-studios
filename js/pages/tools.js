@@ -54,7 +54,7 @@ window.addEventListener('load', () => {
 
 function groupToolsByDomain(tools) {
   const grouped = {};
-  
+
   tools.forEach(tool => {
     const domain = tool.domain || 'General';
     if (!grouped[domain]) {
@@ -62,26 +62,26 @@ function groupToolsByDomain(tools) {
     }
     grouped[domain].push(tool);
   });
-  
+
   // Sort domains and tools within each domain
   const sorted = {};
   Object.keys(grouped)
     .sort()
     .forEach(domain => {
-      sorted[domain] = grouped[domain].sort((a, b) => 
+      sorted[domain] = grouped[domain].sort((a, b) =>
         (a.title || '').localeCompare(b.title || '')
       );
     });
-  
+
   return sorted;
 }
 
 function renderAllTools(data) {
   const container = document.getElementById('tools-container');
   if (!container) return;
-  
+
   const tools = data || [];
-  
+
   if (!tools.length) {
     container.innerHTML = `
       <div class="tools-empty">
@@ -91,15 +91,15 @@ function renderAllTools(data) {
     `;
     return;
   }
-  
+
   const grouped = groupToolsByDomain(tools);
   container.innerHTML = '';
-  
+
   // Render each domain section
   Object.entries(grouped).forEach(([domain, domainTools]) => {
     const section = document.createElement('div');
     section.className = 'tools-section';
-    
+
     const heading = document.createElement('div');
     heading.className = 'tools-section-heading';
     heading.innerHTML = `
@@ -107,25 +107,25 @@ function renderAllTools(data) {
       <span class="tools-section-count">${domainTools.length}</span>
     `;
     section.appendChild(heading);
-    
+
     const grid = document.createElement('div');
     grid.className = 'tools-grid';
-    
+
     domainTools.forEach(tool => {
       const card = document.createElement('a');
       card.className = 'tool-card';
       card.href = tool.url || '#';
       card.target = tool.isExternal ? '_blank' : '_self';
       card.rel = tool.isExternal ? 'noopener noreferrer' : '';
-      
-      const fieldHTML = tool.field 
-        ? `<div class="tool-field">${tool.field}</div>` 
+
+      const fieldHTML = tool.field
+        ? `<div class="tool-field">${tool.field}</div>`
         : '';
-      
+
       const tagsHTML = (tool.tags || []).slice(0, 2)
         .map(t => `<span class="tool-badge">${t}</span>`)
         .join('');
-      
+
       card.innerHTML = `
         <div class="tool-icon">${tool.icon || '?'}</div>
         ${fieldHTML}
@@ -139,10 +139,10 @@ function renderAllTools(data) {
           <span class="tool-link-icon">→</span>
         </div>
       `;
-      
+
       grid.appendChild(card);
     });
-    
+
     section.appendChild(grid);
     container.appendChild(section);
   });
@@ -172,6 +172,28 @@ function getStaticTools() {
       url: 'tools/pipeline-hazard-analysis.html',
       isExternal: false,
       tags: ['Analysis', 'CPU Design']
+    },
+    {
+      id: 'image-analysis-lab',
+      title: 'Image Feature Analysis Lab',
+      description: 'Explore feature maps, LAB color space, sampling, and pixel-level statistics for images',
+      icon: '🖼️',
+      domain: 'Computer Vision',
+      field: 'Image Analysis',
+      url: 'tools/image/analysis/index.html',
+      isExternal: false,
+      tags: ['Analysis', 'Computer Vision']
+    },
+    {
+      id: 'pixel-extractor',
+      title: 'Pixel Extractor',
+      description: 'Apply edge detection, gradients, formulas, and mask-based extraction to images',
+      icon: '🧪',
+      domain: 'Computer Vision',
+      field: 'Image Processing',
+      url: 'tools/image/processing/index.html',
+      isExternal: false,
+      tags: ['Processing', 'Masking']
     }
   ];
 }
